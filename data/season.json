@@ -1,0 +1,41 @@
+{
+  "club": "Real Madrid",
+  "manager": "José Mourinho",
+  "season": "2027/28",
+
+  "competition": "La Liga",
+
+  "formation": "4-2-3-1 Wide",
+
+  "transferBudget": 3000000,
+
+  "played": 4,
+  "wins": 4,
+  "draws": 0,
+  "losses": 0,
+
+  "goalsFor": 15,
+  "goalsAgainst": 0,
+  "cleanSheets": 4,
+
+  "captain": "Federico Valverde",
+  "viceCaptain": "Jude Bellingham",
+
+  "difficulty": "Legendary",
+
+  "transferWindow": "Closed",
+
+  "nextFixture": {
+    "competition": "UEFA Champions League",
+    "opponent": "Olympique de Marseille",
+    "venue": "Home"
+  },
+
+  "lastFixture": {
+    "competition": "La Liga",
+    "opponent": "RCD Mallorca",
+    "venue": "Away",
+    "result": "W",
+    "score": "4-0"
+  }
+}
