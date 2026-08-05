@@ -3,6 +3,24 @@
 // Version: 0.1.0
 // ==========================================
 
+function formatCurrency(value){
+
+    if(value >= 1000000){
+
+        return `€${(value / 1000000).toFixed(2)}M`;
+
+    }
+
+    if(value >= 1000){
+
+        return `€${(value / 1000).toFixed(1)}K`;
+
+    }
+
+    return `€${value}`;
+
+}
+
 export function renderDashboard(season) {
 
     return `
@@ -56,7 +74,8 @@ export function renderDashboard(season) {
 
                 <tr>
                     <td>Transfer Budget</td>
-                    <td>${season.transferBudget.toLocaleString()}</td>
+                    <td>${formatCurrency(season.transferBudget)}
+                    </td>
                 </tr>
 
                 <tr>
