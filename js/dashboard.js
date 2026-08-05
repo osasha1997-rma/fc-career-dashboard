@@ -43,7 +43,7 @@ export function renderDashboard(season) {
 
         <img
             class="club-logo"
-            src="assets/images/real-madrid.png"
+            src="assets/icons/logo.png"
             alt="Real Madrid"
         >
 

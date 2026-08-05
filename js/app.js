@@ -16,7 +16,10 @@ import {
 import { registerRoute, getRoute } from "./router.js";
 
 import { renderDashboard } from "./dashboard.js";
-import { renderSquad } from "./squad.js";
+import {
+    renderSquad,
+    initializeSquad
+} from "./squad.js";
 import { renderMatches } from "./matches.js";
 import { renderAnalytics } from "./analytics.js";
 import { renderDevelopment } from "./development.js";
@@ -49,11 +52,18 @@ registerRoute("dashboard", () => {
 
 });
 
+
 registerRoute("squad", () => {
 
-    setHeader("Squad");
+    setHeader("Squad", `${state.players.length} Players`);
 
-    return renderSquad(state.players);
+const html = renderSquad(state.players);
+
+setTimeout(() => {
+    initializeSquad();
+}, 0);
+
+return html;
 
 });
 

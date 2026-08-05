@@ -268,6 +268,112 @@ body{
     font-weight:700;
 }
 
+/* ==========================================
+   PLAYER CARD
+========================================== */
+
+.player-card{
+
+    background:var(--surface);
+
+    border-radius:20px;
+
+    padding:18px;
+
+    margin-bottom:16px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    border:1px solid rgba(255,255,255,.05);
+
+}
+
+.player-card:hover{
+
+    transform:translateY(-2px);
+
+}
+
+.player-card:active{
+
+    transform:scale(.98);
+
+}
+
+.player-card-top{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:14px;
+
+}
+
+.player-number{
+
+    color:var(--primary);
+
+    font-weight:700;
+
+    font-size:1rem;
+
+}
+
+.player-rating{
+
+    font-weight:700;
+
+    color:#fff;
+
+}
+
+.player-card-body h3{
+
+    font-size:1.1rem;
+
+    margin-bottom:6px;
+
+}
+
+.player-card-body p{
+
+    color:var(--text-secondary);
+
+}
+
+.player-card-footer{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-top:18px;
+
+}
+
+.player-role{
+
+    color:var(--primary);
+
+    font-size:.9rem;
+
+}
+
+.player-arrow{
+
+    font-size:1.5rem;
+
+    color:var(--text-secondary);
+
+}
+
 /* ---------- BUTTONS ---------- */
 
 button{
@@ -475,4 +581,136 @@ td{
 
         transform:translateY(0);
     }
+}
+
+/* ==========================================
+   SEARCH BAR
+========================================== */
+
+.search-container{
+
+    margin-bottom:20px;
+
+}
+
+.search-input{
+
+    width:100%;
+
+    background:var(--surface);
+
+    color:var(--text);
+
+    border:none;
+
+    outline:none;
+
+    padding:16px 18px;
+
+    border-radius:18px;
+
+    font-size:1rem;
+
+    transition:.25s;
+
+}
+
+.search-input::placeholder{
+
+    color:var(--text-secondary);
+
+}
+
+.search-input:focus{
+
+    box-shadow:0 0 0 2px var(--primary);
+
+}
+
+/* ==========================================
+   FILTER BAR
+========================================== */
+
+.filter-bar{
+
+    display:flex;
+
+    gap:10px;
+
+    overflow-x:auto;
+
+    margin-bottom:18px;
+
+    padding-bottom:4px;
+
+    scrollbar-width:none;
+
+}
+
+.filter-bar::-webkit-scrollbar{
+
+    display:none;
+
+}
+
+.filter-btn{
+
+    background:var(--surface);
+
+    color:var(--text-secondary);
+
+    border:none;
+
+    border-radius:999px;
+
+    padding:10px 18px;
+
+    white-space:nowrap;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    font-size:.9rem;
+
+}
+
+.filter-btn.active{
+
+    background:var(--primary);
+
+    color:#111827;
+
+    font-weight:700;
+
+}
+
+.filter-btn:active{
+
+    transform:scale(.96);
+
+}
+
+/* ==========================================
+   SCREEN
+========================================== */
+
+.screen-title{
+
+    font-size:1.8rem;
+
+    margin-bottom:20px;
+
+    font-weight:700;
+
+}
+
+#player-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:14px;
+
 }
