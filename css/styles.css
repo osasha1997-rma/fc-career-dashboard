@@ -138,6 +138,105 @@ body{
 
 /* ---------- CARDS ---------- */
 
+/* =======================================
+   HERO CARD
+======================================= */
+
+.hero-card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    height:180px;
+
+    border-radius:24px;
+
+    margin-bottom:24px;
+
+    background:
+
+        linear-gradient(
+            rgba(8,13,30,.60),
+            rgba(8,13,30,.75)
+        ),
+
+        url("../assets/images/bernabeu.jpg");
+
+    background-size:cover;
+
+    background-position:center;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+.hero-overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    backdrop-filter:blur(1px);
+
+}
+
+.hero-content{
+
+    position:relative;
+
+    z-index:2;
+
+    height:100%;
+
+    padding:28px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:flex-start;
+
+}
+
+.hero-content h1{
+
+    font-size:2.2rem;
+
+    margin-bottom:8px;
+
+    font-weight:700;
+
+}
+
+.hero-content p{
+
+    color:#d6dbe5;
+
+    font-size:1.15rem;
+
+}
+
+.hero-content span{
+
+    display:block;
+
+    margin-top:12px;
+
+    color:#9ca3af;
+
+}
+
+.club-logo{
+
+    width:82px;
+
+    height:82px;
+
+    object-fit:contain;
+
+}
+
 .card{
 
     background:var(--surface);

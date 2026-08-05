@@ -25,15 +25,31 @@ export function renderDashboard(season) {
 
     return `
 
-        <div class="card fade">
+        <div class="hero-card">
 
-            <h2>${season.club}</h2>
+    <div class="hero-overlay"></div>
+
+    <div class="hero-content">
+
+        <div>
+
+            <h1>${season.club}</h1>
 
             <p>${season.manager}</p>
 
-            <p>${season.season}</p>
+            <span>${season.season} • ${season.league}</span>
 
         </div>
+
+        <img
+            class="club-logo"
+            src="assets/images/real-madrid.png"
+            alt="Real Madrid"
+        >
+
+    </div>
+
+</div>
 
         <div class="stats-grid">
 
