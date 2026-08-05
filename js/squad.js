@@ -192,10 +192,20 @@ function updatePlayerList() {
 // Initialize Screen
 // ==========================================
 
-export function initializeSquad() {
+export function initializeSquad(onPlayerSelect) {
 
     attachSearchListener(searchPlayers);
 
     attachFilterListener(filterPlayers);
+
+    document.getElementById("player-list")?.addEventListener("click", event => {
+
+        const card = event.target.closest(".player-card");
+
+        if (card) {
+            onPlayerSelect?.(card.dataset.playerId);
+        }
+
+    });
 
 }

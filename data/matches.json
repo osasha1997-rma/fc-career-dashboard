@@ -1,0 +1,218 @@
+[
+  {
+    "id": 1,
+    "matchday": 1,
+    "venue": "Home",
+    "competition": "La Liga",
+    "opponent": "Alaves",
+    "scoreFor": 4,
+    "scoreAgainst": 0,
+    "result": "W",
+    "goals": [
+      { "minute": 24, "player": "Mbappe" },
+      { "minute": 81, "player": "Bellingham" },
+      { "minute": 84, "player": "Tchouameni" },
+      { "minute": 88, "player": "Endrick" }
+    ],
+    "assists": [
+      { "player": "Bellingham", "count": 1 },
+      { "player": "Mbappe", "count": 1 },
+      { "player": "Cucurella", "count": 1 },
+      { "player": "Dumfries", "count": 1 }
+    ],
+    "substitutions": [
+      {
+        "minute": 81,
+        "on": ["Diomande", "Tchouameni", "Dumfries"],
+        "off": ["Olise", "Rodri", "Trent"]
+      },
+      {
+        "minute": 84,
+        "on": ["Endrick", "Huijsen"],
+        "off": ["Mbappe", "Militao"]
+      }
+    ],
+    "performances": [
+      { "player": "Bellingham", "rating": 9.1 },
+      { "player": "Courtois", "rating": 8.1 },
+      { "player": "Cucurella", "rating": 7.6 },
+      { "player": "Mbappe", "rating": 7.5 },
+      { "player": "Rodri", "rating": 7.4 },
+      { "player": "Valverde", "rating": 7.3 },
+      { "player": "Endrick", "rating": 7.2 },
+      { "player": "Tchouameni", "rating": 7.1 },
+      { "player": "Trent", "rating": 7.0 },
+      { "player": "Dumfries", "rating": 7.0 },
+      { "player": "Bastoni", "rating": 6.8 },
+      { "player": "Militao", "rating": 6.7 },
+      { "player": "Huijsen", "rating": 6.5 },
+      { "player": "Olise", "rating": 6.4 },
+      { "player": "Vini Jr", "rating": 6.3 },
+      { "player": "Diomande", "rating": 6.1 }
+    ]
+  },
+  {
+    "id": 2,
+    "matchday": 2,
+    "venue": "Away",
+    "competition": "La Liga",
+    "opponent": "Levante",
+    "scoreFor": 5,
+    "scoreAgainst": 0,
+    "result": "W",
+    "goals": [
+      { "minute": 14, "player": "Rodri" },
+      { "minute": 28, "player": "Mbappe" },
+      { "minute": 51, "player": "Mbappe" },
+      { "minute": 66, "player": "Vinicius Jr" },
+      { "minute": 82, "player": "Endrick" }
+    ],
+    "assists": [
+      { "player": "Bellingham", "count": 2 },
+      { "player": "Mbappe", "count": 1 },
+      { "player": "Vinicius Jr", "count": 1 }
+    ],
+    "substitutions": [
+      {
+        "minute": 61,
+        "on": ["Guler", "Dumfries"],
+        "off": ["Olise", "Trent"]
+      },
+      {
+        "minute": 72,
+        "on": ["Endrick", "Tchouameni"],
+        "off": ["Mbappe", "Rodri"]
+      },
+      {
+        "minute": 77,
+        "on": ["Huijsen"],
+        "off": ["Militao"]
+      }
+    ],
+    "performances": [
+      { "player": "Mbappe", "rating": 9.7 },
+      { "player": "Bellingham", "rating": 9.1 },
+      { "player": "Rodri", "rating": 8.5 },
+      { "player": "Vinicius Jr", "rating": 8.3 },
+      { "player": "Olise", "rating": 7.9 },
+      { "player": "Endrick", "rating": 7.7 },
+      { "player": "Valverde", "rating": 7.7 },
+      { "player": "Bastoni", "rating": 7.2 },
+      { "player": "Militao", "rating": 7.1 },
+      { "player": "Courtois", "rating": 7.0 },
+      { "player": "Cucurella", "rating": 6.7 },
+      { "player": "Trent", "rating": 6.6 },
+      { "player": "Tchouameni", "rating": 6.3 },
+      { "player": "Dumfries", "rating": 6.3 },
+      { "player": "Guler", "rating": 6.3 },
+      { "player": "Huijsen", "rating": 6.1 }
+    ]
+  },
+  {
+    "id": 3,
+    "matchday": 3,
+    "venue": "Home",
+    "competition": "La Liga",
+    "opponent": "Real Sociedad",
+    "scoreFor": 2,
+    "scoreAgainst": 0,
+    "result": "W",
+    "goals": [
+      { "minute": 60, "player": "Bellingham" },
+      { "minute": 77, "player": "Bellingham" }
+    ],
+    "assists": [
+      { "player": "Mbappe", "count": 2 }
+    ],
+    "substitutions": [
+      {
+        "minute": 65,
+        "on": ["Guler", "Tchouameni"],
+        "off": ["Olise", "Rodri"]
+      },
+      {
+        "minute": 72,
+        "on": ["Diomande"],
+        "off": ["Vinicius"]
+      },
+      {
+        "minute": 78,
+        "on": ["Camavinga", "Carreras"],
+        "off": ["Valverde", "Cucurella"]
+      }
+    ],
+    "performances": [
+      { "player": "Bellingham", "rating": 7.4 },
+      { "player": "Courtois", "rating": 7.4 },
+      { "player": "Valverde", "rating": 7.3 },
+      { "player": "Bastoni", "rating": 7.1 },
+      { "player": "Mbappe", "rating": 6.9 },
+      { "player": "Tchouameni", "rating": 6.8 },
+      { "player": "Rodri", "rating": 6.6 },
+      { "player": "Cucurella", "rating": 6.6 },
+      { "player": "Vinicius", "rating": 6.5 },
+      { "player": "Olise", "rating": 6.4 },
+      { "player": "Militao", "rating": 6.4 },
+      { "player": "Carreras", "rating": 6.3 },
+      { "player": "Guler", "rating": 6.0 },
+      { "player": "Trent", "rating": 6.0 },
+      { "player": "Camavinga", "rating": 6.0 },
+      { "player": "Diomande", "rating": 5.5 }
+    ]
+  },
+  {
+    "id": 4,
+    "matchday": 4,
+    "venue": "Away",
+    "competition": "La Liga",
+    "opponent": "RCD Mallorca",
+    "scoreFor": 4,
+    "scoreAgainst": 0,
+    "result": "W",
+    "goals": [
+      { "minute": 15, "player": "Vinicius" },
+      { "minute": 19, "player": "Mbappe" },
+      { "minute": 60, "player": "Trent Alexander Arnold" },
+      { "minute": 65, "player": "Bellingham" }
+    ],
+    "assists": [
+      { "player": "Mbappe", "count": 2 },
+      { "player": "Rodri", "count": 1 }
+    ],
+    "substitutions": [
+      {
+        "minute": 60,
+        "on": ["Guler"],
+        "off": ["Olise"]
+      },
+      {
+        "minute": 69,
+        "on": ["Tchouameni", "Dumfries"],
+        "off": ["Rodri", "Trent"]
+      },
+      {
+        "minute": 74,
+        "on": ["Diomande", "Schlotterbeck"],
+        "off": ["Bellingham", "Bastoni"]
+      }
+    ],
+    "performances": [
+      { "player": "Mbappe", "rating": 9.1 },
+      { "player": "Trent", "rating": 8.6 },
+      { "player": "Bellingham", "rating": 8.0 },
+      { "player": "Rodri", "rating": 7.6 },
+      { "player": "Courtois", "rating": 7.4 },
+      { "player": "Valverde", "rating": 7.4 },
+      { "player": "Olise", "rating": 7.2 },
+      { "player": "Vinicius", "rating": 7.2 },
+      { "player": "Cucurella", "rating": 7.1 },
+      { "player": "Guler", "rating": 7.1 },
+      { "player": "Schlotterbeck", "rating": 6.7 },
+      { "player": "Diomande", "rating": 6.6 },
+      { "player": "Militao", "rating": 6.7 },
+      { "player": "Tchouameni", "rating": 6.6 },
+      { "player": "Dumfries", "rating": 6.3 },
+      { "player": "Bastoni", "rating": 5.9 }
+    ]
+  }
+]

@@ -23,146 +23,106 @@ import {
 import { renderMatches } from "./matches.js";
 import { renderAnalytics } from "./analytics.js";
 import { renderDevelopment } from "./development.js";
-
-
-// ==========================================
-// Application State
-// ==========================================
+import { createPlayerProfile } from "./components/PlayerProfile.js";
 
 const state = {
-
     season: null,
-
     players: [],
-
-    matches: []
-
+    matches: [],
+    selectedPlayer: null
 };
 
-
-// ==========================================
-// Register Screens
-// ==========================================
-
 registerRoute("dashboard", () => {
-
     setHeader("Dashboard", state.season.club);
-
     return renderDashboard(state.season);
-
 });
 
-
 registerRoute("squad", () => {
-
     setHeader("Squad", `${state.players.length} Players`);
+    console.log("Players:", state.players);
+    const html = renderSquad(state.players);
 
-const html = renderSquad(state.players);
+    setTimeout(() => {
+        initializeSquad(openPlayerProfile);
+    }, 0);
 
-setTimeout(() => {
-    initializeSquad();
-}, 0);
+    return html;
+});
 
-return html;
+registerRoute("player-profile", () => {
+    if (!state.selectedPlayer) {
+        return getRoute("squad")();
+    }
 
+    setHeader(
+        state.selectedPlayer.name,
+        `${state.selectedPlayer.position} · #${state.selectedPlayer.number}`,
+        `<button id="back-to-squad" class="back-btn">← Back</button>`
+    );
+
+    setTimeout(() => {
+        document.getElementById("back-to-squad")?.addEventListener("click", () => {
+            showScreen("squad");
+        });
+    }, 0);
+
+    return createPlayerProfile(state.selectedPlayer, state.matches);
 });
 
 registerRoute("matches", () => {
-
     setHeader("Matches");
-
     return renderMatches(state.matches);
-
 });
 
 registerRoute("analytics", () => {
-
     setHeader("Analytics");
-
     return renderAnalytics();
-
 });
 
 registerRoute("development", () => {
-
     setHeader("Development");
-
     return renderDevelopment();
-
 });
 
-
-// ==========================================
-// Screen Navigation
-// ==========================================
-
-function showScreen(name){
-
+function showScreen(name) {
     const screen = getRoute(name);
 
-    if(!screen){
-
-        console.error("Screen not found:",name);
-
+    if (!screen) {
+        console.error("Screen not found:", name);
         return;
-
     }
 
     renderScreen(screen());
-
-    setActiveNavigation(name);
-
+    setActiveNavigation(name === "player-profile" ? "squad" : name);
 }
 
+function openPlayerProfile(playerId) {
+    state.selectedPlayer = state.players.find(player => player.id === Number(playerId));
 
-// ==========================================
-// Bottom Navigation
-// ==========================================
+    if (state.selectedPlayer) {
+        showScreen("player-profile");
+    }
+}
 
-function setupNavigation(){
-
-    document.querySelectorAll(".nav-btn").forEach(button=>{
-
-        button.addEventListener("click",()=>{
-
+function setupNavigation() {
+    document.querySelectorAll(".nav-btn").forEach(button => {
+        button.addEventListener("click", () => {
             showScreen(button.dataset.screen);
-
         });
-
     });
-
 }
 
-
-// ==========================================
-// Load Data
-// ==========================================
-
-async function loadApplicationData(){
-
+async function loadApplicationData() {
     state.season = await loadSeason();
-
     state.players = await loadPlayers();
-
     state.matches = await loadMatches();
-
 }
 
-
-// ==========================================
-// Application Start
-// ==========================================
-
-async function startApp(){
-
+async function startApp() {
     await loadApplicationData();
-
     setupNavigation();
-
-    showScreen("dashboard");
-
     hideLoadingScreen();
-
+    showScreen("dashboard");
 }
 
 startApp();

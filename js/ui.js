@@ -2,11 +2,12 @@
 // Career Hub UI Utilities
 // ==========================================
 
-export function setHeader(title, subtitle = "") {
+export function setHeader(title, subtitle = "", actionHtml = "") {
     const header = document.getElementById("header");
 
     header.innerHTML = `
         <div class="header-content">
+            ${actionHtml ? `<div class="header-action">${actionHtml}</div>` : ""}
             <h2>${title}</h2>
             ${subtitle ? `<p>${subtitle}</p>` : ""}
         </div>

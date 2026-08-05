@@ -125,6 +125,17 @@ body{
     z-index:10;
 }
 
+.header-content{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.header-action{
+    flex:0 0 auto;
+}
+
 /* ---------- MAIN CONTENT ---------- */
 
 #screen-container{
@@ -154,14 +165,7 @@ body{
 
     margin-bottom:24px;
 
-    background:
-
-        linear-gradient(
-            rgba(8,13,30,.60),
-            rgba(8,13,30,.75)
-        ),
-
-        url("../assets/images/bernabeu.jpg");
+    background:url("../assets/images/bernabeu.jpg");
 
     background-size:cover;
 
@@ -176,6 +180,11 @@ body{
     position:absolute;
 
     inset:0;
+
+    background:linear-gradient(
+        rgba(6,10,20,.68),
+        rgba(6,10,20,.94)
+    );
 
     backdrop-filter:blur(1px);
 
@@ -713,4 +722,109 @@ td{
 
     gap:14px;
 
+}
+
+/* ==========================================
+   PLAYER PROFILE
+========================================== */
+
+.player-profile{
+    padding:20px;
+}
+
+.back-btn{
+    background:none;
+    border:none;
+    color:var(--primary);
+    font-size:1rem;
+    cursor:pointer;
+    padding:0;
+    white-space:nowrap;
+}
+
+.player-profile-header{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.player-overall{
+    width:90px;
+    height:90px;
+    border-radius:50%;
+    margin:0 auto 16px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--primary);
+    color:#111;
+    font-size:2rem;
+    font-weight:700;
+}
+
+.profile-section{
+    margin-top:30px;
+}
+
+.profile-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:16px;
+    margin-top:16px;
+}
+
+.profile-item{
+    background:var(--surface);
+    border-radius:16px;
+    padding:16px;
+}
+
+.profile-item span{
+    display:block;
+    color:var(--text-secondary);
+    font-size:.85rem;
+    margin-bottom:6px;
+}
+
+.profile-item strong{
+    font-size:1.1rem;
+}
+
+.form-list{
+    display:flex;
+    gap:10px;
+    margin-top:16px;
+}
+
+.form-rating{
+    display:grid;
+    place-items:center;
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    font-size:.85rem;
+    font-weight:700;
+    color:#062411;
+}
+
+.form-rating.excellent{ background:var(--success); }
+.form-rating.good{ background:#eab308; color:#2b2100; }
+.form-rating.average{ background:var(--surface-light); color:var(--text); }
+
+.competition-list{
+    display:grid;
+    gap:12px;
+    margin-top:16px;
+}
+
+.competition-row{
+    display:grid;
+    gap:6px;
+    padding:16px;
+    background:var(--surface);
+    border-radius:16px;
+}
+
+.competition-row span{
+    color:var(--text-secondary);
+    font-size:.9rem;
 }

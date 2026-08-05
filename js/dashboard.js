@@ -3,56 +3,40 @@
 // Version: 0.1.0
 // ==========================================
 
-function formatCurrency(value){
-
-    if(value >= 1000000){
-
+function formatCurrency(value) {
+    if (value >= 1000000) {
         return `€${(value / 1000000).toFixed(2)}M`;
-
     }
 
-    if(value >= 1000){
-
+    if (value >= 1000) {
         return `€${(value / 1000).toFixed(1)}K`;
-
     }
 
     return `€${value}`;
-
 }
 
 export function renderDashboard(season) {
-
     return `
 
         <div class="hero-card">
+            <div class="hero-overlay"></div>
 
-    <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div>
+                    <h1>${season.club}</h1>
+                    <p>José Mourinho</p>
+                    <span>${season.season} • ${season.competition}</span>
+                </div>
 
-    <div class="hero-content">
-
-        <div>
-
-            <h1>${season.club}</h1>
-
-            <p>${season.manager}</p>
-
-            <span>${season.season} • ${season.league}</span>
-
+                <img
+                    class="club-logo"
+                    src="assets/icons/logo.png"
+                    alt="Real Madrid"
+                >
+            </div>
         </div>
 
-        <img
-            class="club-logo"
-            src="assets/icons/logo.png"
-            alt="Real Madrid"
-        >
-
-    </div>
-
-</div>
-
         <div class="stats-grid">
-
             <div class="stat">
                 <div class="stat-value">${season.wins}</div>
                 <div class="stat-label">Wins</div>
@@ -72,17 +56,14 @@ export function renderDashboard(season) {
                 <div class="stat-value">${season.cleanSheets}</div>
                 <div class="stat-label">Clean Sheets</div>
             </div>
-
         </div>
 
         <div class="card">
-
             <div class="card-title">
                 Season Overview
             </div>
 
             <table>
-
                 <tr>
                     <td>Formation</td>
                     <td>${season.formation}</td>
@@ -90,8 +71,7 @@ export function renderDashboard(season) {
 
                 <tr>
                     <td>Transfer Budget</td>
-                    <td>${formatCurrency(season.transferBudget)}
-                    </td>
+                    <td>${formatCurrency(season.transferBudget)}</td>
                 </tr>
 
                 <tr>
@@ -113,59 +93,46 @@ export function renderDashboard(season) {
                     <td>Vice Captain</td>
                     <td>${season.viceCaptain}</td>
                 </tr>
-
             </table>
-
         </div>
 
         <div class="card">
-
             <div class="card-title">
-                Next Fixture
+                Last Match
             </div>
 
-            <h3>${season.nextFixture.competition}</h3>
+            <div class="fixture-card">
+                <div>
+                    <strong>${season.lastFixture.competition}</strong>
+                    <p>${season.lastFixture.opponent} · ${season.lastFixture.venue}</p>
+                </div>
 
-            <p>
-
-                Real Madrid
-
-                vs
-
-                ${season.nextFixture.opponent}
-
-            </p>
-
-        </div>
-
-        <div class="card">
-
-            <div class="card-title">
-
-                Latest Result
-
+                <div class="fixture-result">
+                    ${season.lastFixture.result}
+                </div>
             </div>
 
-            <p>
-
-                ${season.lastFixture.opponent}
-
-            </p>
-
-            <h2>
-
+            <div class="fixture-score">
                 ${season.lastFixture.score}
+            </div>
+        </div>
 
-            </h2>
+        <div class="card">
+            <div class="card-title">
+                Next Match
+            </div>
 
-            <p>
+            <div class="fixture-card">
+                <div>
+                    <strong>${season.nextFixture.competition}</strong>
+                    <p>${season.nextFixture.opponent} · ${season.nextFixture.venue}</p>
+                </div>
 
-                ${season.lastFixture.result}
-
-            </p>
-
+                <div class="fixture-result pending">
+                    Soon
+                </div>
+            </div>
         </div>
 
     `;
-
 }
