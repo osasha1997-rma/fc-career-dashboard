@@ -1,34 +1,18 @@
 // ==========================================
-// Career Hub API
-// Loads local JSON data
+// CareerOS — Data API
 // ==========================================
 
 async function loadJson(path) {
-    try {
-        const response = await fetch(path);
-
-        if (!response.ok) {
-            throw new Error(`Failed to load ${path}`);
-        }
-
-        return await response.json();
-
-    } catch (error) {
-
-        console.error(error);
-
-        return null;
-    }
+    const response = await fetch(path);
+    if (!response.ok) throw new Error(`Failed to load ${path}: ${response.status}`);
+    return response.json();
 }
 
-export async function loadSeason() {
-    return await loadJson("data/season.json");
-}
-
-export async function loadPlayers() {
-    return await loadJson("data/players.json");
-}
-
-export async function loadMatches() {
-    return await loadJson("data/matches.json");
+export async function loadAll() {
+    const [season, players, matches] = await Promise.all([
+        loadJson("data/season.json"),
+        loadJson("data/players.json"),
+        loadJson("data/matches.json")
+    ]);
+    return { season, players, matches };
 }

@@ -1,282 +1,180 @@
 // ==========================================
-// Career Hub
-// Player Profile Component
+// CareerOS — Player Profile Component
 // ==========================================
 
+import { getCompetitionLabel } from "../utils/competitions.js";
+
 export function createPlayerProfile(player, matches = []) {
-    const stats = createSeasonStats(player, matches);
-    const secondaryPositions = player.secondaryPositions?.length
-        ? player.secondaryPositions.join(", ")
-        : "None";
+    const stats = computeStats(player.id, matches);
+    const secondaryPositions = player.secondaryPositions?.join(", ") || "None";
 
     return `
+    <section class="player-profile fade">
 
-        <section class="player-profile fade">
+        <div class="player-profile-header">
+            <div class="player-overall">${player.overall}</div>
+            <h1>${player.name}</h1>
+            <p>#${player.number} &middot; ${player.position}</p>
+            <p>${player.nationality}</p>
+        </div>
 
-            <div class="player-profile-header">
-
-                <div class="player-overall">
-                    ${player.overall}
-                </div>
-
-                <h1>${player.name}</h1>
-
-                <p>
-                    #${player.number}
-                    &middot;
-                    ${player.position}
-                </p>
-
-                <p>${player.nationality}</p>
-
+        <div class="profile-section">
+            <h2>Overview</h2>
+            <div class="profile-grid">
+                ${profileItem("Age",            player.age)}
+                ${profileItem("Overall",        player.overall)}
+                ${profileItem("Potential",      player.potential)}
+                ${profileItem("Preferred Foot", player.preferredFoot)}
+                ${profileItem("Role",           player.role)}
             </div>
+        </div>
 
-            <div class="profile-section">
-
-                <h2>Overview</h2>
-
-                <div class="profile-grid">
-
-                    <div class="profile-item">
-                        <span>Age</span>
-                        <strong>${player.age}</strong>
-                    </div>
-
-                    <div class="profile-item">
-                        <span>Overall</span>
-                        <strong>${player.overall}</strong>
-                    </div>
-
-                    <div class="profile-item">
-                        <span>Potential</span>
-                        <strong>${player.potential}</strong>
-                    </div>
-
-                    <div class="profile-item">
-                        <span>Preferred Foot</span>
-                        <strong>${player.preferredFoot}</strong>
-                    </div>
-
-                    <div class="profile-item">
-                        <span>Role</span>
-                        <strong>${player.role}</strong>
-                    </div>
-
-                </div>
-
+        <div class="profile-section">
+            <h2>Season Statistics</h2>
+            <div class="profile-grid">
+                ${profileItem("Starts",         stats.starts)}
+                ${profileItem("Sub Apps",       stats.subApps)}
+                ${profileItem("Goals",          stats.goals)}
+                ${profileItem("Assists",        stats.assists)}
+                ${profileItem("Minutes",        stats.minutes)}
+                ${profileItem("Avg Rating",     stats.avgRating)}
             </div>
+        </div>
 
-            <div class="profile-section">
-
-                <h2>Season Statistics</h2>
-
-                <div class="profile-grid">
-
-                    <div class="profile-item">
-                        <span>Starts</span>
-                        <strong>${stats.starts}</strong>
-                    </div>
-
-                    <div class="profile-item">
-                        <span>Sub Apps</span>
-                        <strong>${stats.subApps}</strong>
-                    </div>
-
-                    <div class="profile-item">
-                        <span>Goals</span>
-                        <strong>${stats.goals}</strong>
-                    </div>
-
-                    <div class="profile-item">
-                        <span>Assists</span>
-                        <strong>${stats.assists}</strong>
-                    </div>
-
-                    <div class="profile-item">
-                        <span>Minutes</span>
-                        <strong>${stats.minutes}</strong>
-                    </div>
-
-                    <div class="profile-item">
-                        <span>Average Rating</span>
-                        <strong>${stats.averageRating}</strong>
-                    </div>
-
-                </div>
-
+        <div class="profile-section">
+            <h2>Recent Form</h2>
+            <div class="form-list">
+                ${stats.recentForm.length
+                    ? stats.recentForm.map(r => `
+                        <span class="form-rating ${r >= 8 ? "excellent" : r >= 7 ? "good" : "average"}">${r.toFixed(1)}</span>
+                    `).join("")
+                    : `<p class="no-data">No appearances yet</p>`}
             </div>
+        </div>
 
-            <div class="profile-section">
-
-                <h2>Recent Form</h2>
-
-                <div class="form-list">
-                    ${stats.recentForm.map(rating => `
-                        <span class="form-rating ${rating >= 8 ? "excellent" : rating >= 7 ? "good" : "average"}">${rating.toFixed(1)}</span>
-                    `).join("")}
-                </div>
-
+        <div class="profile-section">
+            <h2>Season Breakdown</h2>
+            <div class="competition-list">
+                ${renderCompBreakdown(stats.byComp)}
             </div>
+        </div>
 
-            <div class="profile-section">
-
-                <h2>Season Breakdown</h2>
-
-                <div class="competition-list">
-                    <div class="competition-row">
-                        <strong>La Liga</strong>
-                        <span>${stats.leagueStarts + stats.leagueSubApps} apps &middot; ${stats.leagueGoals} goals &middot; ${stats.leagueAssists} assists &middot; ${stats.leagueAverageRating}</span>
-                    </div>
-                    <div class="competition-row">
-                        <strong>Champions League</strong>
-                        <span>${stats.championsApps} apps &middot; ${stats.championsGoals} goals &middot; ${stats.championsAssists} assists &middot; ${stats.championsAverageRating}</span>
-                    </div>
-                </div>
-
+        <div class="profile-section">
+            <h2>Career Information</h2>
+            <div class="profile-grid">
+                ${profileItem("Nationality",          player.nationality)}
+                ${profileItem("Primary Position",     player.position)}
+                ${profileItem("Secondary Positions",  secondaryPositions)}
+                ${profileItem("Captaincy",            player.captain ? "Captain" : player.viceCaptain ? "Vice Captain" : "No")}
+                ${profileItem("Contract",             "2032")}
+                ${profileItem("Status",               "Available")}
             </div>
+        </div>
 
-            <div class="profile-section">
-
-                <h2>Career Information</h2>
-
-                <div class="profile-grid">
-                    <div class="profile-item"><span>Nationality</span><strong>${player.nationality}</strong></div>
-                    <div class="profile-item"><span>Primary Position</span><strong>${player.position}</strong></div>
-                    <div class="profile-item"><span>Secondary Positions</span><strong>${secondaryPositions}</strong></div>
-                    <div class="profile-item"><span>Captaincy</span><strong>${player.captain ? "Captain" : player.viceCaptain ? "Vice Captain" : "No"}</strong></div>
-                    <div class="profile-item"><span>Contract</span><strong>2032</strong></div>
-                    <div class="profile-item"><span>Status</span><strong>Available</strong></div>
-                </div>
-
-            </div>
-
-        </section>
-
-    `;
+    </section>`;
 }
 
-function createSeasonStats(player, matches) {
-    const playerKeys = getPlayerKeys(player);
-    let starts = 0;
-    let subApps = 0;
-    let goals = 0;
-    let assists = 0;
-    const ratings = [];
-    const minutes = [];
+// ── Stats computation ─────────────────────────────────────────
 
-    for (const match of matches) {
-        const performance = match.performances?.find(entry =>
-            playerKeys.some(key => namesMatch(key, normalizeName(entry.player)))
-        );
+function computeStats(id, matches) {
+    const played  = matches.filter(m => m.result);
+    const byComp  = {};   // { slug: { apps, starts, goals, assists, ratings[] } }
+    const allRatings = [];
+    let totalMinutes = 0;
 
-        const subEvent = match.substitutions?.find(event =>
-            (event.on ?? []).some(name =>
-                playerKeys.some(key => namesMatch(key, normalizeName(name)))
-            )
-        );
+    for (const match of played) {
+        const inXI    = match.startingXI?.includes(id);
+        const subOn   = match.substitutions?.find(s => s.playerOn  === id);
+        const subOff  = match.substitutions?.find(s => s.playerOff === id);
+        const perf    = match.performances?.find(p => p.player     === id);
 
-        const offEvent = match.substitutions?.find(event =>
-            (event.off ?? []).some(name =>
-                playerKeys.some(key => namesMatch(key, normalizeName(name)))
-            )
-        );
+        let isStart = false;
+        let isSub   = false;
+        let mins    = 0;
 
-        if (performance) {
-            ratings.push(Number(performance.rating));
+        if (inXI) {
+            isStart = true;
+            mins    = subOff ? subOff.minute : 90;
+        } else if (subOn) {
+            isSub = true;
+            mins  = 90 - subOn.minute;
+        } else if (perf) {
+            // has a rating but squad data is ambiguous — treat as starter
+            isStart = true;
+            mins    = 90;
         }
 
-        if (subEvent) {
-            subApps += 1;
-            minutes.push(Math.max(90 - Number(subEvent.minute || 0), 0));
-        } else if (offEvent) {
-            starts += 1;
-            minutes.push(Math.max(Number(offEvent.minute || 0), 0));
-        } else if (performance) {
-            starts += 1;
-            minutes.push(90);
-        }
+        if (!isStart && !isSub) continue;
 
-        for (const goal of match.goals ?? []) {
-            if (playerKeys.some(key => namesMatch(key, normalizeName(goal.player)))) {
-                goals += 1;
-            }
-        }
+        totalMinutes += mins;
+        if (perf) allRatings.push(perf.rating);
 
-        for (const assist of match.assists ?? []) {
-            if (playerKeys.some(key => namesMatch(key, normalizeName(assist.player)))) {
-                assists += assist.count ?? 1;
-            }
-        }
+        const c = compBucket(byComp, match.competition);
+        c.apps++;
+        if (isStart) c.starts++;
+        if (perf) c.ratings.push(perf.rating);
+
+        for (const g of match.goals ?? [])   if (g.player  === id) c.goals++;
+        for (const a of match.assists ?? []) if (a.player  === id) c.assists += a.count ?? 1;
     }
 
-    const totalApps = starts + subApps;
-    const averageRating = ratings.length
-        ? (ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length).toFixed(1)
-        : player.overall >= 90 ? "7.8" : "7.0";
-    const recentForm = ratings.slice(-5).reverse();
+    // Seal buckets with computed averages
+    Object.values(byComp).forEach(c => {
+        c.avgRating = avgOf(c.ratings);
+    });
+
+    const totals = Object.values(byComp).reduce(
+        (acc, c) => ({
+            apps:    acc.apps    + c.apps,
+            starts:  acc.starts  + c.starts,
+            goals:   acc.goals   + c.goals,
+            assists: acc.assists  + c.assists
+        }),
+        { apps: 0, starts: 0, goals: 0, assists: 0 }
+    );
 
     return {
-        starts,
-        subApps,
-        goals,
-        assists,
-        minutes: minutes.reduce((sum, value) => sum + value, 0),
-        averageRating,
-        recentForm: recentForm.length ? recentForm : [Number(averageRating)],
-        leagueApps: totalApps,
-        leagueGoals: goals,
-        leagueAssists: assists,
-        leagueAverageRating: averageRating,
-        leagueStarts: starts,
-        leagueSubApps: subApps,
-        championsApps: 0,
-        championsGoals: 0,
-        championsAssists: 0,
-        championsAverageRating: "-"
+        starts:     totals.starts,
+        subApps:    totals.apps - totals.starts,
+        goals:      totals.goals,
+        assists:    totals.assists,
+        minutes:    totalMinutes,
+        avgRating:  avgOf(allRatings),
+        recentForm: [...allRatings].reverse(),
+        byComp
     };
 }
 
-function normalizeName(value) {
-    return value
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, " ")
-        .trim();
+// ── Render helpers ────────────────────────────────────────────
+
+function renderCompBreakdown(byComp) {
+    const entries = Object.entries(byComp);
+    if (!entries.length) return `<p class="no-data">No appearances yet</p>`;
+
+    return entries.map(([slug, c]) => `
+        <div class="competition-row">
+            <strong>${getCompetitionLabel(slug)}</strong>
+            <span>${c.apps} apps &middot; ${c.goals}g &middot; ${c.assists}a &middot; ${c.avgRating}</span>
+        </div>`).join("");
 }
 
-function namesMatch(a, b) {
-    return a === b || a.includes(b) || b.includes(a);
+function profileItem(label, value) {
+    return `
+    <div class="profile-item">
+        <span>${label}</span>
+        <strong>${value ?? "—"}</strong>
+    </div>`;
 }
 
-function getPlayerKeys(player) {
-    const keys = new Set([normalizeName(player.name)]);
-    const normalized = normalizeName(player.name);
+// ── Utilities ─────────────────────────────────────────────────
 
-    const nicknameMap = {
-        "thibaut courtois": ["courtois"],
-        "marc cucurella": ["cucurella"],
-        "alessandro bastoni": ["bastoni"],
-        "nico schlotterbeck": ["schlotterbeck"],
-        "trent alexander arnold": ["trent", "trent alexander arnold"],
-        "rodri": ["rodri"],
-        "federico valverde": ["valverde"],
-        "jude bellingham": ["bellingham"],
-        "vinicius junior": ["vinicius", "vinicius jr", "vini jr", "vini"],
-        "kylian mbappe": ["mbappe", "mbappe"],
-        "eduardo camavinga": ["camavinga"],
-        "guler": ["guler", "arda guler"],
-        "olise": ["olise"],
-        "diomande": ["diomande"],
-        "militao": ["militao", "eder militao"],
-        "andriy lunin": ["lunin"],
-        "dumfries": ["dumfries"],
-        "jose mourinho": ["mourinho"]
-    };
+function compBucket(map, slug) {
+    if (!map[slug]) map[slug] = { apps: 0, starts: 0, goals: 0, assists: 0, ratings: [] };
+    return map[slug];
+}
 
-    for (const alias of nicknameMap[normalized] ?? []) {
-        keys.add(normalizeName(alias));
-    }
-
-    return [...keys];
+function avgOf(arr) {
+    return arr.length
+        ? (arr.reduce((s, r) => s + r, 0) / arr.length).toFixed(1)
+        : "—";
 }

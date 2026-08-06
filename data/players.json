@@ -828,5 +828,23 @@
     "loan": false,
     "loanClub": null,
     "loanDurationMonths": 0
+  },
+  {
+    "id": 45,
+    "number": 9,
+    "name": "Endrick",
+    "position": "ST",
+    "secondaryPositions": ["RW"],
+    "overall": 83,
+    "potential": 89,
+    "age": 21,
+    "nationality": "Brazil",
+    "preferredFoot": "Left",
+    "captain": false,
+    "viceCaptain": false,
+    "role": "Rotation",
+    "loan": false,
+    "loanClub": null,
+    "loanDurationMonths": 0
   }
 ]

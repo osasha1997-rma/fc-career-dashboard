@@ -14,10 +14,12 @@ export function setHeader(title, subtitle = "", actionHtml = "") {
     `;
 }
 
-export function renderScreen(html) {
+export function renderScreen(html, init) {
     const container = document.getElementById("screen-container");
 
     container.innerHTML = html;
+
+    if (init) init();
 
     container.classList.add("fade");
 

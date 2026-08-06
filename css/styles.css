@@ -220,7 +220,7 @@ body{
 
 .hero-content p{
 
-    color:#d6dbe5;
+    color:var(--text);
 
     font-size:1.15rem;
 
@@ -232,7 +232,7 @@ body{
 
     margin-top:12px;
 
-    color:#9ca3af;
+    color:var(--text-secondary);
 
 }
 
@@ -337,7 +337,7 @@ body{
 
     font-weight:700;
 
-    color:#fff;
+    color:var(--text);
 
 }
 
@@ -827,4 +827,11 @@ td{
 .competition-row span{
     color:var(--text-secondary);
     font-size:.9rem;
+}
+
+.no-data{
+    color:var(--text-secondary);
+    font-size:.88rem;
+    font-style:italic;
+    margin-top:12px;
 }

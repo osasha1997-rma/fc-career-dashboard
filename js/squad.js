@@ -19,13 +19,9 @@ import {
 // ==========================================
 
 const squadState = {
-
     players: [],
-    filteredPlayers: [],
-
-    search: "",
-    filter: "ALL"
-
+    search:  "",
+    filter:  "ALL"
 };
 
 // ==========================================
@@ -35,15 +31,10 @@ const squadState = {
 export function renderSquad(players = []) {
 
     squadState.players = players;
-    squadState.filteredPlayers = players;
 
     return `
 
         <section class="fade">
-
-            <h2 class="screen-title">
-                Squad
-            </h2>
 
             ${createFilterBar()}
 
@@ -180,8 +171,6 @@ function updatePlayerList() {
         );
 
     }
-
-    squadState.filteredPlayers = players;
 
     document.getElementById("player-list").innerHTML =
         renderPlayerCards(players);

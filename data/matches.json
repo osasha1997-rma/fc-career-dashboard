@@ -1,218 +1,1209 @@
 [
   {
     "id": 1,
+    "season": "2027/28",
+    "competition": "laliga",
+    "stage": "League",
     "matchday": 1,
+    "date": null,
     "venue": "Home",
-    "competition": "La Liga",
     "opponent": "Alaves",
     "scoreFor": 4,
     "scoreAgainst": 0,
     "result": "W",
+    "startingXI": [
+      1,
+      10,
+      7,
+      6,
+      4,
+      12,
+      11,
+      23,
+      13,
+      14,
+      15
+    ],
+    "bench": [
+      3,
+      44,
+      9,
+      5,
+      39,
+      38,
+      22,
+      "Endrick",
+      27
+    ],
     "goals": [
-      { "minute": 24, "player": "Mbappe" },
-      { "minute": 81, "player": "Bellingham" },
-      { "minute": 84, "player": "Tchouameni" },
-      { "minute": 88, "player": "Endrick" }
-    ],
-    "assists": [
-      { "player": "Bellingham", "count": 1 },
-      { "player": "Mbappe", "count": 1 },
-      { "player": "Cucurella", "count": 1 },
-      { "player": "Dumfries", "count": 1 }
-    ],
-    "substitutions": [
+      {
+        "minute": 24,
+        "player": 15
+      },
       {
         "minute": 81,
-        "on": ["Diomande", "Tchouameni", "Dumfries"],
-        "off": ["Olise", "Rodri", "Trent"]
+        "player": 13
       },
       {
         "minute": 84,
-        "on": ["Endrick", "Huijsen"],
-        "off": ["Mbappe", "Militao"]
+        "player": 38
+      },
+      {
+        "minute": 88,
+        "player": "Endrick"
+      }
+    ],
+    "goalsConceded": [],
+    "assists": [
+      {
+        "player": 13,
+        "count": 1
+      },
+      {
+        "player": 15,
+        "count": 1
+      },
+      {
+        "player": 4,
+        "count": 1
+      },
+      {
+        "player": 44,
+        "count": 1
+      }
+    ],
+    "yellowCards": [],
+    "redCards": [],
+    "injuries": [],
+    "substitutions": [
+      {
+        "minute": 81,
+        "playerOn": 27,
+        "playerOff": 23
+      },
+      {
+        "minute": 81,
+        "playerOn": 38,
+        "playerOff": 11
+      },
+      {
+        "minute": 81,
+        "playerOn": 44,
+        "playerOff": 10
+      },
+      {
+        "minute": 84,
+        "playerOn": "Endrick",
+        "playerOff": 15
+      },
+      {
+        "minute": 84,
+        "playerOn": 9,
+        "playerOff": 7
       }
     ],
     "performances": [
-      { "player": "Bellingham", "rating": 9.1 },
-      { "player": "Courtois", "rating": 8.1 },
-      { "player": "Cucurella", "rating": 7.6 },
-      { "player": "Mbappe", "rating": 7.5 },
-      { "player": "Rodri", "rating": 7.4 },
-      { "player": "Valverde", "rating": 7.3 },
-      { "player": "Endrick", "rating": 7.2 },
-      { "player": "Tchouameni", "rating": 7.1 },
-      { "player": "Trent", "rating": 7.0 },
-      { "player": "Dumfries", "rating": 7.0 },
-      { "player": "Bastoni", "rating": 6.8 },
-      { "player": "Militao", "rating": 6.7 },
-      { "player": "Huijsen", "rating": 6.5 },
-      { "player": "Olise", "rating": 6.4 },
-      { "player": "Vini Jr", "rating": 6.3 },
-      { "player": "Diomande", "rating": 6.1 }
-    ]
+      {
+        "player": 13,
+        "rating": 9.1
+      },
+      {
+        "player": 1,
+        "rating": 8.1
+      },
+      {
+        "player": 4,
+        "rating": 7.6
+      },
+      {
+        "player": 15,
+        "rating": 7.5
+      },
+      {
+        "player": 11,
+        "rating": 7.4
+      },
+      {
+        "player": 12,
+        "rating": 7.3
+      },
+      {
+        "player": 45,
+        "rating": 7.2
+      },
+      {
+        "player": 38,
+        "rating": 7.1
+      },
+      {
+        "player": 10,
+        "rating": 7.0
+      },
+      {
+        "player": 44,
+        "rating": 7.0
+      },
+      {
+        "player": 6,
+        "rating": 6.8
+      },
+      {
+        "player": 7,
+        "rating": 6.7
+      },
+      {
+        "player": 9,
+        "rating": 6.5
+      },
+      {
+        "player": 23,
+        "rating": 6.4
+      },
+      {
+        "player": 14,
+        "rating": 6.3
+      },
+      {
+        "player": 27,
+        "rating": 6.1
+      }
+    ],
+    "teamStats": {
+      "possession": 50,
+      "shots": 8,
+      "passes": 146,
+      "passAccuracy": 83,
+      "tackles": 5
+    },
+    "opponentStats": {
+      "possession": 50,
+      "shots": 9,
+      "passes": 141,
+      "passAccuracy": 90,
+      "tackles": 5
+    }
   },
   {
     "id": 2,
+    "season": "2027/28",
+    "competition": "laliga",
+    "stage": "League",
     "matchday": 2,
+    "date": null,
     "venue": "Away",
-    "competition": "La Liga",
     "opponent": "Levante",
     "scoreFor": 5,
     "scoreAgainst": 0,
     "result": "W",
+    "startingXI": [
+      1,
+      10,
+      7,
+      6,
+      4,
+      12,
+      11,
+      23,
+      13,
+      14,
+      15
+    ],
+    "bench": [
+      3,
+      44,
+      9,
+      5,
+      39,
+      38,
+      22,
+      "Endrick",
+      27
+    ],
     "goals": [
-      { "minute": 14, "player": "Rodri" },
-      { "minute": 28, "player": "Mbappe" },
-      { "minute": 51, "player": "Mbappe" },
-      { "minute": 66, "player": "Vinicius Jr" },
-      { "minute": 82, "player": "Endrick" }
+      {
+        "minute": 14,
+        "player": 11
+      },
+      {
+        "minute": 28,
+        "player": 15
+      },
+      {
+        "minute": 51,
+        "player": 15
+      },
+      {
+        "minute": 66,
+        "player": 14
+      },
+      {
+        "minute": 82,
+        "player": "Endrick"
+      }
     ],
+    "goalsConceded": [],
     "assists": [
-      { "player": "Bellingham", "count": 2 },
-      { "player": "Mbappe", "count": 1 },
-      { "player": "Vinicius Jr", "count": 1 }
+      {
+        "player": 13,
+        "count": 2
+      },
+      {
+        "player": 15,
+        "count": 1
+      },
+      {
+        "player": 14,
+        "count": 1
+      }
     ],
+    "yellowCards": [],
+    "redCards": [],
+    "injuries": [],
     "substitutions": [
       {
         "minute": 61,
-        "on": ["Guler", "Dumfries"],
-        "off": ["Olise", "Trent"]
+        "playerOn": 22,
+        "playerOff": 23
+      },
+      {
+        "minute": 61,
+        "playerOn": 44,
+        "playerOff": 10
       },
       {
         "minute": 72,
-        "on": ["Endrick", "Tchouameni"],
-        "off": ["Mbappe", "Rodri"]
+        "playerOn": "Endrick",
+        "playerOff": 15
+      },
+      {
+        "minute": 72,
+        "playerOn": 38,
+        "playerOff": 11
       },
       {
         "minute": 77,
-        "on": ["Huijsen"],
-        "off": ["Militao"]
+        "playerOn": 9,
+        "playerOff": 7
       }
     ],
     "performances": [
-      { "player": "Mbappe", "rating": 9.7 },
-      { "player": "Bellingham", "rating": 9.1 },
-      { "player": "Rodri", "rating": 8.5 },
-      { "player": "Vinicius Jr", "rating": 8.3 },
-      { "player": "Olise", "rating": 7.9 },
-      { "player": "Endrick", "rating": 7.7 },
-      { "player": "Valverde", "rating": 7.7 },
-      { "player": "Bastoni", "rating": 7.2 },
-      { "player": "Militao", "rating": 7.1 },
-      { "player": "Courtois", "rating": 7.0 },
-      { "player": "Cucurella", "rating": 6.7 },
-      { "player": "Trent", "rating": 6.6 },
-      { "player": "Tchouameni", "rating": 6.3 },
-      { "player": "Dumfries", "rating": 6.3 },
-      { "player": "Guler", "rating": 6.3 },
-      { "player": "Huijsen", "rating": 6.1 }
-    ]
+      {
+        "player": 15,
+        "rating": 9.7
+      },
+      {
+        "player": 13,
+        "rating": 9.1
+      },
+      {
+        "player": 11,
+        "rating": 8.5
+      },
+      {
+        "player": 14,
+        "rating": 8.3
+      },
+      {
+        "player": 23,
+        "rating": 7.9
+      },
+      {
+        "player": 45,
+        "rating": 7.7
+      },
+      {
+        "player": 12,
+        "rating": 7.7
+      },
+      {
+        "player": 6,
+        "rating": 7.2
+      },
+      {
+        "player": 7,
+        "rating": 7.1
+      },
+      {
+        "player": 1,
+        "rating": 7.0
+      },
+      {
+        "player": 4,
+        "rating": 6.7
+      },
+      {
+        "player": 10,
+        "rating": 6.6
+      },
+      {
+        "player": 38,
+        "rating": 6.3
+      },
+      {
+        "player": 44,
+        "rating": 6.3
+      },
+      {
+        "player": 22,
+        "rating": 6.3
+      },
+      {
+        "player": 9,
+        "rating": 6.1
+      }
+    ],
+    "teamStats": {
+      "possession": 56,
+      "shots": 25,
+      "passes": 164,
+      "passAccuracy": 89,
+      "tackles": 7
+    },
+    "opponentStats": {
+      "possession": 44,
+      "shots": 3,
+      "passes": 134,
+      "passAccuracy": 85,
+      "tackles": 3
+    }
   },
   {
     "id": 3,
+    "season": "2027/28",
+    "competition": "laliga",
+    "stage": "League",
     "matchday": 3,
+    "date": null,
     "venue": "Home",
-    "competition": "La Liga",
     "opponent": "Real Sociedad",
     "scoreFor": 2,
     "scoreAgainst": 0,
     "result": "W",
+    "startingXI": [
+      1,
+      10,
+      7,
+      6,
+      4,
+      12,
+      11,
+      23,
+      13,
+      14,
+      15
+    ],
+    "bench": [
+      3,
+      44,
+      9,
+      5,
+      39,
+      38,
+      22,
+      "Endrick",
+      27
+    ],
     "goals": [
-      { "minute": 60, "player": "Bellingham" },
-      { "minute": 77, "player": "Bellingham" }
+      {
+        "minute": 60,
+        "player": 13
+      },
+      {
+        "minute": 77,
+        "player": 13
+      }
     ],
+    "goalsConceded": [],
     "assists": [
-      { "player": "Mbappe", "count": 2 }
+      {
+        "player": 15,
+        "count": 2
+      }
     ],
+    "yellowCards": [],
+    "redCards": [],
+    "injuries": [],
     "substitutions": [
       {
         "minute": 65,
-        "on": ["Guler", "Tchouameni"],
-        "off": ["Olise", "Rodri"]
+        "playerOn": 22,
+        "playerOff": 23
+      },
+      {
+        "minute": 65,
+        "playerOn": 38,
+        "playerOff": 11
       },
       {
         "minute": 72,
-        "on": ["Diomande"],
-        "off": ["Vinicius"]
+        "playerOn": 27,
+        "playerOff": 14
       },
       {
         "minute": 78,
-        "on": ["Camavinga", "Carreras"],
-        "off": ["Valverde", "Cucurella"]
+        "playerOn": 39,
+        "playerOff": 12
+      },
+      {
+        "minute": 78,
+        "playerOn": 5,
+        "playerOff": 4
       }
     ],
     "performances": [
-      { "player": "Bellingham", "rating": 7.4 },
-      { "player": "Courtois", "rating": 7.4 },
-      { "player": "Valverde", "rating": 7.3 },
-      { "player": "Bastoni", "rating": 7.1 },
-      { "player": "Mbappe", "rating": 6.9 },
-      { "player": "Tchouameni", "rating": 6.8 },
-      { "player": "Rodri", "rating": 6.6 },
-      { "player": "Cucurella", "rating": 6.6 },
-      { "player": "Vinicius", "rating": 6.5 },
-      { "player": "Olise", "rating": 6.4 },
-      { "player": "Militao", "rating": 6.4 },
-      { "player": "Carreras", "rating": 6.3 },
-      { "player": "Guler", "rating": 6.0 },
-      { "player": "Trent", "rating": 6.0 },
-      { "player": "Camavinga", "rating": 6.0 },
-      { "player": "Diomande", "rating": 5.5 }
-    ]
+      {
+        "player": 13,
+        "rating": 7.4
+      },
+      {
+        "player": 1,
+        "rating": 7.4
+      },
+      {
+        "player": 12,
+        "rating": 7.3
+      },
+      {
+        "player": 6,
+        "rating": 7.1
+      },
+      {
+        "player": 15,
+        "rating": 6.9
+      },
+      {
+        "player": 38,
+        "rating": 6.8
+      },
+      {
+        "player": 11,
+        "rating": 6.6
+      },
+      {
+        "player": 4,
+        "rating": 6.6
+      },
+      {
+        "player": 14,
+        "rating": 6.5
+      },
+      {
+        "player": 23,
+        "rating": 6.4
+      },
+      {
+        "player": 7,
+        "rating": 6.4
+      },
+      {
+        "player": 5,
+        "rating": 6.3
+      },
+      {
+        "player": 22,
+        "rating": 6.0
+      },
+      {
+        "player": 10,
+        "rating": 6.0
+      },
+      {
+        "player": 39,
+        "rating": 6.0
+      },
+      {
+        "player": 27,
+        "rating": 5.5
+      }
+    ],
+    "teamStats": {
+      "possession": 41,
+      "shots": 8,
+      "passes": 97,
+      "passAccuracy": 84,
+      "tackles": 7
+    },
+    "opponentStats": {
+      "possession": 59,
+      "shots": 2,
+      "passes": 181,
+      "passAccuracy": 88,
+      "tackles": 7
+    }
   },
   {
     "id": 4,
+    "season": "2027/28",
+    "competition": "laliga",
+    "stage": "League",
     "matchday": 4,
+    "date": null,
     "venue": "Away",
-    "competition": "La Liga",
     "opponent": "RCD Mallorca",
     "scoreFor": 4,
     "scoreAgainst": 0,
     "result": "W",
+    "startingXI": [
+      1,
+      10,
+      7,
+      6,
+      4,
+      12,
+      11,
+      23,
+      13,
+      14,
+      15
+    ],
+    "bench": [
+      2,
+      44,
+      9,
+      8,
+      39,
+      38,
+      22,
+      "Endrick",
+      27
+    ],
     "goals": [
-      { "minute": 15, "player": "Vinicius" },
-      { "minute": 19, "player": "Mbappe" },
-      { "minute": 60, "player": "Trent Alexander Arnold" },
-      { "minute": 65, "player": "Bellingham" }
+      {
+        "minute": 15,
+        "player": 14
+      },
+      {
+        "minute": 19,
+        "player": 15
+      },
+      {
+        "minute": 60,
+        "player": 10
+      },
+      {
+        "minute": 65,
+        "player": 13
+      }
     ],
+    "goalsConceded": [],
     "assists": [
-      { "player": "Mbappe", "count": 2 },
-      { "player": "Rodri", "count": 1 }
+      {
+        "player": 15,
+        "count": 2
+      },
+      {
+        "player": 11,
+        "count": 1
+      }
     ],
+    "yellowCards": [
+      {
+        "player": 23,
+        "minute": null
+      }
+    ],
+    "redCards": [],
+    "injuries": [],
     "substitutions": [
       {
         "minute": 60,
-        "on": ["Guler"],
-        "off": ["Olise"]
+        "playerOn": 22,
+        "playerOff": 23
       },
       {
         "minute": 69,
-        "on": ["Tchouameni", "Dumfries"],
-        "off": ["Rodri", "Trent"]
+        "playerOn": 38,
+        "playerOff": 11
+      },
+      {
+        "minute": 69,
+        "playerOn": 44,
+        "playerOff": 10
       },
       {
         "minute": 74,
-        "on": ["Diomande", "Schlotterbeck"],
-        "off": ["Bellingham", "Bastoni"]
+        "playerOn": 27,
+        "playerOff": 13
+      },
+      {
+        "minute": 74,
+        "playerOn": 8,
+        "playerOff": 6
       }
     ],
     "performances": [
-      { "player": "Mbappe", "rating": 9.1 },
-      { "player": "Trent", "rating": 8.6 },
-      { "player": "Bellingham", "rating": 8.0 },
-      { "player": "Rodri", "rating": 7.6 },
-      { "player": "Courtois", "rating": 7.4 },
-      { "player": "Valverde", "rating": 7.4 },
-      { "player": "Olise", "rating": 7.2 },
-      { "player": "Vinicius", "rating": 7.2 },
-      { "player": "Cucurella", "rating": 7.1 },
-      { "player": "Guler", "rating": 7.1 },
-      { "player": "Schlotterbeck", "rating": 6.7 },
-      { "player": "Diomande", "rating": 6.6 },
-      { "player": "Militao", "rating": 6.7 },
-      { "player": "Tchouameni", "rating": 6.6 },
-      { "player": "Dumfries", "rating": 6.3 },
-      { "player": "Bastoni", "rating": 5.9 }
-    ]
+      {
+        "player": 15,
+        "rating": 9.1
+      },
+      {
+        "player": 10,
+        "rating": 8.6
+      },
+      {
+        "player": 13,
+        "rating": 8.0
+      },
+      {
+        "player": 11,
+        "rating": 7.6
+      },
+      {
+        "player": 1,
+        "rating": 7.4
+      },
+      {
+        "player": 12,
+        "rating": 7.4
+      },
+      {
+        "player": 23,
+        "rating": 7.2
+      },
+      {
+        "player": 14,
+        "rating": 7.2
+      },
+      {
+        "player": 4,
+        "rating": 7.1
+      },
+      {
+        "player": 22,
+        "rating": 7.1
+      },
+      {
+        "player": 8,
+        "rating": 6.7
+      },
+      {
+        "player": 27,
+        "rating": 6.6
+      },
+      {
+        "player": 7,
+        "rating": 6.7
+      },
+      {
+        "player": 38,
+        "rating": 6.6
+      },
+      {
+        "player": 44,
+        "rating": 6.3
+      },
+      {
+        "player": 6,
+        "rating": 5.9
+      }
+    ],
+    "teamStats": {
+      "possession": 55,
+      "shots": 20,
+      "passes": 142,
+      "passAccuracy": 88,
+      "tackles": 12
+    },
+    "opponentStats": {
+      "possession": 45,
+      "shots": 6,
+      "passes": 119,
+      "passAccuracy": 93,
+      "tackles": 7
+    }
+  },
+  {
+    "id": 5,
+    "season": "2027/28",
+    "competition": "ucl",
+    "stage": "League Phase",
+    "matchday": 1,
+    "date": "2027-09-14",
+    "venue": "Home",
+    "opponent": "Marseille",
+    "scoreFor": 2,
+    "scoreAgainst": 2,
+    "result": "D",
+    "startingXI": [
+      2,
+      10,
+      7,
+      6,
+      4,
+      11,
+      12,
+      23,
+      13,
+      14,
+      15
+    ],
+    "bench": [
+      1,
+      44,
+      8,
+      9,
+      39,
+      22,
+      38,
+      27,
+      "Endrick"
+    ],
+    "goals": [
+      {
+        "minute": 80,
+        "player": 15
+      },
+      {
+        "minute": 90,
+        "player": 39
+      }
+    ],
+    "goalsConceded": [
+      {
+        "minute": 21,
+        "player": "Mason Greenwood"
+      },
+      {
+        "minute": 84,
+        "player": "Igor Paixão"
+      }
+    ],
+    "assists": [
+      {
+        "player": 15,
+        "count": 1
+      }
+    ],
+    "yellowCards": [],
+    "redCards": [],
+    "injuries": [
+      {
+        "player": 11,
+        "minute": 67,
+        "daysOut": 5
+      }
+    ],
+    "substitutions": [
+      {
+        "minute": 77,
+        "playerOn": 22,
+        "playerOff": 13
+      },
+      {
+        "minute": 77,
+        "playerOn": 38,
+        "playerOff": 11
+      },
+      {
+        "minute": 77,
+        "playerOn": 39,
+        "playerOff": 12
+      },
+      {
+        "minute": 81,
+        "playerOn": "Endrick",
+        "playerOff": 14
+      },
+      {
+        "minute": 81,
+        "playerOn": 27,
+        "playerOff": 23
+      }
+    ],
+    "performances": [
+      {
+        "player": 15,
+        "rating": 8.1
+      },
+      {
+        "player": 6,
+        "rating": 7.5
+      },
+      {
+        "player": 4,
+        "rating": 7.2
+      },
+      {
+        "player": 12,
+        "rating": 6.8
+      },
+      {
+        "player": 39,
+        "rating": 6.7
+      },
+      {
+        "player": 11,
+        "rating": 6.6
+      },
+      {
+        "player": 45,
+        "rating": 6.6
+      },
+      {
+        "player": 14,
+        "rating": 6.6
+      },
+      {
+        "player": 38,
+        "rating": 6.5
+      },
+      {
+        "player": 22,
+        "rating": 6.4
+      },
+      {
+        "player": 23,
+        "rating": 6.4
+      },
+      {
+        "player": 10,
+        "rating": 6.4
+      },
+      {
+        "player": 7,
+        "rating": 6.2
+      },
+      {
+        "player": 27,
+        "rating": 5.9
+      },
+      {
+        "player": 13,
+        "rating": 5.8
+      },
+      {
+        "player": 2,
+        "rating": 5.7
+      }
+    ],
+    "teamStats": {
+      "possession": 49,
+      "shots": 8,
+      "passes": 128,
+      "passAccuracy": 80,
+      "tackles": 6
+    },
+    "opponentStats": {
+      "possession": 51,
+      "shots": 5,
+      "passes": 159,
+      "passAccuracy": 92,
+      "tackles": 8
+    }
+  },
+  {
+    "id": 6,
+    "season": "2027/28",
+    "competition": "laliga",
+    "stage": "League",
+    "matchday": 5,
+    "date": "2027-09-17",
+    "venue": "Home",
+    "opponent": "Real Betis",
+    "scoreFor": 1,
+    "scoreAgainst": 4,
+    "result": "L",
+    "startingXI": [
+      1,
+      10,
+      9,
+      6,
+      4,
+      38,
+      12,
+      22,
+      13,
+      14,
+      15
+    ],
+    "bench": [
+      2,
+      44,
+      8,
+      7,
+      39,
+      35,
+      23,
+      27,
+      "Endrick"
+    ],
+    "goals": [
+      {
+        "minute": 49,
+        "player": 14
+      }
+    ],
+    "goalsConceded": [
+      {
+        "minute": 13,
+        "player": "Antony"
+      },
+      {
+        "minute": 23,
+        "player": "Aitor Ruibal"
+      },
+      {
+        "minute": 32,
+        "player": "Gianluca Scamacca"
+      },
+      {
+        "minute": 88,
+        "player": "Gianluca Scamacca"
+      }
+    ],
+    "assists": [
+      {
+        "player": 4,
+        "count": 1
+      }
+    ],
+    "yellowCards": [
+      {
+        "player": 22,
+        "minute": null
+      }
+    ],
+    "redCards": [],
+    "injuries": [],
+    "substitutions": [
+      {
+        "minute": 77,
+        "playerOn": 23,
+        "playerOff": 13
+      },
+      {
+        "minute": 77,
+        "playerOn": 44,
+        "playerOff": 10
+      },
+      {
+        "minute": 88,
+        "playerOn": "Endrick",
+        "playerOff": 15
+      },
+      {
+        "minute": 88,
+        "playerOn": 27,
+        "playerOff": 14
+      },
+      {
+        "minute": 88,
+        "playerOn": 7,
+        "playerOff": 9
+      }
+    ],
+    "performances": [
+      {
+        "player": 9,
+        "rating": 7.1
+      },
+      {
+        "player": 14,
+        "rating": 7.0
+      },
+      {
+        "player": 13,
+        "rating": 7.0
+      },
+      {
+        "player": 10,
+        "rating": 6.9
+      },
+      {
+        "player": 38,
+        "rating": 6.8
+      },
+      {
+        "player": 12,
+        "rating": 6.7
+      },
+      {
+        "player": 22,
+        "rating": 6.7
+      },
+      {
+        "player": 4,
+        "rating": 6.6
+      },
+      {
+        "player": 44,
+        "rating": 6.4
+      },
+      {
+        "player": 27,
+        "rating": 6.0
+      },
+      {
+        "player": 7,
+        "rating": 6.0
+      },
+      {
+        "player": 6,
+        "rating": 5.9
+      },
+      {
+        "player": 45,
+        "rating": 5.9
+      },
+      {
+        "player": 23,
+        "rating": 5.7
+      },
+      {
+        "player": 15,
+        "rating": 5.7
+      },
+      {
+        "player": 1,
+        "rating": 5.3
+      }
+    ],
+    "teamStats": {
+      "possession": 38,
+      "shots": 9,
+      "passes": 113,
+      "passAccuracy": 85,
+      "tackles": 7
+    },
+    "opponentStats": {
+      "possession": 62,
+      "shots": 9,
+      "passes": 192,
+      "passAccuracy": 88,
+      "tackles": 7
+    }
+  },
+  {
+    "id": 7, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 6, "date": "2027-09-24", "venue": "Home", "opponent": "Valencia CF",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 8, "season": "2027/28", "competition": "ucl", "stage": "League Phase",
+    "matchday": 2, "date": "2027-09-28", "venue": "Home", "opponent": "Brøndby IF",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 9, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 7, "date": "2027-10-02", "venue": "Away", "opponent": "CA Osasuna",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 10, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 8, "date": "2027-10-15", "venue": "Home", "opponent": "Athletic Club",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 11, "season": "2027/28", "competition": "ucl", "stage": "League Phase",
+    "matchday": 3, "date": "2027-10-19", "venue": "Away", "opponent": "Manchester City",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 12, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 9, "date": "2027-10-26", "venue": "Away", "opponent": "RCD Espanyol",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 13, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 10, "date": "2027-11-02", "venue": "Away", "opponent": "Sevilla FC",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 14, "season": "2027/28", "competition": "ucl", "stage": "League Phase",
+    "matchday": 4, "date": "2027-11-07", "venue": "Home", "opponent": "GNK Dinamo Zagreb",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 15, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 11, "date": "2027-11-10", "venue": "Away", "opponent": "FC Barcelona",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 16, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 12, "date": "2027-11-19", "venue": "Home", "opponent": "SD Eibar",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 17, "season": "2027/28", "competition": "ucl", "stage": "League Phase",
+    "matchday": 5, "date": "2027-11-23", "venue": "Home", "opponent": "SL Benfica",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 18, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 13, "date": "2027-11-27", "venue": "Away", "opponent": "Villarreal CF",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 19, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 14, "date": "2027-12-01", "venue": "Away", "opponent": "Getafe CF",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 20, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 15, "date": "2027-12-06", "venue": "Home", "opponent": "Elche CF",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 21, "season": "2027/28", "competition": "ucl", "stage": "League Phase",
+    "matchday": 6, "date": "2027-12-07", "venue": "Away", "opponent": "Sporting CP",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 22, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 16, "date": "2027-12-12", "venue": "Away", "opponent": "Girona FC",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 23, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 17, "date": "2027-12-18", "venue": "Home", "opponent": "Atlético de Madrid",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 24, "season": "2027/28", "competition": "laliga", "stage": "League",
+    "matchday": 18, "date": "2028-01-02", "venue": "Home", "opponent": "Real Club Celta",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+  },
+  {
+    "id": 25, "season": "2027/28", "competition": "supercopa", "stage": "Semi Final",
+    "matchday": null, "date": "2028-01-03", "venue": "Home", "opponent": "Levante UD",
+    "result": null, "scoreFor": null, "scoreAgainst": null,
+    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
+    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
   }
 ]

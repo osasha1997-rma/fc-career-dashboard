@@ -4,7 +4,7 @@
 // Version 0.1.0 Alpha
 // ==========================================
 
-import { loadSeason, loadPlayers, loadMatches } from "./api.js";
+import { loadAll } from "./api.js";
 
 import {
     setHeader,
@@ -20,11 +20,14 @@ import {
     renderSquad,
     initializeSquad
 } from "./squad.js";
-import { renderMatches } from "./matches.js";
 import { renderAnalytics } from "./analytics.js";
 import { renderDevelopment } from "./development.js";
 import { createPlayerProfile } from "./components/PlayerProfile.js";
-
+import { createMatchCentre,
+    initializeMatchCentre
+ } from "./match-center.js";
+import { deriveSeasonStats } from "./utils/stats.js";
+ 
 const state = {
     season: null,
     players: [],
@@ -33,20 +36,17 @@ const state = {
 };
 
 registerRoute("dashboard", () => {
+    const stats = deriveSeasonStats(state.matches, state.players);
     setHeader("Dashboard", state.season.club);
-    return renderDashboard(state.season);
+    return renderDashboard(state.season, stats);
 });
 
 registerRoute("squad", () => {
     setHeader("Squad", `${state.players.length} Players`);
-    console.log("Players:", state.players);
-    const html = renderSquad(state.players);
-
-    setTimeout(() => {
-        initializeSquad(openPlayerProfile);
-    }, 0);
-
-    return html;
+    return {
+        html: renderSquad(state.players),
+        init: () => initializeSquad(openPlayerProfile)
+    };
 });
 
 registerRoute("player-profile", () => {
@@ -60,18 +60,26 @@ registerRoute("player-profile", () => {
         `<button id="back-to-squad" class="back-btn">← Back</button>`
     );
 
-    setTimeout(() => {
-        document.getElementById("back-to-squad")?.addEventListener("click", () => {
-            showScreen("squad");
-        });
-    }, 0);
-
-    return createPlayerProfile(state.selectedPlayer, state.matches);
+    return {
+        html: createPlayerProfile(state.selectedPlayer, state.matches),
+        init: () => {
+            document.getElementById("back-to-squad")?.addEventListener("click", () => {
+                showScreen("squad");
+            });
+        }
+    };
 });
 
 registerRoute("matches", () => {
-    setHeader("Matches");
-    return renderMatches(state.matches);
+    setHeader(
+        "Match Centre",
+        `${state.matches.filter(m => m.result).length} Matches`
+    );
+
+    return {
+        html: createMatchCentre(state.matches, state.players),
+        init: initializeMatchCentre
+    };
 });
 
 registerRoute("analytics", () => {
@@ -92,7 +100,11 @@ function showScreen(name) {
         return;
     }
 
-    renderScreen(screen());
+    const result = screen();
+    const html = typeof result === "string" ? result : result.html;
+    const init = typeof result === "object" ? result.init : null;
+
+    renderScreen(html, init);
     setActiveNavigation(name === "player-profile" ? "squad" : name);
 }
 
@@ -113,16 +125,26 @@ function setupNavigation() {
 }
 
 async function loadApplicationData() {
-    state.season = await loadSeason();
-    state.players = await loadPlayers();
-    state.matches = await loadMatches();
+    const data = await loadAll();
+    if (!data.season || !data.players || !data.matches) {
+        throw new Error("Failed to load required data");
+    }
+    state.season  = data.season;
+    state.players = data.players;
+    state.matches = data.matches;
 }
 
 async function startApp() {
-    await loadApplicationData();
-    setupNavigation();
-    hideLoadingScreen();
-    showScreen("dashboard");
+    try {
+        await loadApplicationData();
+        setupNavigation();
+        hideLoadingScreen();
+        showScreen("dashboard");
+    } catch (err) {
+        console.error(err);
+        document.getElementById("loading-screen").innerHTML =
+            `<div class="loader"><h1>⚽ CareerOS</h1><p style="color:var(--danger)">Failed to load data. Please refresh.</p></div>`;
+    }
 }
 
 startApp();

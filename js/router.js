@@ -12,6 +12,3 @@ export function getRoute(name) {
     return routes[name];
 }
 
-export function getRoutes() {
-    return routes;
-}

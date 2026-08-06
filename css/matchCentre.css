@@ -1,0 +1,670 @@
+/* ==========================================
+   CareerOS — Match Centre
+   ========================================== */
+
+/* ── Layout ── */
+
+.match-centre {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-bottom: 40px;
+}
+
+.page-header { margin-bottom: 4px; }
+.page-header h1 { margin: 0; font-size: 1.6rem; font-weight: 700; }
+.page-header p  { color: var(--text-secondary); font-size: .85rem; margin-top: 4px; }
+
+/* ── Upcoming Fixture ── */
+
+.upcoming-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    background: linear-gradient(135deg, #0f2027, #1a2a3a, #111827);
+    border: 1px solid rgba(212,175,55,.25);
+}
+
+.upcoming-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top right, rgba(212,175,55,.08), transparent 65%);
+    pointer-events: none;
+}
+
+.fixture-competition {
+    display: inline-block;
+    color: var(--primary);
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 1px solid rgba(212,175,55,.35);
+    border-radius: 6px;
+    padding: 3px 10px;
+    margin-bottom: 16px;
+}
+
+.upcoming-card h2 {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    font-weight: 600;
+}
+
+.upcoming-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 10px;
+    line-height: 1.3;
+}
+
+.upcoming-card p {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: .85rem;
+}
+
+/* ── Section Label ── */
+
+.results-header {
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-secondary);
+    padding-left: 2px;
+}
+
+/* ── Match List ── */
+
+.match-list {
+    display: grid;
+    gap: 10px;
+}
+
+/* ── Match Card ── */
+
+.match-card {
+    position: relative;
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 16px 18px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,.05);
+    border-left: 4px solid transparent;
+    transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+    display: grid;
+    gap: 6px;
+}
+
+.match-card:hover {
+    transform: translateY(-2px);
+    background: #243044;
+    box-shadow: 0 8px 24px rgba(0,0,0,.3);
+}
+
+.match-card:active { transform: scale(.985); }
+
+.match-card.active {
+    background: #1e2d42;
+    box-shadow: 0 0 0 2px var(--primary), 0 8px 24px rgba(0,0,0,.3);
+    border-left-color: var(--primary);
+}
+
+.match-card.win  { border-left-color: var(--success); }
+.match-card.draw { border-left-color: #F59E0B; }
+.match-card.loss { border-left-color: var(--danger); }
+
+.match-card.active.win  { box-shadow: 0 0 0 2px var(--success), 0 8px 24px rgba(0,0,0,.3); }
+.match-card.active.draw { box-shadow: 0 0 0 2px #F59E0B,       0 8px 24px rgba(0,0,0,.3); }
+.match-card.active.loss { box-shadow: 0 0 0 2px var(--danger),  0 8px 24px rgba(0,0,0,.3); }
+
+.match-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+}
+
+.match-card h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -.2px;
+}
+
+.match-card p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: .82rem;
+}
+
+/* ── Result Badge ── */
+
+.match-result-badge {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 3px 11px;
+    border-radius: 6px;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.match-result-badge--win  { background: rgba(34,197,94,.15);  color: var(--success); }
+.match-result-badge--draw { background: rgba(245,158,11,.15); color: #F59E0B; }
+.match-result-badge--loss { background: rgba(239,68,68,.15);  color: var(--danger); }
+
+/* ── Match Detail Panel ── */
+
+.match-detail {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,.06);
+    overflow: hidden;
+    animation: slideUp .25s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.match-detail--empty {
+    padding: 56px 24px;
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: .95rem;
+    letter-spacing: .3px;
+}
+
+/* ── Detail Header ── */
+
+.md-header {
+    background: linear-gradient(160deg, #0d1f35, #111827);
+    padding: 28px 24px 24px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    position: relative;
+    overflow: hidden;
+}
+
+.md-header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top, rgba(212,175,55,.07), transparent 70%);
+    pointer-events: none;
+}
+
+.md-competition {
+    display: inline-block;
+    color: var(--primary);
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: 1px solid rgba(212,175,55,.3);
+    border-radius: 6px;
+    padding: 3px 10px;
+    margin-bottom: 20px;
+}
+
+.md-score {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 14px;
+}
+
+.md-score span {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    max-width: 100px;
+    text-align: center;
+    line-height: 1.3;
+}
+
+.md-score strong {
+    font-size: 2.6rem;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: var(--text);
+    line-height: 1;
+}
+
+.md-meta {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    font-size: .78rem;
+    color: var(--text-secondary);
+}
+
+.md-meta span + span::before {
+    content: "·";
+    margin-right: 16px;
+}
+
+/* ── Sections ── */
+
+.md-section {
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+    transition: background .15s ease;
+}
+
+.md-section:last-child { border-bottom: none; }
+
+.md-section-title {
+    font-size: .65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-secondary);
+    margin-bottom: 14px;
+}
+
+.md-empty {
+    color: var(--text-secondary);
+    font-size: .88rem;
+    font-style: italic;
+}
+
+/* ── Events (goals, subs, cards, injuries) ── */
+
+.md-event {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    font-size: .9rem;
+    transition: background .15s ease;
+}
+
+.md-event:last-child { border-bottom: none; }
+
+.md-minute {
+    min-width: 36px;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+}
+
+.md-icon { margin-left: auto; font-size: .9rem; }
+.md-icon--danger { opacity: .65; }
+
+.md-badge {
+    margin-left: auto;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.md-badge--danger { color: var(--danger); }
+
+.md-sub-on  { color: var(--success); font-weight: 500; }
+.md-sub-off { color: var(--danger);  font-weight: 500; margin-left: auto; }
+
+/* ── Timeline ── */
+
+.timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tl-event {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 4px;
+    border-radius: 8px;
+    transition: background .15s ease;
+}
+
+.tl-event:hover { background: rgba(255,255,255,.04); }
+
+.tl-minute {
+    min-width: 34px;
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.tl-icon {
+    font-size: 1rem;
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.tl-desc {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .88rem;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.tl-desc strong { font-weight: 600; }
+.tl-desc span   { color: var(--text-secondary); }
+
+.tl-sub-on  { color: var(--success) !important; font-weight: 500; }
+.tl-sub-off { color: var(--danger)  !important; }
+
+.tl-badge--danger {
+    font-size: .72rem;
+    font-weight: 600;
+    color: var(--danger);
+    background: rgba(239,68,68,.12);
+    border-radius: 5px;
+    padding: 2px 8px;
+}
+
+/* ── Match Statistics ── */
+
+.md-stats-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+}
+
+.md-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: .88rem;
+    margin-bottom: 5px;
+}
+
+.md-stat-val {
+    min-width: 36px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.md-stat-row .md-stat-val:last-child { text-align: right; }
+
+.md-stat-label {
+    color: var(--text-secondary);
+    font-size: .73rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    flex: 1;
+}
+
+.md-stat-bar {
+    display: flex;
+    height: 5px;
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    background: rgba(255,255,255,.06);
+}
+
+.md-stat-bar__fill--home {
+    background: var(--primary);
+    border-radius: 3px 0 0 3px;
+    transition: width .4s ease;
+}
+
+.md-stat-bar__fill--away {
+    background: var(--surface-light);
+    border-radius: 0 3px 3px 0;
+    transition: width .4s ease;
+}
+
+/* ── Player Ratings ── */
+
+.md-rating-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    font-size: .9rem;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    transition: background .15s ease;
+}
+
+.md-rating-row:last-child { border-bottom: none; }
+
+.md-rating {
+    font-weight: 800;
+    font-size: .95rem;
+    min-width: 42px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.rating--high { color: var(--success); }
+.rating--mid  { color: var(--primary); }
+.rating--low  { color: var(--danger); }
+
+/* ── Lineup ── */
+
+.md-sub-label {
+    font-size: .65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+    margin: 14px 0 8px;
+}
+
+.md-sub-label:first-child { margin-top: 0; }
+
+.md-player-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.md-player-chip {
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: .78rem;
+    font-weight: 500;
+    transition: background .15s ease, transform .15s ease;
+}
+
+.md-player-chip:hover {
+    background: rgba(255,255,255,.12);
+    transform: translateY(-1px);
+}
+
+.md-player-chip--bench {
+    opacity: .55;
+    font-style: italic;
+}
+
+/* ── Lineup Pitch ── */
+
+.lineup-pitch {
+    background: linear-gradient(180deg, #194f2b 0%, #1d6033 50%, #194f2b 100%);
+    border-radius: 12px;
+    padding: 16px 8px;
+    position: relative;
+    border: 1px solid rgba(255,255,255,.06);
+    overflow: hidden;
+}
+
+.lineup-pitch::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,.12);
+    pointer-events: none;
+}
+
+.lineup-pitch::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 50%;
+    height: 1px;
+    background: rgba(255,255,255,.09);
+    pointer-events: none;
+}
+
+.pitch-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.pitch-row:last-child { margin-bottom: 0; }
+
+.pitch-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    min-width: 52px;
+}
+
+.pitch-badges {
+    display: flex;
+    gap: 2px;
+    justify-content: center;
+    min-height: 18px;
+}
+
+.pitch-chip {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(10, 20, 38, 0.85);
+    border: 2px solid rgba(255,255,255,.22);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.pitch-chip--leader {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 1px var(--primary), 0 0 10px rgba(212,175,55,.25);
+}
+
+.pitch-pos {
+    font-size: .54rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.85);
+    letter-spacing: .4px;
+    text-transform: uppercase;
+}
+
+.pitch-armband {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: var(--primary);
+    color: #111;
+    font-size: .44rem;
+    font-weight: 800;
+    border-radius: 3px;
+    padding: 1px 3px;
+    line-height: 1.3;
+}
+
+.pitch-name {
+    font-size: .6rem;
+    color: rgba(255,255,255,.92);
+    text-align: center;
+    max-width: 58px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-shadow: 0 1px 4px rgba(0,0,0,.7);
+    font-weight: 500;
+}
+
+.pb {
+    font-size: .68rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    gap: 1px;
+}
+
+.pb b {
+    font-size: .55rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.9);
+}
+
+/* ── Bench ── */
+
+.bench-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.bench-card {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: .78rem;
+}
+
+.bench-pos {
+    font-size: .64rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+}
+
+.bench-name { font-weight: 500; }
+
+.bench-armband {
+    font-size: .6rem;
+    font-weight: 800;
+    background: var(--primary);
+    color: #111;
+    border-radius: 3px;
+    padding: 1px 4px;
+    line-height: 1.3;
+}
+
+.bench-badges {
+    display: flex;
+    gap: 2px;
+    font-size: .72rem;
+}

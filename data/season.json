@@ -9,13 +9,13 @@
 
   "transferBudget": 3000000,
 
-  "played": 4,
+  "played": 6,
   "wins": 4,
-  "draws": 0,
-  "losses": 0,
+  "draws": 1,
+  "losses": 1,
 
-  "goalsFor": 15,
-  "goalsAgainst": 0,
+  "goalsFor": 18,
+  "goalsAgainst": 6,
   "cleanSheets": 4,
 
   "captain": "Federico Valverde",
@@ -26,16 +26,17 @@
   "transferWindow": "Closed",
 
   "nextFixture": {
-    "competition": "UEFA Champions League",
-    "opponent": "Olympique de Marseille",
-    "venue": "Home"
+    "competition": "La Liga",
+    "opponent": "Valencia CF",
+    "venue": "Home",
+    "date": "2027-09-24"
   },
 
   "lastFixture": {
     "competition": "La Liga",
-    "opponent": "RCD Mallorca",
-    "venue": "Away",
-    "result": "W",
-    "score": "4-0"
+    "opponent": "Real Betis",
+    "venue": "Home",
+    "result": "L",
+    "score": "1-4"
   }
 }

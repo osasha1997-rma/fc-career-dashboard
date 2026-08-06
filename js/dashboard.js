@@ -3,6 +3,33 @@
 // Version: 0.1.0
 // ==========================================
 
+function renderSeasonStats(s) {
+    const row = (label, value) => `
+        <tr>
+            <td>${label}</td>
+            <td>${value ?? "—"}</td>
+        </tr>`;
+
+    return `
+    <div class="card">
+        <div class="card-title">Season Statistics</div>
+        <table>
+            ${row("Matches Played", s.played)}
+            ${row("Wins", s.wins)}
+            ${row("Draws", s.draws)}
+            ${row("Losses", s.losses)}
+            ${row("Goals", s.goalsFor)}
+            ${row("Goals Conceded", s.goalsAgainst)}
+            ${row("Clean Sheets", s.cleanSheets)}
+            ${s.avgPossession != null ? row("Avg Possession", `${s.avgPossession}%`) : ""}
+            ${s.topScorer   ? row("Top Scorer",   `${s.topScorer.name} (${s.topScorer.goals})`) : ""}
+            ${s.topAssists  ? row("Top Assists",  `${s.topAssists.name} (${s.topAssists.assists})`) : ""}
+            ${s.topRated    ? row("Highest Rated", `${s.topRated.name} (${s.topRated.rating})`) : ""}
+            ${s.avgTeamRating != null ? row("Avg Team Rating", s.avgTeamRating) : ""}
+        </table>
+    </div>`;
+}
+
 function formatCurrency(value) {
     if (value >= 1000000) {
         return `€${(value / 1000000).toFixed(2)}M`;
@@ -15,7 +42,8 @@ function formatCurrency(value) {
     return `€${value}`;
 }
 
-export function renderDashboard(season) {
+export function renderDashboard(season, stats) {
+    const s = stats;
     return `
 
         <div class="hero-card">
@@ -24,7 +52,7 @@ export function renderDashboard(season) {
             <div class="hero-content">
                 <div>
                     <h1>${season.club}</h1>
-                    <p>José Mourinho</p>
+                    <p>${season.manager}</p>
                     <span>${season.season} • ${season.competition}</span>
                 </div>
 
@@ -38,25 +66,32 @@ export function renderDashboard(season) {
 
         <div class="stats-grid">
             <div class="stat">
-                <div class="stat-value">${season.wins}</div>
+                <div class="stat-value">${s.played}</div>
+                <div class="stat-label">Played</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-value">${s.wins}</div>
                 <div class="stat-label">Wins</div>
             </div>
 
             <div class="stat">
-                <div class="stat-value">${season.draws}</div>
+                <div class="stat-value">${s.draws}</div>
                 <div class="stat-label">Draws</div>
             </div>
 
             <div class="stat">
-                <div class="stat-value">${season.losses}</div>
+                <div class="stat-value">${s.losses}</div>
                 <div class="stat-label">Losses</div>
             </div>
 
             <div class="stat">
-                <div class="stat-value">${season.cleanSheets}</div>
+                <div class="stat-value">${s.cleanSheets}</div>
                 <div class="stat-label">Clean Sheets</div>
             </div>
         </div>
+
+        ${renderSeasonStats(s)}
 
         <div class="card">
             <div class="card-title">
@@ -72,16 +107,6 @@ export function renderDashboard(season) {
                 <tr>
                     <td>Transfer Budget</td>
                     <td>${formatCurrency(season.transferBudget)}</td>
-                </tr>
-
-                <tr>
-                    <td>Goals Scored</td>
-                    <td>${season.goalsFor}</td>
-                </tr>
-
-                <tr>
-                    <td>Goals Conceded</td>
-                    <td>${season.goalsAgainst}</td>
                 </tr>
 
                 <tr>
@@ -117,22 +142,18 @@ export function renderDashboard(season) {
             </div>
         </div>
 
+        ${season.nextFixture ? `
         <div class="card">
-            <div class="card-title">
-                Next Match
-            </div>
-
+            <div class="card-title">Next Match</div>
             <div class="fixture-card">
                 <div>
                     <strong>${season.nextFixture.competition}</strong>
                     <p>${season.nextFixture.opponent} · ${season.nextFixture.venue}</p>
+                    ${season.nextFixture.date ? `<p>${season.nextFixture.date}</p>` : ""}
                 </div>
-
-                <div class="fixture-result pending">
-                    Soon
-                </div>
+                <div class="fixture-result pending">Soon</div>
             </div>
-        </div>
+        </div>` : ""}
 
     `;
 }
