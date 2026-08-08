@@ -76,9 +76,9 @@ export function deriveSeasonStats(matches, players = []) {
         goalsAgainst,
         cleanSheets,
         avgPossession,
-        topScorer:    tScorerEntry ? { name: resolveName(tScorerEntry[0]), goals:   tScorerEntry[1] } : null,
-        topAssists:   tAssistEntry ? { name: resolveName(tAssistEntry[0]), assists: tAssistEntry[1] } : null,
-        topRated:     tRatedEntry  ? { name: resolveName(tRatedEntry[0]),  rating:  avgRatingMap[tRatedEntry[0]].toFixed(2) } : null,
+        topScorer:    tScorerEntry ? { id: Number(tScorerEntry[0]), name: resolveName(tScorerEntry[0]), goals:   tScorerEntry[1] } : null,
+        topAssists:   tAssistEntry ? { id: Number(tAssistEntry[0]), name: resolveName(tAssistEntry[0]), assists: tAssistEntry[1] } : null,
+        topRated:     tRatedEntry  ? { id: Number(tRatedEntry[0]),  name: resolveName(tRatedEntry[0]),  rating:  avgRatingMap[tRatedEntry[0]].toFixed(2) } : null,
         avgTeamRating
     };
 }

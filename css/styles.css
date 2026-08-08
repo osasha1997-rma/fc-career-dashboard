@@ -505,7 +505,7 @@ td{
 
 .nav-btn small{
 
-    font-size:.70rem;
+    font-size:.62rem;
 }
 
 .nav-btn.active{
@@ -745,21 +745,49 @@ td{
 .player-profile-header{
     text-align:center;
     margin-bottom:30px;
+    position: relative;
 }
 
-.player-overall{
-    width:90px;
-    height:90px;
-    border-radius:50%;
-    margin:0 auto 16px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:var(--primary);
-    color:#111;
-    font-size:2rem;
-    font-weight:700;
+.player-render-wrap {
+    position: relative;
+    width: 200px;
+    height: 250px;
+    margin: 0 auto 12px;
 }
+
+.player-render {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom center;
+    filter: drop-shadow(0 8px 24px rgba(0,0,0,.5));
+}
+
+.player-render-fallback {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #111;
+    font-size: 2rem;
+    font-weight: 700;
+    align-items: center;
+    justify-content: center;
+    margin: 45px auto 0;
+}
+
+.player-overall-badge {
+    display: inline-block;
+    background: var(--primary);
+    color: #111;
+    font-size: .85rem;
+    font-weight: 800;
+    border-radius: 8px;
+    padding: 3px 12px;
+    margin-bottom: 8px;
+}
+
+.player-overall { display: none; }
 
 .profile-section{
     margin-top:30px;
@@ -834,4 +862,813 @@ td{
     font-size:.88rem;
     font-style:italic;
     margin-top:12px;
+}
+
+/* ==========================================
+   PLAYER PROFILE 2.0
+========================================== */
+
+.pp-empty{
+    text-align:center;
+    color:var(--text-secondary);
+    padding:24px 0;
+    font-style:italic;
+}
+
+/* Summary pills */
+.pp-pills{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.pp-pill{
+    background:var(--surface);
+    border-radius:14px;
+    padding:14px 10px;
+    text-align:center;
+    border:1px solid rgba(255,255,255,.05);
+}
+
+.pp-pill-v{
+    display:block;
+    font-size:1.1rem;
+    font-weight:800;
+    color:var(--primary);
+}
+
+.pp-pill-l{
+    display:block;
+    font-size:.68rem;
+    color:var(--text-secondary);
+    margin-top:3px;
+}
+
+/* Sections */
+.pp-section{
+    margin-bottom:24px;
+}
+
+.pp-section-title{
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--text-secondary);
+    margin-bottom:10px;
+}
+
+/* Competition table */
+.pp-comp-table{
+    background:var(--surface);
+    border-radius:14px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.05);
+}
+
+.pp-comp-row{
+    display:grid;
+    grid-template-columns:2fr 1fr .6fr .6fr 1fr 1fr;
+    padding:12px 14px;
+    font-size:.85rem;
+    border-bottom:1px solid rgba(255,255,255,.05);
+    align-items:center;
+}
+
+.pp-comp-row:last-child{ border-bottom:none; }
+
+.pp-comp-header{
+    font-size:.7rem;
+    color:var(--text-secondary);
+    font-weight:600;
+    letter-spacing:.04em;
+    background:rgba(255,255,255,.03);
+}
+
+.pp-comp-row small{
+    color:var(--text-secondary);
+    font-size:.75em;
+}
+
+.pp-rating-val{ color:var(--primary); font-weight:700; }
+
+/* Rating chart */
+.pp-chart{
+    display:flex;
+    align-items:flex-end;
+    gap:6px;
+    height:80px;
+    padding:0 4px;
+}
+
+.pp-bar-wrap{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    height:100%;
+    gap:3px;
+}
+
+.pp-bar{
+    width:100%;
+    border-radius:4px 4px 0 0;
+    min-height:4px;
+    transition:.3s ease;
+}
+
+.pp-bar--excellent{ background:#4ade80; }
+.pp-bar--good     { background:var(--primary); }
+.pp-bar--average  { background:#94a3b8; }
+.pp-bar--poor     { background:#f87171; }
+
+.pp-bar-label{
+    font-size:.62rem;
+    color:var(--text-secondary);
+}
+
+.pp-bar-opp{
+    font-size:.55rem;
+    color:var(--text-secondary);
+    opacity:.6;
+    text-align:center;
+    white-space:nowrap;
+}
+
+/* Recent form */
+.pp-form-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.pp-form-row{
+    background:var(--surface);
+    border-radius:12px;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border:1px solid rgba(255,255,255,.05);
+}
+
+.pp-form-badge{
+    width:32px;
+    height:32px;
+    border-radius:8px;
+    display:grid;
+    place-items:center;
+    font-size:.8rem;
+    font-weight:800;
+    flex-shrink:0;
+}
+
+.pp-form-badge--win  { background:rgba(34,197,94,.2);  color:#4ade80; }
+.pp-form-badge--draw { background:rgba(234,179,8,.2);  color:#fbbf24; }
+.pp-form-badge--loss { background:rgba(239,68,68,.2);  color:#f87171; }
+
+.pp-form-info{ flex:1; min-width:0; }
+
+.pp-form-opp{
+    display:block;
+    font-size:.9rem;
+    font-weight:600;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.pp-form-meta{
+    display:block;
+    font-size:.75rem;
+    color:var(--text-secondary);
+    margin-top:2px;
+}
+
+.pp-form-rating{
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    font-size:.8rem;
+    font-weight:700;
+    flex-shrink:0;
+}
+
+.pp-form-rating.excellent{ background:rgba(34,197,94,.2);  color:#4ade80; }
+.pp-form-rating.good     { background:rgba(212,175,55,.2); color:var(--primary); }
+.pp-form-rating.average  { background:var(--surface-light); color:var(--text); }
+
+/* Discipline */
+.pp-discipline{
+    display:flex;
+    gap:12px;
+}
+
+.pp-disc-item{
+    background:var(--surface);
+    border-radius:12px;
+    padding:14px 18px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:.9rem;
+    font-weight:600;
+    border:1px solid rgba(255,255,255,.05);
+}
+
+.pp-disc-card{
+    display:inline-block;
+    width:14px;
+    height:20px;
+    border-radius:3px;
+}
+
+.pp-disc-card--yellow{ background:#fbbf24; }
+.pp-disc-card--red   { background:#f87171; }
+
+/* Injuries */
+.pp-injury-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.pp-injury-row{
+    background:var(--surface);
+    border-radius:12px;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border:1px solid rgba(239,68,68,.15);
+}
+
+.pp-injury-icon{ font-size:1.2rem; }
+
+.pp-injury-info{ display:flex; flex-direction:column; gap:2px; }
+.pp-injury-info span{ font-size:.9rem; font-weight:600; }
+.pp-injury-meta{ font-size:.75rem; color:var(--text-secondary) !important; font-weight:400 !important; }
+
+/* ==========================================
+   SQUAD SCREEN 2.0
+========================================== */
+
+.sq-summary{
+    display:flex;
+    gap:16px;
+    font-size:.85rem;
+    color:var(--text-secondary);
+    margin-bottom:10px;
+    font-weight:600;
+}
+
+.sq-depth-bar{
+    display:flex;
+    gap:6px;
+    margin-bottom:14px;
+}
+
+.sq-depth-item{
+    background:var(--surface);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:8px;
+    padding:5px 10px;
+    font-size:.72rem;
+    color:var(--text-secondary);
+    font-weight:600;
+}
+
+.sq-depth-item b{
+    color:var(--primary);
+    margin-left:4px;
+}
+
+/* Position group */
+.sq-group{
+    margin-bottom:20px;
+}
+
+.sq-group-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:6px 4px 8px;
+    margin-bottom:6px;
+    border-bottom:1px solid rgba(255,255,255,.07);
+}
+
+.sq-group-label{
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--primary);
+}
+
+.sq-group-count{
+    font-size:.72rem;
+    color:var(--text-secondary);
+    background:var(--surface);
+    padding:2px 8px;
+    border-radius:20px;
+}
+
+/* Player card */
+.sq-card{
+    display:flex;
+    align-items:center;
+    background:var(--surface);
+    border-radius:14px;
+    margin-bottom:8px;
+    border:1px solid rgba(255,255,255,.05);
+    cursor:pointer;
+    transition:.2s ease;
+    overflow:hidden;
+    height:64px;
+}
+
+.sq-card:hover{ transform:translateX(3px); border-color:rgba(212,175,55,.2); }
+.sq-card:active{ transform:scale(.98); }
+
+.sq-card-render{
+    width:48px;
+    height:64px;
+    flex-shrink:0;
+    overflow:hidden;
+    background:rgba(255,255,255,.03);
+}
+
+.sq-card-render img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:top center;
+}
+
+.sq-card-body{
+    flex:1;
+    min-width:0;
+    padding:0 12px;
+}
+
+.sq-card-name{
+    font-size:.9rem;
+    font-weight:700;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.sq-card-meta{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-top:3px;
+}
+
+.sq-pos-badge{
+    font-size:.65rem;
+    font-weight:700;
+    background:rgba(212,175,55,.15);
+    color:var(--primary);
+    border-radius:5px;
+    padding:1px 6px;
+    flex-shrink:0;
+}
+
+.sq-nationality{
+    font-size:.72rem;
+    color:var(--text-secondary);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.sq-card-right{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-end;
+    gap:4px;
+    padding-right:6px;
+    flex-shrink:0;
+}
+
+.sq-ovr{
+    font-size:1rem;
+    font-weight:800;
+    color:var(--text);
+}
+
+.sq-role{
+    font-size:.6rem;
+    font-weight:700;
+    border-radius:5px;
+    padding:2px 6px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    white-space:nowrap;
+}
+
+.sq-role--crucial   { background:rgba(212,175,55,.2); color:var(--primary); }
+.sq-role--important { background:rgba(59,130,246,.2); color:#60a5fa; }
+.sq-role--rotation  { background:rgba(148,163,184,.15); color:#94a3b8; }
+.sq-role--prospect  { background:rgba(34,197,94,.15); color:#4ade80; }
+
+.sq-arrow{
+    font-size:1.2rem;
+    color:var(--text-secondary);
+    padding:0 10px 0 4px;
+    flex-shrink:0;
+}
+
+.sq-empty{
+    text-align:center;
+    color:var(--text-secondary);
+    padding:40px 0;
+    font-style:italic;
+}
+
+.sq-card--loan{
+    border-color:rgba(251,191,36,.3);
+    background:linear-gradient(90deg, rgba(251,191,36,.06) 0%, var(--surface) 60%);
+}
+
+.sq-loan-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    font-size:.62rem;
+    font-weight:700;
+    background:rgba(251,191,36,.2);
+    color:#fbbf24;
+    border-radius:5px;
+    padding:1px 6px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:140px;
+}
+
+.sq-loan-logo{
+    width:14px;
+    height:14px;
+    object-fit:contain;
+    flex-shrink:0;
+}
+
+.sq-loaned-from-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    font-size:.62rem;
+    font-weight:700;
+    background:rgba(96,165,250,.15);
+    color:#60a5fa;
+    border-radius:5px;
+    padding:1px 6px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    max-width:140px;
+}
+
+.sq-card--loaned-from{
+    border-color:rgba(96,165,250,.3);
+    background:linear-gradient(90deg, rgba(96,165,250,.06) 0%, var(--surface) 60%);
+}
+
+/* ==========================================
+   DASHBOARD v2
+========================================== */
+
+.hero-season{
+    font-size:.8rem;
+    color:var(--primary);
+    font-weight:700;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    margin-bottom:6px;
+}
+
+.hero-club{
+    font-size:2rem;
+    font-weight:800;
+    margin-bottom:6px;
+}
+
+.hero-manager{
+    font-size:.9rem;
+    color:var(--text-secondary);
+}
+
+.db-body{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    padding-top:4px;
+}
+
+.db-section-label{
+    font-size:.75rem;
+    font-weight:700;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--text-secondary);
+    margin-bottom:10px;
+}
+
+/* Key Stats Row */
+.db-stats-row{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+}
+
+.db-stat-pill{
+    background:var(--surface);
+    border-radius:14px;
+    padding:14px 8px;
+    text-align:center;
+    border:1px solid rgba(255,255,255,.05);
+}
+
+.db-stat-pill-value{
+    display:block;
+    font-size:1rem;
+    font-weight:800;
+    color:var(--primary);
+    white-space:nowrap;
+}
+
+.db-stat-pill-label{
+    display:block;
+    font-size:.7rem;
+    color:var(--text-secondary);
+    margin-top:4px;
+}
+
+/* Form Strip */
+.db-section{ }
+
+.db-form-strip{
+    display:flex;
+    gap:8px;
+}
+
+.db-form-chip{
+    width:38px;
+    height:38px;
+    border-radius:10px;
+    display:grid;
+    place-items:center;
+    font-size:.85rem;
+    font-weight:800;
+}
+
+.db-form-chip--win  { background:rgba(34,197,94,.2);  color:#4ade80; border:1px solid rgba(34,197,94,.4); }
+.db-form-chip--draw { background:rgba(234,179,8,.2);  color:#fbbf24; border:1px solid rgba(234,179,8,.4); }
+.db-form-chip--loss { background:rgba(239,68,68,.2);  color:#f87171; border:1px solid rgba(239,68,68,.4); }
+
+/* Top Performers */
+.db-perf-row{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.db-perf-card{
+    background:var(--surface);
+    border-radius:14px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    border:1px solid rgba(255,255,255,.05);
+}
+
+.db-perf-icon{
+    font-size:1.4rem;
+    width:40px;
+    text-align:center;
+    flex-shrink:0;
+}
+
+.db-perf-render-wrap{
+    width:44px;
+    height:58px;
+    flex-shrink:0;
+    overflow:hidden;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+}
+
+.db-perf-render{
+    width:44px;
+    height:auto;
+    object-fit:contain;
+    object-position:bottom center;
+    display:block;
+}
+
+.db-perf-label{
+    font-size:.7rem;
+    color:var(--text-secondary);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+}
+
+.db-perf-name{
+    font-size:1rem;
+    font-weight:700;
+    margin:2px 0;
+}
+
+.db-perf-value{
+    font-size:.85rem;
+    color:var(--primary);
+    font-weight:600;
+}
+
+/* Fixtures */
+.db-fixtures{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.db-fixture-card{
+    background:var(--surface);
+    border-radius:14px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    border:1px solid rgba(255,255,255,.05);
+}
+
+.db-fixture-card--next{
+    border-color:rgba(212,175,55,.2);
+}
+
+.db-fixture-badge{
+    width:42px;
+    height:42px;
+    border-radius:10px;
+    display:grid;
+    place-items:center;
+    font-size:.8rem;
+    font-weight:800;
+    flex-shrink:0;
+}
+
+.db-fixture-badge--win      { background:rgba(34,197,94,.2);  color:#4ade80; }
+.db-fixture-badge--draw     { background:rgba(234,179,8,.2);  color:#fbbf24; }
+.db-fixture-badge--loss     { background:rgba(239,68,68,.2);  color:#f87171; }
+.db-fixture-badge--upcoming { background:rgba(212,175,55,.15); color:var(--primary); }
+
+.db-fixture-body{
+    flex:1;
+    min-width:0;
+}
+
+.db-fixture-comp{
+    font-size:.7rem;
+    color:var(--text-secondary);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+}
+
+.db-fixture-opp{
+    font-size:1rem;
+    font-weight:700;
+    margin:2px 0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.db-fixture-venue{
+    font-size:.8rem;
+    color:var(--text-secondary);
+}
+
+.db-fixture-score{
+    font-size:1.3rem;
+    font-weight:800;
+    flex-shrink:0;
+}
+
+.db-fixture-score--win  { color:#4ade80; }
+.db-fixture-score--draw { color:#fbbf24; }
+.db-fixture-score--loss { color:#f87171; }
+
+.db-fixture-date{
+    font-size:.8rem;
+    color:var(--primary);
+    flex-shrink:0;
+    font-weight:600;
+}
+
+.db-fixture-crest{
+    width:32px;
+    height:32px;
+    object-fit:contain;
+    flex-shrink:0;
+}
+
+.db-fixture-crest--initials{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:rgba(255,255,255,.1);
+    color:var(--text-secondary);
+    font-size:.8rem;
+    font-weight:700;
+    display:grid;
+    place-items:center;
+    flex-shrink:0;
+}
+
+.db-fixture-filter{
+    display:flex;
+    gap:6px;
+    margin-bottom:10px;
+}
+
+.db-fix-btn{
+    background:var(--surface);
+    color:var(--text-secondary);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:999px;
+    padding:5px 14px;
+    font-size:.72rem;
+    font-weight:700;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.db-fix-btn.active{
+    background:var(--primary);
+    color:#111;
+    border-color:var(--primary);
+}
+
+/* Season Info Grid */
+.db-info-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.db-info-item{
+    background:var(--surface);
+    border-radius:14px;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    border:1px solid rgba(255,255,255,.05);
+}
+
+.db-info-icon{
+    font-size:1.2rem;
+    flex-shrink:0;
+}
+
+.db-info-render-wrap{
+    width:36px;
+    height:48px;
+    flex-shrink:0;
+    overflow:hidden;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+}
+
+.db-info-render{
+    width:36px;
+    height:auto;
+    object-fit:contain;
+    object-position:bottom center;
+    display:block;
+}
+
+.db-info-label{
+    display:block;
+    font-size:.68rem;
+    color:var(--text-secondary);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+}
+
+.db-info-value{
+    display:block;
+    font-size:.9rem;
+    font-weight:700;
+    margin-top:2px;
 }

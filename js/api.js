@@ -9,10 +9,12 @@ async function loadJson(path) {
 }
 
 export async function loadAll() {
-    const [season, players, matches] = await Promise.all([
+    const [season, players, matches, standings, leagueStats] = await Promise.all([
         loadJson("data/season.json"),
         loadJson("data/players.json"),
-        loadJson("data/matches.json")
+        loadJson("data/matches.json"),
+        loadJson("data/standings.json").catch(() => ({})),
+        loadJson("data/leagueStats.json").catch(() => ({}))
     ]);
-    return { season, players, matches };
+    return { season, players, matches, standings, leagueStats };
 }

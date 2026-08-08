@@ -20,25 +20,67 @@ import {
     renderSquad,
     initializeSquad
 } from "./squad.js";
-import { renderAnalytics } from "./analytics.js";
+import { renderAnalytics, initializeAnalytics } from "./analytics.js";
+import { createCompetitions, initializeCompetitions } from "./competitions.js";
 import { renderDevelopment } from "./development.js";
+import { createCalendar, initializeCalendar } from "./calendar.js";
 import { createPlayerProfile } from "./components/PlayerProfile.js";
 import { createMatchCentre,
     initializeMatchCentre
  } from "./match-center.js";
 import { deriveSeasonStats } from "./utils/stats.js";
+import { initPlayers } from "./utils/players.js";
  
 const state = {
     season: null,
     players: [],
     matches: [],
+    standings: {},
+    leagueStats: {},
     selectedPlayer: null
 };
 
 registerRoute("dashboard", () => {
     const stats = deriveSeasonStats(state.matches, state.players);
+    const played = state.matches.filter(m => m.result);
+    const upcoming = state.matches.find(m => !m.result);
+    const lastMatch = played.at(-1) ?? null;
+    const season = {
+        ...state.season,
+        lastFixture: lastMatch ? {
+            competition: lastMatch.competition,
+            opponent:    lastMatch.opponent,
+            venue:       lastMatch.venue,
+            result:      lastMatch.result,
+            score:       `${lastMatch.scoreFor}-${lastMatch.scoreAgainst}`
+        } : state.season.lastFixture,
+        nextFixture: upcoming ? {
+            competition: upcoming.competition,
+            opponent:    upcoming.opponent,
+            venue:       upcoming.venue,
+            date:        upcoming.date
+        } : null
+    };
     setHeader("Dashboard", state.season.club);
-    return renderDashboard(state.season, stats);
+    return {
+        html: renderDashboard(season, stats, state.matches, state.players),
+        init: () => {
+            // Show first upcoming card by default, then handle filter
+            const showUpcoming = comp => {
+                document.querySelectorAll(".db-upcoming").forEach(el => {
+                    el.style.display = (comp === "all" || el.dataset.comp === comp) ? "" : "none";
+                });
+            };
+            showUpcoming("all");
+
+            document.querySelector(".db-fixture-filter")?.addEventListener("click", e => {
+                const btn = e.target.closest(".db-fix-btn");
+                if (!btn) return;
+                document.querySelectorAll(".db-fix-btn").forEach(b => b.classList.toggle("active", b === btn));
+                showUpcoming(btn.dataset.comp);
+            });
+        }
+    };
 });
 
 registerRoute("squad", () => {
@@ -82,9 +124,28 @@ registerRoute("matches", () => {
     };
 });
 
+registerRoute("competitions", () => {
+    setHeader("Competitions", "2027/28");
+    return {
+        html: createCompetitions(state.matches, state.standings, state.leagueStats),
+        init: initializeCompetitions
+    };
+});
+
+registerRoute("calendar", () => {
+    setHeader("Season Calendar", "2027/28");
+    return {
+        html: createCalendar(state.matches),
+        init: () => initializeCalendar(() => showScreen("matches"))
+    };
+});
+
 registerRoute("analytics", () => {
-    setHeader("Analytics");
-    return renderAnalytics();
+    setHeader("Analytics", "2027/28");
+    return {
+        html: renderAnalytics(state.matches, state.players),
+        init: initializeAnalytics
+    };
 });
 
 registerRoute("development", () => {
@@ -129,9 +190,12 @@ async function loadApplicationData() {
     if (!data.season || !data.players || !data.matches) {
         throw new Error("Failed to load required data");
     }
-    state.season  = data.season;
-    state.players = data.players;
-    state.matches = data.matches;
+    state.season    = data.season;
+    state.players   = data.players;
+    state.matches   = data.matches;
+    state.standings   = data.standings   ?? {};
+    state.leagueStats = data.leagueStats ?? {};
+    initPlayers(data.players);
 }
 
 async function startApp() {

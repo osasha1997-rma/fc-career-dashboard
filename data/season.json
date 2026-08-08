@@ -9,34 +9,10 @@
 
   "transferBudget": 3000000,
 
-  "played": 6,
-  "wins": 4,
-  "draws": 1,
-  "losses": 1,
-
-  "goalsFor": 18,
-  "goalsAgainst": 6,
-  "cleanSheets": 4,
-
   "captain": "Federico Valverde",
   "viceCaptain": "Jude Bellingham",
 
   "difficulty": "Legendary",
 
-  "transferWindow": "Closed",
-
-  "nextFixture": {
-    "competition": "La Liga",
-    "opponent": "Valencia CF",
-    "venue": "Home",
-    "date": "2027-09-24"
-  },
-
-  "lastFixture": {
-    "competition": "La Liga",
-    "opponent": "Real Betis",
-    "venue": "Home",
-    "result": "L",
-    "score": "1-4"
-  }
+  "transferWindow": "Closed"
 }

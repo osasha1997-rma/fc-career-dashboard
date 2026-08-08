@@ -1,0 +1,356 @@
+/* ==========================================
+   CareerOS — Competitions
+   ========================================== */
+
+/* ── Page ── */
+.cp-page { padding-bottom: 32px; }
+
+/* ── Competition tabs (horizontal scroll) ── */
+.cp-comp-tabs {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 16px 4px;
+    margin-bottom: 4px;
+    scrollbar-width: none;
+}
+.cp-comp-tabs::-webkit-scrollbar { display: none; }
+
+.cp-comp-tab {
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 20px;
+    color: var(--text-secondary);
+    font-size: .75rem;
+    font-weight: 600;
+    padding: 7px 14px;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+}
+.cp-comp-tab.active {
+    background: color-mix(in srgb, var(--cc) 15%, transparent);
+    border-color: var(--cc);
+    color: var(--cc);
+}
+
+/* ── Sub-tabs ── */
+.cp-sub-tabs {
+    display: flex;
+    gap: 6px;
+    padding: 10px 16px 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.cp-sub-tabs::-webkit-scrollbar { display: none; }
+
+.cp-sub-tab {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-secondary);
+    font-size: .8rem;
+    font-weight: 600;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all .2s;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+.cp-sub-tab.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+}
+
+.cp-tab-body { padding: 8px 16px 0; }
+
+/* ── Empty state ── */
+.cp-empty {
+    text-align: center;
+    padding: 48px 16px;
+    color: var(--text-secondary);
+    font-size: .9rem;
+}
+
+/* ── League Table ── */
+.cp-table-wrap {
+    overflow-x: auto;
+    border-radius: 14px;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,.05);
+}
+
+.cp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .82rem;
+    white-space: nowrap;
+}
+
+.cp-table thead tr {
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.cp-table th {
+    padding: 10px 8px;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    text-align: center;
+}
+.cp-th-team { text-align: left; padding-left: 10px; }
+
+.cp-table td {
+    padding: 9px 8px;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+}
+.cp-table tbody tr:last-child td { border-bottom: none; }
+
+.cp-td-pos { color: var(--text-secondary); font-size: .75rem; width: 28px; }
+.cp-td-pts { font-weight: 700; }
+
+.cp-td-team {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-left: 10px;
+}
+
+.cp-row--us td { background: rgba(212,175,55,.06); }
+.cp-row--us .cp-td-team span { font-weight: 700; }
+
+.cp-crest {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+.cp-crest-init {
+    width: 20px;
+    height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-2);
+    border-radius: 50%;
+    font-size: .65rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ── Match rows ── */
+.cp-match-list { display: flex; flex-direction: column; gap: 8px; }
+
+.cp-match-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,.05);
+    border-radius: 12px;
+    padding: 10px 14px;
+}
+
+.cp-badge {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: .72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+.cp-badge--win      { background: rgba(34,197,94,.2);  color: #4ade80; }
+.cp-badge--draw     { background: rgba(234,179,8,.2);  color: #facc15; }
+.cp-badge--loss     { background: rgba(239,68,68,.2);  color: #f87171; }
+.cp-badge--upcoming { background: rgba(255,255,255,.08); color: var(--text-secondary); }
+
+.cp-match-crest {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+.cp-match-crest--init {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-2);
+    border-radius: 50%;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.cp-match-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+.cp-match-opp   { font-weight: 600; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cp-match-venue { font-size: .72rem; color: var(--text-secondary); }
+
+.cp-match-score {
+    font-size: 1rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    min-width: 40px;
+    text-align: right;
+}
+.cp-match-date {
+    font-size: .75rem;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    text-align: right;
+}
+
+/* ── Stats ── */
+.cp-stats { display: flex; flex-direction: column; gap: 12px; }
+
+/* ── Stat mini-tabs ── */
+.cp-stat-tabs {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+}
+.cp-stat-tabs::-webkit-scrollbar { display: none; }
+
+.cp-stat-tab {
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 16px;
+    color: var(--text-secondary);
+    font-size: .72rem;
+    font-weight: 600;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+}
+.cp-stat-tab.active {
+    background: color-mix(in srgb, var(--primary) 15%, transparent);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.cp-stat-section {
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,.05);
+    border-radius: 14px;
+    padding: 14px 16px;
+}
+.cp-stat-title {
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    margin-bottom: 12px;
+}
+
+.cp-stat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.cp-stat-row:last-child { margin-bottom: 0; }
+
+.cp-stat-rank {
+    width: 18px;
+    font-size: .75rem;
+    color: var(--text-secondary);
+    font-weight: 700;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.cp-stat-render {
+    width: 32px;
+    height: 42px;
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+.cp-stat-render img {
+    width: 32px;
+    height: auto;
+    object-fit: contain;
+    object-position: bottom center;
+    display: block;
+}
+
+.cp-stat-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.cp-stat-name { font-size: .88rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cp-stat-club-row { display: flex; align-items: center; gap: 4px; }
+.cp-stat-club { width: 14px; height: 14px; object-fit: contain; flex-shrink: 0; }
+.cp-stat-club--init { width: 14px; height: 14px; display: inline-flex; align-items: center; justify-content: center; background: var(--surface-2); border-radius: 50%; font-size: .55rem; font-weight: 700; }
+.cp-stat-team { font-size: .7rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cp-stat-render--empty { width: 32px; height: 42px; flex-shrink: 0; }
+.cp-stats-source { font-size: .72rem; color: var(--text-secondary); padding: 0 2px 4px; }
+
+.cp-stat-bar-wrap {
+    width: 80px;
+    height: 5px;
+    background: rgba(255,255,255,.08);
+    border-radius: 3px;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+.cp-stat-bar {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 3px;
+    transition: width .4s ease;
+}
+
+.cp-stat-val {
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+/* ── Clean Sheets ── */
+.cp-clean-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.cp-clean-bar-wrap {
+    flex: 1;
+    height: 8px;
+    background: rgba(255,255,255,.08);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.cp-clean-bar {
+    height: 100%;
+    background: var(--primary);
+    border-radius: 4px;
+    transition: width .4s ease;
+}
+.cp-clean-val {
+    font-size: .9rem;
+    font-weight: 700;
+    color: var(--primary);
+    white-space: nowrap;
+}

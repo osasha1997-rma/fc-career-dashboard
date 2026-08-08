@@ -1,0 +1,135 @@
+// Download club logos via Wikipedia page-image API (free, no key)
+// Run: node scripts/download-logos.mjs
+
+import https from "https";
+import http  from "http";
+import fs    from "fs";
+import path  from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const OUT_DIR   = path.join(__dirname, "..", "assets", "logos");
+
+// Map our club name → Wikipedia article title
+const CLUBS = {
+    "Real Madrid":          "Real Madrid CF",
+    "Alaves":               "Deportivo Alavés",
+    "Levante":              "Levante UD",
+    "Levante UD":           null,
+    "Real Sociedad":        "Real Sociedad",
+    "RCD Mallorca":         "RCD Mallorca",
+    "Real Betis":           "Real Betis",
+    "Valencia CF":          "Valencia CF",
+    "CA Osasuna":           "CA Osasuna",
+    "Athletic Club":        "Athletic Bilbao",
+    "RCD Espanyol":         "RCD Espanyol",
+    "Sevilla FC":           "Sevilla FC",
+    "FC Barcelona":         "FC Barcelona",
+    "SD Eibar":             "SD Eibar",
+    "Villarreal CF":        "Villarreal CF",
+    "Getafe CF":            "Getafe CF",
+    "Elche CF":             "Elche CF",
+    "Girona FC":            "Girona FC",
+    "Atlético de Madrid":   "Club_Atlético_de_Madrid",
+    "Real Club Celta":      "RC_Celta_de_Vigo",
+    "Marseille":            "Olympique de Marseille",
+    "Brøndby IF":           "Brøndby IF",
+    "Manchester City":      "Manchester City F.C.",
+    "GNK Dinamo Zagreb":    "GNK Dinamo Zagreb",
+    "SL Benfica":           "S.L. Benfica",
+    "Sporting CP":          "Sporting CP",
+};
+
+function toFilename(name) {
+    return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") + ".png";
+}
+
+function get(url) {
+    return new Promise((resolve, reject) => {
+        const lib = url.startsWith("https") ? https : http;
+        lib.get(url, { headers: { "User-Agent": "CareerOS/1.0 (personal dashboard)" } }, res => {
+            // Follow redirects
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                return get(res.headers.location).then(resolve).catch(reject);
+            }
+            let data = "";
+            res.on("data", c => data += c);
+            res.on("end", () => resolve({ status: res.statusCode, body: data }));
+        }).on("error", reject);
+    });
+}
+
+function download(url, dest) {
+    return new Promise((resolve, reject) => {
+        const lib = url.startsWith("https") ? https : http;
+        lib.get(url, { headers: { "User-Agent": "CareerOS/1.0" } }, res => {
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                return download(res.headers.location, dest).then(resolve).catch(reject);
+            }
+            if (res.statusCode !== 200) return reject(new Error(`HTTP ${res.statusCode}`));
+            const file = fs.createWriteStream(dest);
+            res.pipe(file);
+            file.on("finish", () => file.close(resolve));
+            file.on("error", reject);
+        }).on("error", reject);
+    });
+}
+
+async function getWikipediaLogoUrl(title) {
+    const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`;
+    const { body, status } = await get(url);
+    if (status !== 200) throw new Error(`HTTP ${status}`);
+    const data = JSON.parse(body);
+    return data?.thumbnail?.source ?? null;
+}
+
+async function main() {
+    fs.mkdirSync(OUT_DIR, { recursive: true });
+
+    const mapping = {};
+
+    for (const [clubName, wikiTitle] of Object.entries(CLUBS)) {
+        const filename = toFilename(clubName);
+        const dest     = path.join(OUT_DIR, filename);
+
+        if (!wikiTitle) {
+            // alias — point to the same file as the canonical entry
+            const canonical = Object.values(mapping).find(v => v?.includes(toFilename(clubName.split(" ")[0].toLowerCase())));
+            if (canonical) mapping[clubName] = canonical;
+            continue;
+        }
+
+        if (fs.existsSync(dest)) {
+            console.log(`✓ skip   ${clubName}`);
+            mapping[clubName] = `assets/logos/${filename}`;
+            continue;
+        }
+
+        try {
+            const imgUrl = await getWikipediaLogoUrl(wikiTitle);
+            if (!imgUrl) { console.warn(`✗ no img  ${clubName}`); continue; }
+
+            await download(imgUrl, dest);
+            mapping[clubName] = `assets/logos/${filename}`;
+            console.log(`✓ saved  ${clubName}`);
+        } catch (err) {
+            console.error(`✗ error  ${clubName}: ${err.message}`);
+        }
+
+        await new Promise(r => setTimeout(r, 4000));
+    }
+
+    // Write clubLogos.js
+    const jsOut  = path.join(__dirname, "..", "js", "utils", "clubLogos.js");
+    const entries = Object.entries(mapping)
+        .map(([k, v]) => `    ${JSON.stringify(k)}: ${JSON.stringify(v)}`)
+        .join(",\n");
+
+    fs.writeFileSync(jsOut,
+`// Auto-generated by scripts/download-logos.mjs — do not edit manually
+const LOGOS = {\n${entries}\n};\n\nexport function getClubLogo(name) {\n    return LOGOS[name] ?? null;\n}\n`);
+
+    console.log(`\nDone — wrote js/utils/clubLogos.js (${Object.keys(mapping).length} clubs)`);
+}
+
+main().catch(console.error);

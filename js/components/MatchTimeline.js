@@ -1,16 +1,16 @@
 // ==========================================
-// CareerOS — Match Timeline
+// CareerOS — Match Timeline (vertical spine)
 // ==========================================
 
 import { getPlayerName } from "../utils/players.js";
 
 const EVENT_CONFIG = {
-    goal:   { icon: "⚽" },
-    assist: { icon: "🎯" },
-    yellow: { icon: "🟨" },
-    red:    { icon: "🟥" },
-    sub:    { icon: "🔄" },
-    injury: { icon: "🤕" }
+    goal:     { icon: "⚽" },
+    conceded: { icon: "⚽" },
+    yellow:   { icon: "🟨" },
+    red:      { icon: "🟥" },
+    sub:      { icon: "🔄" },
+    injury:   { icon: "🤕" }
 };
 
 export function createMatchTimeline(match, players) {
@@ -19,7 +19,79 @@ export function createMatchTimeline(match, players) {
 
     const name = id => getPlayerName(id, players);
 
-    return events.map(e => renderEvent(e, name)).join("");
+    // Group by minute, sort descending (90 at top, 0 at bottom)
+    const groups = groupByMinute(events);
+    const sorted = [...groups.entries()].sort((a, b) => {
+        if (a[0] === null) return 1;
+        if (b[0] === null) return -1;
+        return b[0] - a[0];
+    });
+
+    const rows = sorted.map(([minute, evts]) => renderRow(minute, evts, name)).join("");
+
+    return `
+    <div class="tl-spine">
+        <div class="tl-cap tl-cap--top">90'</div>
+        ${rows}
+        <div class="tl-cap tl-cap--bottom">0'</div>
+    </div>`;
+}
+
+// ── Grouping ─────────────────────────────────────────────────
+
+function groupByMinute(events) {
+    const map = new Map();
+    for (const e of events) {
+        const key = e.minute ?? null;
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(e);
+    }
+    return map;
+}
+
+// ── Row renderer ──────────────────────────────────────────────
+
+function renderRow(minute, evts, name) {
+    const home = evts.filter(e => e.side === "home");
+    const away = evts.filter(e => e.side === "away");
+
+    const homeHtml = home.map(e => renderChip(e, name, "home")).join("");
+    const awayHtml = away.map(e => renderChip(e, name, "away")).join("");
+    const minLabel = minute != null ? `${minute}'` : "—";
+
+    return `
+    <div class="tl-row">
+        <div class="tl-side tl-side--home">${homeHtml}</div>
+        <div class="tl-node">
+            <div class="tl-dot"></div>
+            <span class="tl-min">${minLabel}</span>
+        </div>
+        <div class="tl-side tl-side--away">${awayHtml}</div>
+    </div>`;
+}
+
+function renderChip(event, name, side) {
+    const { icon } = EVENT_CONFIG[event.type] ?? { icon: "•" };
+    const label = renderLabel(event, name, side);
+    return `<div class="tl-chip tl-chip--${event.type}">${side === "home" ? `${label} ${icon}` : `${icon} ${label}`}</div>`;
+}
+
+function renderLabel(event, name, side) {
+    switch (event.type) {
+        case "goal":
+            return `<strong>${name(event.player)}</strong>`;
+        case "conceded":
+            return `<span>${event.player}</span>`;
+        case "yellow":
+        case "red":
+            return `<span>${name(event.player)}</span>`;
+        case "sub":
+            return `<span class="tl-sub-on">▲${name(event.playerOn)}</span><span class="tl-sub-off"> ▼${name(event.playerOff)}</span>`;
+        case "injury":
+            return `<span>${name(event.player)}</span>`;
+        default:
+            return "";
+    }
 }
 
 // ── Event collection ─────────────────────────────────────────
@@ -28,68 +100,22 @@ function collectEvents(match) {
     const events = [];
 
     match.goals?.forEach(g =>
-        events.push({ minute: g.minute, type: "goal", player: g.player }));
+        events.push({ minute: g.minute ?? null, type: "goal", player: g.player, side: "home" }));
 
-    match.assists?.forEach(a => {
-        for (let i = 0; i < (a.count ?? 1); i++)
-            events.push({ minute: null, type: "assist", player: a.player });
-    });
+    match.goalsConceded?.forEach(g =>
+        events.push({ minute: g.minute ?? null, type: "conceded", player: g.player, side: "away" }));
 
     match.yellowCards?.forEach(c =>
-        events.push({ minute: c.minute ?? null, type: "yellow", player: c.player }));
+        events.push({ minute: c.minute ?? null, type: "yellow", player: c.player, side: "home" }));
 
     match.redCards?.forEach(c =>
-        events.push({ minute: c.minute ?? null, type: "red", player: c.player }));
+        events.push({ minute: c.minute ?? null, type: "red", player: c.player, side: "home" }));
 
     match.substitutions?.forEach(s =>
-        events.push({ minute: s.minute, type: "sub", playerOn: s.playerOn, playerOff: s.playerOff }));
+        events.push({ minute: s.minute ?? null, type: "sub", playerOn: s.playerOn, playerOff: s.playerOff, side: "home" }));
 
     match.injuries?.forEach(i =>
-        events.push({ minute: i.minute, type: "injury", player: i.player, daysOut: i.daysOut }));
+        events.push({ minute: i.minute ?? null, type: "injury", player: i.player, side: "home" }));
 
-    return events.sort((a, b) => {
-        if (a.minute === null && b.minute === null) return 0;
-        if (a.minute === null) return 1;
-        if (b.minute === null) return -1;
-        return a.minute - b.minute;
-    });
-}
-
-// ── Renderers ─────────────────────────────────────────────────
-
-function renderEvent(event, name) {
-    const { icon } = EVENT_CONFIG[event.type];
-    const minute = event.minute != null ? `${event.minute}'` : "—";
-
-    return `
-    <div class="tl-event tl-event--${event.type}">
-        <span class="tl-minute">${minute}</span>
-        <span class="tl-icon">${icon}</span>
-        <div class="tl-desc">${renderDescription(event, name)}</div>
-    </div>`;
-}
-
-function renderDescription(event, name) {
-    switch (event.type) {
-        case "goal":
-        case "yellow":
-        case "red":
-            return `<strong>${name(event.player)}</strong>`;
-
-        case "assist":
-            return `<span>${name(event.player)}</span>`;
-
-        case "sub":
-            return `
-                <span class="tl-sub-on">▲ ${name(event.playerOn)}</span>
-                <span class="tl-sub-off">▼ ${name(event.playerOff)}</span>`;
-
-        case "injury":
-            return `
-                <strong>${name(event.player)}</strong>
-                <span class="tl-badge--danger">${event.daysOut}d out</span>`;
-
-        default:
-            return "";
-    }
+    return events;
 }
