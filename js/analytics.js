@@ -2,15 +2,17 @@
 // CareerOS — Analytics
 // ==========================================
 
+import { shortOpp } from "./utils/competitions.js";
+
 let _matches = [];
 let _players = [];
 let _activePlayer    = null;
 let _activePlayerChart = "rating";
 let _activeTeamChart   = "goals";
 
-// SVG canvas constants
-const W = 360, H = 148;
-const P = { t: 14, r: 12, b: 30, l: 34 };
+// SVG canvas constants — sized for ~1200px display width
+const W = 1200, H = 300;
+const P = { t: 24, r: 24, b: 54, l: 70 };
 const CW = W - P.l - P.r;
 const CH = H - P.t - P.b;
 
@@ -32,11 +34,24 @@ export function renderAnalytics(matches = [], players = []) {
             <div class="an-empty">No match data available yet.</div>
         </section>`;
 
+    const wins   = played.filter(m => m.result === "W").length;
+    const draws  = played.filter(m => m.result === "D").length;
+    const losses = played.filter(m => m.result === "L").length;
+    const gf     = played.reduce((s, m) => s + (m.scoreFor ?? 0), 0);
+    const ga     = played.reduce((s, m) => s + (m.scoreAgainst ?? 0), 0);
+    const pts    = wins * 3 + draws;
+    const cleanSheets = played.filter(m => (m.scoreAgainst ?? 0) === 0).length;
+
     return `
     <section class="an-page fade">
-        <div class="page-header">
-            <h1>Analytics</h1>
-            <p>2027/28 · ${played.length} matches played</p>
+        <div class="an-summary">
+            <div class="an-sum-card" style="--an-accent:#22c55e"><div class="an-sum-val" style="color:#22c55e">${wins}</div><div class="an-sum-lbl">Wins</div></div>
+            <div class="an-sum-card" style="--an-accent:#94a3b8"><div class="an-sum-val" style="color:#94a3b8">${draws}</div><div class="an-sum-lbl">Draws</div></div>
+            <div class="an-sum-card" style="--an-accent:#ef4444"><div class="an-sum-val" style="color:#ef4444">${losses}</div><div class="an-sum-lbl">Losses</div></div>
+            <div class="an-sum-card" style="--an-accent:#4ade80"><div class="an-sum-val" style="color:#4ade80">${gf}</div><div class="an-sum-lbl">Goals For</div></div>
+            <div class="an-sum-card" style="--an-accent:#f87171"><div class="an-sum-val" style="color:#f87171">${ga}</div><div class="an-sum-lbl">Against</div></div>
+            <div class="an-sum-card" style="--an-accent:#D4AF37"><div class="an-sum-val" style="color:#D4AF37">${pts}</div><div class="an-sum-lbl">Points</div></div>
+            <div class="an-sum-card" style="--an-accent:#60a5fa"><div class="an-sum-val" style="color:#60a5fa">${cleanSheets}</div><div class="an-sum-lbl">Clean Sheets</div></div>
         </div>
 
         <div class="an-block">
@@ -233,44 +248,44 @@ function lineChart(data, { minY, maxY, color, gridLines = [], refLine = null }) 
     const uid = color.replace("#", "");
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" class="an-svg">
         <defs><linearGradient id="lg${uid}" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="${color}" stop-opacity=".2"/>
+            <stop offset="0%" stop-color="${color}" stop-opacity=".25"/>
             <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
         </linearGradient></defs>
         ${gridLines.map(v => {
             const y = yOf(v).toFixed(1);
-            return `<line x1="${P.l}" y1="${y}" x2="${W-P.r}" y2="${y}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
-                    <text x="${P.l-4}" y="${(yOf(v)+3).toFixed(1)}" fill="rgba(255,255,255,.3)" font-size="8" text-anchor="end">${v}</text>`;
+            return `<line x1="${P.l}" y1="${y}" x2="${W-P.r}" y2="${y}" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+                    <text x="${P.l-18}" y="${(yOf(v)+5).toFixed(1)}" fill="rgba(255,255,255,.4)" font-size="13" text-anchor="end">${v}</text>`;
         }).join("")}
-        ${refLine !== null ? `<line x1="${P.l}" y1="${yOf(refLine).toFixed(1)}" x2="${W-P.r}" y2="${yOf(refLine).toFixed(1)}" stroke="rgba(255,255,255,.22)" stroke-width="1" stroke-dasharray="4,3"/>` : ""}
+        ${refLine !== null ? `<line x1="${P.l}" y1="${yOf(refLine).toFixed(1)}" x2="${W-P.r}" y2="${yOf(refLine).toFixed(1)}" stroke="rgba(255,255,255,.22)" stroke-width="1" stroke-dasharray="8,5"/>` : ""}
         ${areaPath ? `<path d="${areaPath}" fill="url(#lg${uid})"/>` : ""}
-        ${segs.map(d => `<path d="${d}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`).join("")}
+        ${segs.map(d => `<path d="${d}" fill="none" stroke="${color}" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>`).join("")}
         ${data.map((d, i) => d.value === null ? "" : `
-            <circle cx="${xOf(i).toFixed(1)}" cy="${yOf(d.value).toFixed(1)}" r="3.5" fill="${color}"/>
-            <text x="${xOf(i).toFixed(1)}" y="${(yOf(d.value)-7).toFixed(1)}" fill="${color}" font-size="8" text-anchor="middle" font-weight="600">${d.value}</text>
+            <circle cx="${xOf(i).toFixed(1)}" cy="${yOf(d.value).toFixed(1)}" r="6" fill="${color}"/>
+            <text x="${xOf(i).toFixed(1)}" y="${(yOf(d.value)-14).toFixed(1)}" fill="${color}" font-size="13" text-anchor="middle" font-weight="700">${d.value}</text>
         `).join("")}
-        ${data.map((d, i) => `<text x="${xOf(i).toFixed(1)}" y="${H-4}" fill="rgba(255,255,255,.35)" font-size="8" text-anchor="middle">${d.label}</text>`).join("")}
+        ${data.map((d, i) => `<text x="${xOf(i).toFixed(1)}" y="${H-8}" fill="rgba(255,255,255,.45)" font-size="13" text-anchor="middle">${d.label}</text>`).join("")}
     </svg>`;
 }
 
 function stackedBarChart(data, maxVal) {
     const n = data.length;
     const step = CW / n;
-    const bw = Math.min(22, step - 6);
+    const bw = Math.min(80, step - 20);
     const yOf = v => (v / maxVal) * CH;
 
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" class="an-svg">
         <line x1="${P.l}" y1="${P.t+CH}" x2="${W-P.r}" y2="${P.t+CH}" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
-        <text x="${P.l-4}" y="${P.t+10}" fill="#4ade80" font-size="8" text-anchor="end">G</text>
-        <text x="${P.l-4}" y="${P.t+20}" fill="#d4af37" font-size="8" text-anchor="end">A</text>
+        <text x="${P.l-18}" y="${P.t+18}" fill="#4ade80" font-size="13" text-anchor="end">G</text>
+        <text x="${P.l-18}" y="${P.t+36}" fill="#d4af37" font-size="13" text-anchor="end">A</text>
         ${data.map((d, i) => {
             const cx = P.l + step * i + step / 2;
             const gh = yOf(d.goals), ah = yOf(d.assists);
             const topY = P.t + CH - gh - ah;
             return `
-            ${ah > 0 ? `<rect x="${(cx-bw/2).toFixed(1)}" y="${(P.t+CH-ah).toFixed(1)}" width="${bw}" height="${ah.toFixed(1)}" fill="#d4af37" rx="2"/>` : ""}
-            ${gh > 0 ? `<rect x="${(cx-bw/2).toFixed(1)}" y="${topY.toFixed(1)}" width="${bw}" height="${gh.toFixed(1)}" fill="#4ade80" rx="2"/>` : ""}
-            ${gh+ah > 0 ? `<text x="${cx.toFixed(1)}" y="${(topY-4).toFixed(1)}" fill="rgba(255,255,255,.7)" font-size="8" text-anchor="middle">${d.goals+d.assists}</text>` : ""}
-            <text x="${cx.toFixed(1)}" y="${H-4}" fill="rgba(255,255,255,.35)" font-size="8" text-anchor="middle">${d.label}</text>`;
+            ${ah > 0 ? `<rect x="${(cx-bw/2).toFixed(1)}" y="${(P.t+CH-ah).toFixed(1)}" width="${bw}" height="${ah.toFixed(1)}" fill="#d4af37" rx="4"/>` : ""}
+            ${gh > 0 ? `<rect x="${(cx-bw/2).toFixed(1)}" y="${topY.toFixed(1)}" width="${bw}" height="${gh.toFixed(1)}" fill="#4ade80" rx="4"/>` : ""}
+            ${gh+ah > 0 ? `<text x="${cx.toFixed(1)}" y="${(topY-8).toFixed(1)}" fill="rgba(255,255,255,.8)" font-size="13" text-anchor="middle" font-weight="700">${d.goals+d.assists}</text>` : ""}
+            <text x="${cx.toFixed(1)}" y="${H-8}" fill="rgba(255,255,255,.45)" font-size="13" text-anchor="middle">${d.label}</text>`;
         }).join("")}
     </svg>`;
 }
@@ -278,48 +293,48 @@ function stackedBarChart(data, maxVal) {
 function minutesBarChart(data) {
     const n = data.length;
     const step = CW / n;
-    const bw = Math.min(22, step - 6);
+    const bw = Math.min(80, step - 20);
     const yOf = v => (v / 90) * CH;
 
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" class="an-svg">
         ${[30, 60, 90].map(v => {
             const y = (P.t + CH - yOf(v)).toFixed(1);
             return `<line x1="${P.l}" y1="${y}" x2="${W-P.r}" y2="${y}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
-                    <text x="${P.l-4}" y="${(+y+3).toFixed(1)}" fill="rgba(255,255,255,.3)" font-size="8" text-anchor="end">${v}'</text>`;
+                    <text x="${P.l-18}" y="${(+y+5).toFixed(1)}" fill="rgba(255,255,255,.4)" font-size="13" text-anchor="end">${v}'</text>`;
         }).join("")}
         ${data.map((d, i) => {
             const cx = P.l + step * i + step / 2;
             const h = yOf(d.value);
             const y = P.t + CH - h;
             const col = d.started ? "#d4af37" : "#60a5fa";
-            return d.value === 0 ? `<text x="${cx.toFixed(1)}" y="${H-4}" fill="rgba(255,255,255,.2)" font-size="8" text-anchor="middle">${d.label}</text>` : `
-            <rect x="${(cx-bw/2).toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${h.toFixed(1)}" fill="${col}" rx="2" opacity=".85"/>
-            <text x="${cx.toFixed(1)}" y="${(y-4).toFixed(1)}" fill="${col}" font-size="8" text-anchor="middle">${d.value}'</text>
-            <text x="${cx.toFixed(1)}" y="${H-4}" fill="rgba(255,255,255,.35)" font-size="8" text-anchor="middle">${d.label}</text>`;
+            return d.value === 0 ? `<text x="${cx.toFixed(1)}" y="${H-8}" fill="rgba(255,255,255,.2)" font-size="13" text-anchor="middle">${d.label}</text>` : `
+            <rect x="${(cx-bw/2).toFixed(1)}" y="${y.toFixed(1)}" width="${bw}" height="${h.toFixed(1)}" fill="${col}" rx="4" opacity=".85"/>
+            <text x="${cx.toFixed(1)}" y="${(y-8).toFixed(1)}" fill="${col}" font-size="13" text-anchor="middle">${d.value}'</text>
+            <text x="${cx.toFixed(1)}" y="${H-8}" fill="rgba(255,255,255,.45)" font-size="13" text-anchor="middle">${d.label}</text>`;
         }).join("")}
-        <text x="${P.l}" y="${H-4}" fill="#d4af37" font-size="7">● Start</text>
-        <text x="${P.l+42}" y="${H-4}" fill="#60a5fa" font-size="7">● Sub</text>
+        <text x="${P.l}" y="${H-8}" fill="#d4af37" font-size="12">● Started</text>
+        <text x="${P.l+110}" y="${H-8}" fill="#60a5fa" font-size="12">● Sub</text>
     </svg>`;
 }
 
 function hBarChart(rows) {
     if (!rows.length) return noData();
-    const rowH = 20;
-    const svgH = rows.length * rowH + 8;
-    const nameW = 100;
+    const rowH = 40;
+    const svgH = rows.length * rowH + 20;
+    const nameW = 280;
     const barX = P.l + nameW;
-    const barMaxW = W - barX - P.r - 38;
+    const barMaxW = W - barX - P.r - 80;
 
     return `<svg viewBox="0 0 ${W} ${svgH}" xmlns="http://www.w3.org/2000/svg" class="an-svg">
         ${rows.map((r, i) => {
-            const y = i * rowH + 6;
+            const y = i * rowH + 10;
             const bw = (r.avg / 10) * barMaxW;
-            const name = r.name.length > 14 ? r.name.slice(0, 13) + "…" : r.name;
+            const name = r.name.length > 20 ? r.name.slice(0, 19) + "…" : r.name;
             return `
-            <text x="${P.l-4}" y="${y+10}" fill="rgba(255,255,255,.35)" font-size="8" text-anchor="end">${i+1}</text>
-            <text x="${P.l}" y="${y+10}" fill="rgba(255,255,255,.85)" font-size="9">${name}</text>
-            <rect x="${barX}" y="${y+1}" width="${bw.toFixed(1)}" height="11" fill="#d4af37" rx="3" opacity=".8"/>
-            <text x="${(barX+bw+4).toFixed(1)}" y="${y+10}" fill="#d4af37" font-size="9" font-weight="600">${r.avg.toFixed(2)}</text>`;
+            <text x="${P.l-18}" y="${y+14}" fill="rgba(255,255,255,.35)" font-size="13" text-anchor="end">${i+1}</text>
+            <text x="${P.l}" y="${y+14}" fill="rgba(255,255,255,.85)" font-size="13">${name}</text>
+            <rect x="${barX}" y="${y+2}" width="${bw.toFixed(1)}" height="16" fill="#d4af37" rx="4" opacity=".8"/>
+            <text x="${(barX+bw+8).toFixed(1)}" y="${y+14}" fill="#d4af37" font-size="13" font-weight="700">${r.avg.toFixed(2)}</text>`;
         }).join("")}
     </svg>`;
 }
@@ -327,25 +342,25 @@ function hBarChart(rows) {
 function goalsBarChart(data, maxVal) {
     const n = data.length;
     const step = CW / n;
-    const bw = Math.min(13, step / 2 - 3);
+    const bw = Math.min(50, step / 2 - 8);
     const yOf = v => (v / maxVal) * CH;
 
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" class="an-svg">
         ${[1,2,3,4,5].filter(v => v <= maxVal).map(v => {
             const y = (P.t + CH - yOf(v)).toFixed(1);
             return `<line x1="${P.l}" y1="${y}" x2="${W-P.r}" y2="${y}" stroke="rgba(255,255,255,.07)" stroke-width="1"/>
-                    <text x="${P.l-4}" y="${(+y+3).toFixed(1)}" fill="rgba(255,255,255,.3)" font-size="8" text-anchor="end">${v}</text>`;
+                    <text x="${P.l-18}" y="${(+y+5).toFixed(1)}" fill="rgba(255,255,255,.4)" font-size="13" text-anchor="end">${v}</text>`;
         }).join("")}
         ${data.map((d, i) => {
             const cx = P.l + step * i + step / 2;
             const sh = yOf(d.scored), ch = yOf(d.conceded);
             return `
-            <rect x="${(cx-bw-1).toFixed(1)}" y="${(P.t+CH-sh).toFixed(1)}" width="${bw}" height="${sh.toFixed(1)}" fill="#4ade80" rx="2"/>
-            <rect x="${(cx+1).toFixed(1)}" y="${(P.t+CH-ch).toFixed(1)}" width="${bw}" height="${ch.toFixed(1)}" fill="#f87171" rx="2"/>
-            <text x="${cx.toFixed(1)}" y="${H-4}" fill="rgba(255,255,255,.35)" font-size="8" text-anchor="middle">${d.label}</text>`;
+            <rect x="${(cx-bw-3).toFixed(1)}" y="${(P.t+CH-sh).toFixed(1)}" width="${bw}" height="${sh.toFixed(1)}" fill="#4ade80" rx="4"/>
+            <rect x="${(cx+3).toFixed(1)}" y="${(P.t+CH-ch).toFixed(1)}" width="${bw}" height="${ch.toFixed(1)}" fill="#f87171" rx="4"/>
+            <text x="${cx.toFixed(1)}" y="${H-8}" fill="rgba(255,255,255,.45)" font-size="13" text-anchor="middle">${d.label}</text>`;
         }).join("")}
-        <text x="${W-P.r-50}" y="${P.t+10}" fill="#4ade80" font-size="7">■ Scored</text>
-        <text x="${W-P.r-20}" y="${P.t+10}" fill="#f87171" font-size="7">■ Conceded</text>
+        <text x="${W-P.r-260}" y="${P.t+18}" fill="#4ade80" font-size="13">■ Scored</text>
+        <text x="${W-P.r-145}" y="${P.t+18}" fill="#f87171" font-size="13">■ Conceded</text>
     </svg>`;
 }
 
@@ -359,11 +374,11 @@ function formChart(data) {
     const linePath = data.map((d, i) => `${i ? "L" : "M"}${xOf(i).toFixed(1)},${yOf(d.value).toFixed(1)}`).join(" ");
 
     return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" class="an-svg">
-        ${linePath ? `<path d="${linePath}" fill="none" stroke="#60a5fa" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>` : ""}
+        ${linePath ? `<path d="${linePath}" fill="none" stroke="#60a5fa" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>` : ""}
         ${data.map((d, i) => `
-            <circle cx="${xOf(i).toFixed(1)}" cy="${yOf(d.value).toFixed(1)}" r="4" fill="${rCol(d.result)}"/>
-            <text x="${xOf(i).toFixed(1)}" y="${(yOf(d.value)-8).toFixed(1)}" fill="${rCol(d.result)}" font-size="8" text-anchor="middle" font-weight="600">${d.value}pt</text>
-            <text x="${xOf(i).toFixed(1)}" y="${H-4}" fill="rgba(255,255,255,.35)" font-size="8" text-anchor="middle">${d.label}</text>
+            <circle cx="${xOf(i).toFixed(1)}" cy="${yOf(d.value).toFixed(1)}" r="7" fill="${rCol(d.result)}"/>
+            <text x="${xOf(i).toFixed(1)}" y="${(yOf(d.value)-14).toFixed(1)}" fill="${rCol(d.result)}" font-size="13" text-anchor="middle" font-weight="700">${d.value}pt</text>
+            <text x="${xOf(i).toFixed(1)}" y="${H-8}" fill="rgba(255,255,255,.45)" font-size="13" text-anchor="middle">${d.label}</text>
         `).join("")}
     </svg>`;
 }
@@ -391,26 +406,6 @@ function getMinutes(pid, m) {
     return 0;
 }
 
-const OPP_SHORT = {
-    "Atlético de Madrid":"Atl","FC Barcelona":"Barca","Athletic Club":"Ath",
-    "Real Sociedad":"RSO","Rayo Vallecano":"Rayo","RCD Espanyol de Barcelona":"Esp",
-    "RCD Mallorca":"Mall","Deportivo Alavés":"Alav","Alaves":"Alav",
-    "Villarreal CF":"Vila","Getafe CF":"Get","Sevilla FC":"Sev",
-    "Valencia CF":"Val","CA Osasuna":"Osa","SD Eibar":"Eib",
-    "Elche CF":"Elche","Girona FC":"Giro","Levante":"Lev",
-    "Real Betis":"Bet","Real Betis Balompié":"Bet",
-    "Olympique de Marseille":"OM","Marseille":"OM",
-    "Brøndby IF":"BIF","Manchester City":"MCI","Manchester United":"MU",
-    "GNK Dinamo Zagreb":"Din","SL Benfica":"Ben","Feyenoord":"Fey",
-    "Qarabağ FK":"QFK","PSV":"PSV","Bayer 04 Leverkusen":"B04",
-    "Borussia Dortmund":"BVB","SK Slavia Praha":"Sla","FC Bayern München":"Bay",
-    "Fenerbahçe SK":"Fen","Celtic":"Celt","Rangers":"Rang","AS Monaco":"Mon",
-    "Galatasaray SK":"Gala","Juventus":"Juv","Inter Milan":"Int",
-    "Arsenal":"Ars","Paris Saint-Germain":"PSG","AC Milan":"Mil",
-    "BK Häcken":"Häc","RB Leipzig":"RBL","Club Brugge":"Bru",
-    "FK Bodø/Glimt":"Bod","Chelsea":"Che","FC Red Bull Salzburg":"Sal","AS Roma":"Rom",
-};
-const shortOpp = opp => OPP_SHORT[opp] ?? opp.slice(0, 4);
 
 function tabs(list, active) {
     return list.map(({ k, l }) =>

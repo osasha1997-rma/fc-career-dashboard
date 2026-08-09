@@ -2,7 +2,7 @@
 // CareerOS — Player Profile 2.0
 // ==========================================
 
-import { getCompetitionLabel } from "../utils/competitions.js";
+import { getCompetitionLabel, shortOpp } from "../utils/competitions.js";
 
 const RENDER_PATH = "assets/renders/";
 
@@ -172,11 +172,6 @@ function renderCompBreakdown(byComp) {
     </div>`;
 }
 
-function shortOpp(name) {
-    const SKIP = new Set(["Real","RCD","SD","FC","CA","CF","GNK","SL","UD","de"]);
-    const word = name.split(" ").find(w => !SKIP.has(w)) ?? name;
-    return word.slice(0, 5);
-}
 
 function renderRatingChart(appearances) {
     const rated = appearances.filter(a => a.rating !== null);

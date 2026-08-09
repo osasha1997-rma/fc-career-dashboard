@@ -214,7 +214,7 @@ function buildFromMatches(results, type) {
         });
     });
     return Object.entries(map)
-        .sort((a, b) => b[1] - a[1]).slice(0, 10)
+        .sort((a, b) => b[1] - a[1]).slice(0, 5)
         .map(([id, value]) => ({ name: getPlayerName(Number(id)), rmId: Number(id), team: "Real Madrid", value }));
 }
 
@@ -223,7 +223,7 @@ function scorerSection(title, players, max) {
     return `
     <div class="cp-stat-section">
         <div class="cp-stat-title">${title}</div>
-        ${players.map((p, i) => {
+        ${players.slice(0, 5).map((p, i) => {
             const val   = p.goals ?? p.value ?? 0;
             const logo  = getClubLogo(p.team);
             const crest = logo
@@ -254,7 +254,7 @@ function assistSection(title, players, max) {
     return `
     <div class="cp-stat-section">
         <div class="cp-stat-title">${title}</div>
-        ${players.map((p, i) => {
+        ${players.slice(0, 5).map((p, i) => {
             const val   = p.assists ?? p.value ?? 0;
             const logo  = getClubLogo(p.team);
             const crest = logo
@@ -285,7 +285,7 @@ function cleanSheetSection(title, keepers, max) {
     return `
     <div class="cp-stat-section">
         <div class="cp-stat-title">${title}</div>
-        ${keepers.map((p, i) => {
+        ${keepers.slice(0, 5).map((p, i) => {
             const logo  = getClubLogo(p.team);
             const crest = logo
                 ? `<img src="${logo}" class="cp-stat-club" alt="${p.team}" onerror="this.style.display='none'">`
@@ -315,7 +315,7 @@ function cardSection(title, players, max, field) {
     return `
     <div class="cp-stat-section">
         <div class="cp-stat-title">${title}</div>
-        ${players.map((p, i) => {
+        ${players.slice(0, 5).map((p, i) => {
             const val   = p[field] ?? 0;
             const logo  = getClubLogo(p.team);
             const crest = logo

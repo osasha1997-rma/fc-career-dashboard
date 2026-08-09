@@ -2,23 +2,56 @@
    CareerOS — Analytics
    ========================================== */
 
-.an-page {
-    padding-bottom: 32px;
-}
+.an-page { padding-bottom: 24px; }
 
 .an-empty {
     text-align: center;
     color: var(--text-secondary);
-    padding: 64px 24px;
-    font-size: .9rem;
+    padding: 48px 16px;
+    font-size: .8rem;
+}
+
+/* ── Summary strip ── */
+.an-summary {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+.an-sum-card {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid rgba(255,255,255,.07);
+    border-top: 2px solid var(--an-accent, rgba(255,255,255,.15));
+    border-radius: 8px;
+    padding: 8px 4px 7px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+}
+.an-sum-val {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: var(--text);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+}
+.an-sum-lbl {
+    font-size: .55rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    text-align: center;
+    line-height: 1.2;
 }
 
 /* ── Section block ── */
 .an-block {
-    margin: 0 16px 20px;
+    margin-bottom: 10px;
     background: var(--surface);
-    border: 1px solid rgba(255,255,255,.05);
-    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.07);
+    border-left: 3px solid var(--primary);
+    border-radius: 10px;
     overflow: hidden;
 }
 
@@ -26,8 +59,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 16px 0;
-    gap: 10px;
+    padding: 10px 12px 0;
+    gap: 8px;
 }
 
 .an-block-title {
@@ -35,33 +68,35 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: .1em;
-    color: var(--text-secondary);
+    color: var(--primary);
 }
 
 /* ── Player dropdown ── */
 .an-player-select {
-    background: rgba(255,255,255,.07);
-    border: 1px solid rgba(255,255,255,.1);
-    border-radius: 8px;
-    color: var(--text-primary);
-    font-size: .78rem;
+    background: var(--surface, #1e293b);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 6px;
+    color: var(--text, #f1f5f9);
+    font-size: .68rem;
     font-weight: 600;
-    padding: 5px 10px;
+    padding: 4px 8px;
     cursor: pointer;
     outline: none;
-    max-width: 180px;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    max-width: 160px;
+    -webkit-appearance: none;
+    appearance: none;
 }
-.an-player-select:focus {
-    border-color: var(--primary);
+.an-player-select option {
+    background: var(--surface, #1e293b);
+    color: var(--text, #f1f5f9);
 }
+.an-player-select:focus { border-color: var(--primary); }
 
-/* ── Stat tab strip ── */
+/* ── Tab strip ── */
 .an-tabs {
     display: flex;
-    gap: 6px;
-    padding: 10px 16px 0;
+    gap: 5px;
+    padding: 8px 12px 0;
     overflow-x: auto;
     scrollbar-width: none;
 }
@@ -69,31 +104,27 @@
 
 .an-tab {
     flex-shrink: 0;
-    font-size: .72rem;
-    font-weight: 600;
-    padding: 5px 12px;
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,.08);
+    font-size: .62rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,.07);
     background: transparent;
     color: var(--text-secondary);
     cursor: pointer;
-    transition: background .15s, color .15s, border-color .15s;
+    transition: background .15s, color .15s;
     white-space: nowrap;
 }
-.an-tab:hover {
-    background: rgba(255,255,255,.06);
-    color: var(--text-primary);
-}
 .an-tab.active {
-    background: rgba(212,175,55,.15);
-    border-color: rgba(212,175,55,.4);
+    background: rgba(212,175,55,.14);
+    border-color: rgba(212,175,55,.35);
     color: var(--primary);
 }
 
 /* ── Chart container ── */
 .an-chart {
-    padding: 12px 12px 14px;
-    min-height: 90px;
+    padding: 8px 10px 10px;
+    min-height: 50px;
 }
 
 .an-svg {
@@ -106,7 +137,7 @@
 .an-no-data {
     text-align: center;
     color: var(--text-secondary);
-    font-size: .8rem;
-    padding: 32px 16px;
-    opacity: .7;
+    font-size: .7rem;
+    padding: 18px 12px;
+    opacity: .6;
 }

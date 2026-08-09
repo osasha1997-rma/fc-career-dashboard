@@ -3,12 +3,16 @@
 // ==========================================
 
 import { createMatchDetails } from "./components/MatchDetail.js";
-import { getCompetitionLabel, getCompetitionColor } from "./utils/competitions.js";
+import { getCompetitionLabel, getCompetitionColor, shortOpp } from "./utils/competitions.js";
 
 let selectedMatchId = null;
 let _matches = [];
 let _players = [];
 let _compFilter = "all";
+
+export function setSelectedMatch(id) {
+    if (typeof id === "number") selectedMatchId = id;
+}
 
 export function createMatchCentre(matches = [], players = []) {
     _matches = matches;
@@ -151,11 +155,6 @@ function createMatchCard(match, isActive) {
     </div>`;
 }
 
-const _GENERIC = new Set(["Real", "RCD", "SD", "FC", "CA", "CF", "GNK", "SL", "UD"]);
-function shortOpp(name) {
-    const word = name.split(" ").find(w => !_GENERIC.has(w)) ?? name;
-    return word.length > 9 ? word.slice(0, 9) : word;
-}
 
 function getResultClass(result) {
     return { W: "win", D: "draw", L: "loss" }[result] ?? "";

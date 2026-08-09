@@ -9,10 +9,11 @@
     <meta name="theme-color" content="#0F172A">
 
     <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/matchCentre.css?v=8">
+    <link rel="stylesheet" href="css/matchCentre.css">
     <link rel="stylesheet" href="css/competitions.css">
     <link rel="stylesheet" href="css/calendar.css">
     <link rel="stylesheet" href="css/analytics.css">
+    <link rel="stylesheet" href="css/transfers.css">
 </head>
 
 <body>
@@ -28,14 +29,8 @@
     <!-- Main Application -->
     <div id="app" class="hidden">
 
-        <!-- Header -->
-        <header id="header"></header>
-
-        <!-- Screen Container -->
-        <main id="screen-container"></main>
-
-        <!-- Bottom Navigation -->
-        <nav id="bottom-nav">
+        <!-- Side Navigation -->
+        <nav id="side-nav">
 
             <button class="nav-btn active" data-screen="dashboard">
                 <span>🏠</span>
@@ -45,6 +40,11 @@
             <button class="nav-btn" data-screen="squad">
                 <span>👥</span>
                 <small>Squad</small>
+            </button>
+
+            <button class="nav-btn" data-screen="squad-report">
+                <span>📋</span>
+                <small>Squad Report</small>
             </button>
 
             <button class="nav-btn" data-screen="matches">
@@ -67,11 +67,27 @@
                 <small>Calendar</small>
             </button>
 
+            <button class="nav-btn" data-screen="transfers">
+                <span>🔄</span>
+                <small>Transfers</small>
+            </button>
+
+            <button class="nav-btn" data-screen="ai-assistant">
+                <span>🤖</span>
+                <small>AI Assistant</small>
+            </button>
+
         </nav>
+
+        <!-- Main Content -->
+        <div id="main-content">
+            <header id="header"></header>
+            <main id="screen-container"></main>
+        </div>
 
     </div>
 
-    <script type="module" src="js/app.js?v=2"></script>
+    <script type="module" src="js/app.js?v=41"></script>
 
 </body>
 </html>

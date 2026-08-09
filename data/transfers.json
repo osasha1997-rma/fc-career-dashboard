@@ -1,0 +1,38 @@
+{
+  "season": "2027/28",
+  "ins": [
+    { "name": "Alessandro Bastoni",  "position": "CB",  "from": "Inter Milan",      "fee": 92.7  },
+    { "name": "Nico Schlotterbeck",  "position": "CB",  "from": "Borussia Dortmund","fee": 110.0 },
+    { "name": "Diogo Costa",         "position": "GK",  "from": "FC Porto",         "fee": 83.5  },
+    { "name": "Carlos Espi",          "position": "CB",  "from": "Levante UD",       "fee": 35.0  },
+    { "name": "Cardoso Varela",              "position": "RB",  "from": "Dynamo Zagreb",    "fee": 9.5   },
+    { "name": "Rodri",               "position": "CDM", "from": "Manchester City",  "fee": 120.0 },
+    { "name": "Michael Olise",       "position": "RW",  "from": "Bayern Munich",    "fee": 200.0 },
+    { "name": "Yan Diomande",        "position": "CB",  "from": "RB Leipzig",       "fee": 72.5  }
+  ],
+  "outs": [
+    { "name": "Ibrahima Konaté",    "position": "CB",  "to": "Liverpool FC",       "fee": 82.5  },
+    { "name": "Fran García",        "position": "LB",  "to": "Manchester United",  "fee": 32.0  },
+    { "name": "Brahim Díaz",        "position": "CAM", "to": "Juventus",           "fee": 50.0  },
+    { "name": "Gonzalo",            "position": "LB",  "to": "Athletic Bilbao",    "fee": 48.0  },
+    { "name": "Bernardo Silva",     "position": "CM",  "to": "Sporting CP",        "fee": 40.0  },
+    { "name": "Antonio Rüdiger",    "position": "CB",  "to": "Liverpool FC",       "fee": 28.5  },
+    { "name": "Rodrygo",            "position": "RW",  "to": "Tottenham Hotspur",  "fee": 125.0 },
+    { "name": "Ferland Mendy",      "position": "LB",  "to": "Crystal Palace",     "fee": 22.5  }
+  ],
+  "loans": [
+    { "name": "Diego Aguado",      "position": "CB",  "club": "Asteras AKTOR",    "direction": "Out" },
+    { "name": "Víctor Valdepeñas", "position": "CB",  "club": "R Union St-Gilloise", "direction": "Out" },
+    { "name": "Joan Martínez",     "position": "CB",  "club": "Club América",     "direction": "Out" },
+    { "name": "Marvel Antolín",    "position": "CB",  "club": "Club América",     "direction": "Out" },
+    { "name": "Álvaro Leiva",      "position": "RW",  "club": "Udinese",          "direction": "Out" },
+    { "name": "Jaime Barroso",     "position": "ST",  "club": "Club América",     "direction": "Out" },
+    { "name": "Enzo Alves",        "position": "ST",  "club": "Blau-Weiß Linz",  "direction": "Out" },
+    { "name": "Hugo de Llanos",    "position": "CAM", "club": "CD Guadalajara",   "direction": "Out" },
+    { "name": "Pol Fortuny",       "position": "CAM", "club": "Udinese",          "direction": "Out" },
+    { "name": "David Jiménez",     "position": "RB",  "club": "AEK Athens",       "direction": "Out" },
+    { "name": "Ferran Quetglas",   "position": "GK",  "club": "AEK Athens",       "direction": "Out" },
+    { "name": "Sergio Mestre",     "position": "GK",  "club": "Club Tijuana",     "direction": "Out" },
+    { "name": "Fran González",     "position": "GK",  "club": "AEK Athens",       "direction": "Out" }
+  ]
+}

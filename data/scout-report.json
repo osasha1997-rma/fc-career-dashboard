@@ -1,0 +1,270 @@
+{
+  "generated": "2026-08-09",
+  "source": "ChatGPT",
+  "rating": "8.7",
+  "sections": [
+    {
+      "icon": "🏅",
+      "title": "Overall Squad Assessment",
+      "type": "rating",
+      "content": "8.7 / 10 — Elite squad with very strong depth. Real Madrid have the quality to compete for all major trophies this season. The squad is particularly strong through the spine, with elite options in midfield, centre-back and attack. The main challenge isn't lack of quality but managing minutes, rotation and development without weakening the strongest XI."
+    },
+    {
+      "icon": "🟢",
+      "title": "Major Strengths",
+      "type": "positive",
+      "items": [
+        {
+          "heading": "Central Midfield — Elite",
+          "body": "The combination of Rodri, Valverde, Bellingham, Tchouaméni and Camavinga gives the squad an exceptional range of profiles. Rodri provides control and defensive stability. Valverde gives intensity, mobility and transition power. Bellingham is the primary attacking midfielder and currently one of the team's most productive players. Tchouaméni provides reliable defensive cover. Camavinga offers both rotation and tactical flexibility.",
+          "verdict": "No midfield signing required."
+        },
+        {
+          "heading": "Centre-Back Depth — Excellent",
+          "body": "The squad has several high-level options: Bastoni, Militão, Huijsen, Schlotterbeck, Diomande. This gives Mourinho considerable flexibility depending on opponent and competition.",
+          "verdict": "Strong enough for a full season across three competitions."
+        },
+        {
+          "heading": "Elite Attacking Ceiling",
+          "body": "Mbappé remains the focal point of the attack, while Vinícius, Bellingham, Olise, Güler and Endrick provide different attacking profiles. Early results: Alavés 4–0, Levante 5–0, Real Sociedad 2–0, Mallorca 4–0. The team has demonstrated it can score heavily without relying exclusively on Mbappé.",
+          "verdict": "Champions League-level attack."
+        }
+      ]
+    },
+    {
+      "icon": "🟡",
+      "title": "Areas to Monitor",
+      "type": "warning",
+      "items": [
+        {
+          "heading": "Right Wing",
+          "body": "Olise and Güler provide quality, but the position requires careful rotation. Güler's development should be protected through meaningful minutes rather than simply replacing Olise whenever energy is low.",
+          "verdict": "Continue internal competition before considering a transfer."
+        },
+        {
+          "heading": "Left-Back Rotation",
+          "body": "Cucurella is currently an important part of the starting XI, while Carreras provides rotation. The position is good enough, but the drop-off from the first-choice option should be monitored over a long season.",
+          "verdict": "No immediate signing. Reassess in January."
+        },
+        {
+          "heading": "Young Player Minutes",
+          "body": "The squad contains several players who need regular football to develop: Endrick, Güler, Diomande, Huijsen, Carreras. The biggest squad-management challenge will be finding minutes for these players while maintaining Champions League-level standards.",
+          "verdict": "Use Copa del Rey and favourable league fixtures aggressively for rotation."
+        }
+      ]
+    },
+    {
+      "icon": "🔴",
+      "title": "Immediate Concerns",
+      "type": "negative",
+      "content": "No Critical Transfer Need. There is currently no position that requires an emergency signing. The squad is strong enough to compete for La Liga, Champions League, and Copa del Rey. The priority should therefore be optimization rather than recruitment."
+    },
+    {
+      "icon": "⭐",
+      "title": "Players to Watch",
+      "type": "players",
+      "items": [
+        { "name": "Jude Bellingham",  "status": "Key Player",              "note": "Outstanding early-season influence. Already producing goals and consistently high ratings." },
+        { "name": "Kylian Mbappé",    "status": "Elite / Untouchable",     "note": "The primary attacking reference point." },
+        { "name": "Rodri",            "status": "Critical",                "note": "His injury in the Marseille match demonstrates how important midfield depth is." },
+        { "name": "Arda Güler",       "status": "Development Priority",    "note": "Needs consistent minutes, particularly when Olise requires rest." },
+        { "name": "Endrick",          "status": "Development Priority",    "note": "Should receive controlled minutes rather than being restricted to late-game appearances." },
+        { "name": "Huijsen",          "status": "High-Potential Rotation", "note": "Strong option for rotation at centre-back and should continue receiving meaningful minutes." }
+      ]
+    },
+    {
+      "icon": "🔄",
+      "title": "Rotation Recommendation",
+      "type": "lineup",
+      "first_xi": ["Courtois", "Trent · Militão · Bastoni · Cucurella", "Rodri · Valverde", "Olise · Bellingham · Vinícius", "Mbappé"],
+      "rotation": ["Costa", "Dumfries", "Huijsen", "Schlotterbeck", "Camavinga", "Tchouaméni", "Güler", "Endrick", "Diomande"],
+      "note": "The depth is good enough that Mourinho can rotate 3–5 players in domestic fixtures without completely sacrificing quality."
+    },
+    {
+      "icon": "📋",
+      "title": "Transfer Recommendation",
+      "type": "transfer",
+      "priority": "LOW",
+      "points": [
+        "Monitor RW development.",
+        "Monitor LB depth.",
+        "Continue developing Güler and Endrick.",
+        "Maintain centre-back rotation.",
+        "Reassess after the first Champions League group-stage run."
+      ],
+      "note": "If a major opportunity appears for an elite young player, the club can consider it, but the squad does not currently have an obvious hole that needs filling."
+    },
+    {
+      "icon": "🧠",
+      "title": "Tactical Scout Verdict",
+      "type": "tactical",
+      "content": "The squad is best suited to Mourinho's approach when the midfield controls the game and the attack exploits space quickly. The Marseille (2–2) and Betis (1–4) matches are particularly useful warning signs. The Betis defeat is more concerning — Madrid had only 38% possession and conceded four goals despite matching them 9–9 on shots. That suggests the problem wasn't simply chance creation — it was control and defensive management. The squad has enough quality to correct this without requiring transfers."
+    },
+    {
+      "icon": "🏁",
+      "title": "Final Verdict",
+      "type": "final",
+      "scores": [
+        { "label": "Squad Quality",    "score": "9/10" },
+        { "label": "Depth",           "score": "8.5/10" },
+        { "label": "Midfield",        "score": "9.5/10" },
+        { "label": "Defence",         "score": "9/10" },
+        { "label": "Attack",          "score": "9.5/10" },
+        { "label": "Youth Potential", "score": "9/10" },
+        { "label": "Transfer Urgency","score": "3/10" }
+      ],
+      "summary": "Stay patient in the transfer market. The squad is already capable of competing for all three objectives. The biggest opportunity is not adding players — it is getting the existing squad's rotation, development and tactical balance right."
+    }
+  ],
+  "scouting_arena": {
+    "shortlist": [
+      {
+        "name": "Lamine Yamal", "position": "RW", "club": "FC Barcelona",
+        "ovr": 89, "pot": 95, "value": "€147M",
+        "fit_stars": 5, "fit_label": "Exceptional",
+        "feasibility_dot": "red", "feasibility_label": "Extremely Low",
+        "barrier": "Barcelona → Real Madrid. A direct transfer between the two clubs would be highly unlikely due to the rivalry. Treat as a dream target rather than an actionable signing.",
+        "description": "Generational attacking talent and arguably the best long-term RW option available. His technical profile would fit perfectly with Madrid's attack.",
+        "verdict": null
+      },
+      {
+        "name": "Florian Wirtz", "position": "CAM", "club": "Liverpool",
+        "ovr": 89, "pot": 93, "value": "€151M",
+        "fit_stars": 5, "fit_label": "Excellent",
+        "feasibility_dot": "orange", "feasibility_label": "Difficult",
+        "barrier": null,
+        "description": "Elite creative midfielder capable of playing between the lines and creating chances consistently. Would provide another world-class attacking option but is not an immediate squad requirement.",
+        "verdict": "Monitor closely."
+      },
+      {
+        "name": "Jamal Musiala", "position": "CAM", "club": "Bayern Munich",
+        "ovr": 88, "pot": 92, "value": "€134M",
+        "fit_stars": 5, "fit_label": "Excellent",
+        "feasibility_dot": "orange", "feasibility_label": "Difficult",
+        "barrier": "Bayern consider him untouchable. Would likely require a world-record offer.",
+        "description": "Elite dribbler and creative attacker who can operate centrally or from the left. His versatility makes him particularly attractive for a long-term squad build.",
+        "verdict": "Shortlist if attacking midfield becomes a priority."
+      },
+      {
+        "name": "William Saliba", "position": "CB", "club": "Arsenal",
+        "ovr": 87, "pot": 89, "value": "€92M",
+        "fit_stars": 4, "fit_label": "Excellent",
+        "feasibility_dot": "orange", "feasibility_label": "Difficult",
+        "barrier": null,
+        "description": "Physically dominant, fast and already at an elite level. Would be a genuine upgrade option rather than simply adding depth.",
+        "verdict": "Only pursue if a major CB change becomes necessary."
+      },
+      {
+        "name": "Willian Pacho", "position": "CB", "club": "PSG",
+        "ovr": 86, "pot": 89, "value": "€83M",
+        "fit_stars": 4, "fit_label": "Very Good",
+        "feasibility_dot": "yellow", "feasibility_label": "Moderate",
+        "barrier": null,
+        "description": "Left-footed centre-back with excellent physical and defensive attributes. Interesting long-term option for maintaining balance in the defensive line.",
+        "verdict": "Keep on shortlist."
+      }
+    ],
+    "watchlist": [
+      {
+        "name": "Désiré Doué", "position": "RW", "club": "PSG",
+        "ovr": 85, "pot": 91, "value": "€84M",
+        "why": "Could become a genuine elite RW option.",
+        "note": "High-upside attacking player with elite dribbling and the ability to operate across multiple attacking positions."
+      },
+      {
+        "name": "Estêvão", "position": "RM", "club": "Chelsea",
+        "ovr": 78, "pot": 89, "value": "€30M",
+        "why": "Development trajectory could make him significantly more valuable in 2–3 seasons.",
+        "note": "Explosive young wide player with exceptional pace and promising technical ability."
+      },
+      {
+        "name": "Rodrigo Mora", "position": "CAM", "club": "FC Porto",
+        "ovr": 76, "pot": 89, "value": "€18M",
+        "why": "Excellent value proposition if his development accelerates.",
+        "note": "High-potential creative midfielder with a relatively low current valuation."
+      },
+      {
+        "name": "João Neves", "position": "CM", "club": "PSG",
+        "ovr": 85, "pot": 90, "value": "€80M",
+        "why": "Could become a long-term midfield option if the squad changes.",
+        "note": "Excellent defensive midfielder/central midfielder with strong passing, dribbling and defensive attributes."
+      }
+    ],
+    "wonderkids": [
+      {
+        "name": "Estêvão", "position": "RW / RM", "club": "Chelsea",
+        "ovr": 78, "pot": 89, "value": "€30M",
+        "pot_stars": 5, "risk": "Medium",
+        "note": "One of the most interesting young wide players in the database. His pace gives him an immediate physical advantage while his potential makes him worth monitoring."
+      },
+      {
+        "name": "Désiré Doué", "position": "RW", "club": "PSG",
+        "ovr": 85, "pot": 91, "value": "€84M",
+        "pot_stars": 5, "risk": "Low",
+        "note": "Already close to elite level while retaining significant development potential."
+      },
+      {
+        "name": "Rodrigo Mora", "position": "CAM", "club": "FC Porto",
+        "ovr": 76, "pot": 89, "value": "€18M",
+        "pot_stars": 4, "risk": "Medium",
+        "note": "High-upside prospect at a relatively affordable valuation. More of a development investment than an immediate first-team solution."
+      }
+    ],
+    "elite_talent": [
+      { "name": "Lamine Yamal", "position": "RW",  "ovr": 89, "pot": 95 },
+      { "name": "Florian Wirtz", "position": "CAM", "ovr": 89, "pot": 93 },
+      { "name": "Jamal Musiala", "position": "CAM", "ovr": 88, "pot": 92 },
+      { "name": "William Saliba","position": "CB",  "ovr": 87, "pot": 89 },
+      { "name": "João Neves",    "position": "CM",  "ovr": 85, "pot": 90 }
+    ],
+    "market_opportunities": [
+      {
+        "name": "Memphis Depay", "position": "ST", "ovr": 81, "club": "Free Agent",
+        "opportunity": "High", "value": "€0",
+        "squad_fit": "Medium",
+        "note": "Experienced attacker available without a transfer fee. Could provide short-term depth, although his arrival would require careful consideration given the existing attacking options.",
+        "verdict": "Only consider if attacking depth changes."
+      },
+      {
+        "name": "Romain Saïss", "position": "CB", "ovr": 79, "club": "Free Agent",
+        "opportunity": "High", "value": "€0",
+        "squad_fit": "Low",
+        "note": "Experienced defensive option available without a transfer fee. Could provide short-term squad depth but doesn't represent a long-term solution.",
+        "verdict": "Emergency / short-term option only."
+      }
+    ],
+    "specialist": [
+      {
+        "category": "⚡ Speed Threats",
+        "players": [
+          { "name": "Loïs Openda",    "club": "RB Leipzig",    "attr": "PAC", "val": 95, "note": "Potential alternative striker profile if Madrid ever require more pace behind the line." },
+          { "name": "Karim Adeyemi",  "club": "Dortmund",      "attr": "PAC", "val": 96, "note": "Interesting wide/forward option because of his elite acceleration." },
+          { "name": "Nuno Mendes",    "club": "PSG",            "attr": "PAC", "val": 95, "note": "Elite athletic LB profile, but current LB depth means no immediate need." },
+          { "name": "Achraf Hakimi",  "club": "PSG",            "attr": "PAC", "val": 92, "note": "Elite attacking RB, but Madrid already have Trent and Dumfries — low priority position." }
+        ]
+      }
+    ],
+    "avoid": [
+      {
+        "name": "Lamine Yamal", "position": "RW", "club": "FC Barcelona",
+        "status": "Highly Unlikely",
+        "reason": "Barcelona → Real Madrid. Exceptional footballing fit, but direct movement between the two rivals makes this an unrealistic target."
+      },
+      {
+        "name": "Pedri", "position": "CM", "club": "FC Barcelona",
+        "status": "Highly Unlikely",
+        "reason": "Barcelona → Real Madrid. Elite midfielder, but the Barcelona connection makes this an extremely difficult transfer."
+      },
+      {
+        "name": "Jules Koundé", "position": "RB / CB", "club": "FC Barcelona",
+        "status": "Highly Unlikely",
+        "reason": "Barcelona → Real Madrid. Excellent player, but direct rival transfer makes the move highly unrealistic."
+      },
+      {
+        "name": "Fermín López", "position": "CM", "club": "FC Barcelona",
+        "status": "Do Not Pursue",
+        "reason": "Has publicly stated he would never play for Real Madrid. Exclude entirely — not just Barcelona rivalry, but direct player refusal."
+      }
+    ]
+  }
+}

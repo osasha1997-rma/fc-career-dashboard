@@ -173,7 +173,14 @@ function renderSeasonInfo(season, s, findPlayer) {
 
 export function renderDashboard(season, stats, matches = [], players = []) {
     const s = stats;
-    const findPlayer = name => players.find(p => p.name === name);
+    const findPlayer = name => {
+        // Prefer numeric ID lookup via season captainId/viceCaptainId
+        if (name === season.captain && season.captainId)
+            return players.find(p => p.id === season.captainId);
+        if (name === season.viceCaptain && season.viceCaptainId)
+            return players.find(p => p.id === season.viceCaptainId);
+        return players.find(p => p.name === name);
+    };
     return `
     <div class="hero-card">
         <div class="hero-overlay"></div>

@@ -86,6 +86,6 @@ export function initializeCalendar(onMatchClick) {
     document.querySelector(".cal-body")?.addEventListener("click", e => {
         const row = e.target.closest(".cal-row");
         if (!row) return;
-        onMatchClick?.();
+        onMatchClick?.(Number(row.dataset.id));
     });
 }

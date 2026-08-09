@@ -21,12 +21,16 @@ import {
     initializeSquad
 } from "./squad.js";
 import { renderAnalytics, initializeAnalytics } from "./analytics.js";
+import { renderTransfers, initializeTransfers } from "./transfers.js";
 import { createCompetitions, initializeCompetitions } from "./competitions.js";
 import { renderDevelopment } from "./development.js";
 import { createCalendar, initializeCalendar } from "./calendar.js";
 import { createPlayerProfile } from "./components/PlayerProfile.js";
+import { renderSquadReport } from "./squadReport.js";
+import { renderAIAssistant, initializeAIAssistant } from "./aiAssistant.js";
 import { createMatchCentre,
-    initializeMatchCentre
+    initializeMatchCentre,
+    setSelectedMatch
  } from "./match-center.js";
 import { deriveSeasonStats } from "./utils/stats.js";
 import { initPlayers } from "./utils/players.js";
@@ -136,7 +140,7 @@ registerRoute("calendar", () => {
     setHeader("Season Calendar", "2027/28");
     return {
         html: createCalendar(state.matches),
-        init: () => initializeCalendar(() => showScreen("matches"))
+        init: () => initializeCalendar(id => { setSelectedMatch(id); showScreen("matches"); })
     };
 });
 
@@ -148,12 +152,32 @@ registerRoute("analytics", () => {
     };
 });
 
+registerRoute("transfers", () => {
+    setHeader("Transfer Hub", "FC 26 Database");
+    return {
+        html: renderTransfers(state.players, state.matches, state.season),
+        init: initializeTransfers
+    };
+});
+
+registerRoute("ai-assistant", async () => {
+    setHeader("AI Assistant", "2027/28");
+    const html = await renderAIAssistant(state.players, state.matches);
+    return { html, init: () => initializeAIAssistant(state.players, state.matches) };
+});
+
+registerRoute("squad-report", async () => {
+    setHeader("Squad Report", "2027/28");
+    const html = await renderSquadReport();
+    return html;
+});
+
 registerRoute("development", () => {
     setHeader("Development");
     return renderDevelopment();
 });
 
-function showScreen(name) {
+async function showScreen(name) {
     const screen = getRoute(name);
 
     if (!screen) {
@@ -161,7 +185,7 @@ function showScreen(name) {
         return;
     }
 
-    const result = screen();
+    const result = await screen();
     const html = typeof result === "string" ? result : result.html;
     const init = typeof result === "object" ? result.init : null;
 

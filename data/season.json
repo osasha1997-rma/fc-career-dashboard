@@ -10,7 +10,9 @@
   "transferBudget": 3000000,
 
   "captain": "Federico Valverde",
+  "captainId": 12,
   "viceCaptain": "Jude Bellingham",
+  "viceCaptainId": 13,
 
   "difficulty": "Legendary",
 
