@@ -2,6 +2,8 @@
 // CareerOS — AI Assistant Screen
 // ==========================================
 
+import { deriveSeasonStats } from "./utils/stats.js";
+
 const TABS = [
     { k: "squad",    l: "Squad Advice" },
     { k: "match",    l: "Upcoming Match" },
@@ -12,6 +14,7 @@ const TABS = [
 ];
 
 let _activeTab = "squad";
+let _clubName  = "Real Madrid";
 
 function posGroup(pos) {
     if (pos === "GK") return "GK";
@@ -190,8 +193,11 @@ function buildMatchAdvice(players, matches) {
 
     const compLabel = { laliga: "La Liga", ucl: "Champions League", copa: "Copa del Rey", supercopa: "Supercopa" }[next.competition] || next.competition;
 
-    const topScorer = [...players].sort((a,b) => (b.goals||0)-(a.goals||0))[0];
-    const topRated  = [...players].filter(p=>!p.loan).sort((a,b)=>b.overall-a.overall).slice(0,3);
+    // Derive top scorer from actual match data (players.json has no goals field)
+    const seasonStats    = deriveSeasonStats(matches, players);
+    const topScorerStats = seasonStats.topScorer;
+    const topScorer      = topScorerStats ? players.find(p => p.id === topScorerStats.id) : null;
+    const topRated       = [...players].filter(p=>!p.loan).sort((a,b)=>b.overall-a.overall).slice(0,3);
 
     const advice = [];
     if (next.venue === "Away") advice.push({ type: "warn", text: "Away fixture — consider a more defensive setup. Prioritise not conceding early." });
@@ -205,7 +211,7 @@ function buildMatchAdvice(players, matches) {
         <div class="aia-match-banner">
             <div class="aia-match-comp">${compIcon} ${compLabel}</div>
             <div class="aia-match-fixture">
-                <span class="aia-match-team">Real Madrid</span>
+                <span class="aia-match-team">${_clubName}</span>
                 <span class="aia-match-vs">${next.venue === "Home" ? "vs" : "@"}</span>
                 <span class="aia-match-team">${next.opponent}</span>
             </div>
@@ -239,7 +245,7 @@ function buildMatchAdvice(players, matches) {
             <div class="aia-player-row">
                 <span class="aia-pos-badge">${topScorer.position}</span>
                 <span class="aia-player-name">${topScorer.name}</span>
-                <span class="aia-player-ovr" style="color:#D4AF37">${topScorer.goals ?? 0} goals</span>
+                <span class="aia-player-ovr" style="color:#D4AF37">${topScorerStats.goals} goals</span>
             </div>
         </div>` : ""}
     </div>`;
@@ -284,33 +290,89 @@ function buildTransferAdvice(scoutReport) {
 
 // ── Contract Advice ───────────────────────────────────────────
 
+// In-game current date: 2027-09-24 (next fixture vs Valencia CF)
+const CONTRACT_REF_YEAR = 2027, CONTRACT_REF_MONTH = 9;
+
+function monthsLeft(expiry) {
+    if (!expiry || expiry === "-") return null;
+    const [y, m] = expiry.split("-").map(Number);
+    return (y - CONTRACT_REF_YEAR) * 12 + (m - CONTRACT_REF_MONTH);
+}
+
+function expiryLabel(months) {
+    if (months === null) return "—";
+    if (months <= 0) return "Expired";
+    if (months <= 6)  return `${months}mo · Critical`;
+    if (months <= 12) return `${months}mo · Urgent`;
+    const yrs = Math.floor(months / 12);
+    const rem  = months % 12;
+    return rem ? `${yrs}y ${rem}mo` : `${yrs}y`;
+}
+
+function expiryColor(months) {
+    if (months === null) return "var(--text-secondary)";
+    if (months <= 6)  return "#ef4444";
+    if (months <= 12) return "#f59e0b";
+    if (months <= 24) return "#60a5fa";
+    return "var(--text-secondary)";
+}
+
 function buildContractAdvice(players) {
     const active = players.filter(p => !p.loan);
-    const crucial = active.filter(p => p.role === "Crucial").sort((a,b) => b.age - a.age);
-    const agingKey = active.filter(p => p.age >= 30 && (p.role === "Crucial" || p.role === "Important"));
+
+    const critical   = active.filter(p => { const m = monthsLeft(p.contractExpiry); return m !== null && m <= 6; })
+        .sort((a, b) => monthsLeft(a.contractExpiry) - monthsLeft(b.contractExpiry));
+    const urgent     = active.filter(p => { const m = monthsLeft(p.contractExpiry); return m !== null && m > 6 && m <= 12; })
+        .sort((a, b) => monthsLeft(a.contractExpiry) - monthsLeft(b.contractExpiry));
+    const monitor    = active.filter(p => {
+        const m = monthsLeft(p.contractExpiry);
+        return m !== null && m > 12 && m <= 24 && (p.role === "Crucial" || p.role === "Important");
+    }).sort((a, b) => monthsLeft(a.contractExpiry) - monthsLeft(b.contractExpiry));
     const youngToTie = active.filter(p => p.age <= 23 && p.potential >= 80 && p.role !== "Prospect");
-    const letGo = active.filter(p => p.age >= 33 && p.role === "Rotation");
+    const letGo      = active.filter(p => p.age >= 33 && p.role === "Rotation");
 
     const item = (text, type) => `<div class="aia-advice-item aia-advice-${type}">${text}</div>`;
 
+    const contractRow = p => {
+        const m = monthsLeft(p.contractExpiry);
+        return `<div class="aia-player-row">
+            <span class="aia-pos-badge">${p.position}</span>
+            <span class="aia-player-name">${p.name}</span>
+            <span class="aia-player-meta">Age ${p.age} · ${p.role}</span>
+            <span class="aia-player-meta" style="color:${expiryColor(m)}">${expiryLabel(m)}</span>
+        </div>`;
+    };
+
     return `<div class="aia-content">
-        ${agingKey.length ? `<div class="aia-block">
-            <div class="aia-block-title">⚠️ Ageing Key Players — Prioritise Renewal</div>
-            ${agingKey.map(p => `<div class="aia-player-row">
-                <span class="aia-pos-badge">${p.position}</span>
-                <span class="aia-player-name">${p.name}</span>
-                <span class="aia-player-meta">Age ${p.age} · ${p.role}</span>
-            </div>`).join("")}
-            ${item("Renew contracts before they enter their final year — leverage is lost once they can negotiate freely.", "warn")}
+        ${critical.length ? `<div class="aia-block">
+            <div class="aia-block-title">🚨 Expiring Now — Act Immediately</div>
+            ${critical.map(contractRow).join("")}
+            ${item("Under 6 months remaining. These players can negotiate with other clubs now. Open talks immediately.", "warn")}
+        </div>` : ""}
+
+        ${urgent.length ? `<div class="aia-block">
+            <div class="aia-block-title">⚠️ Expiring This Season — Prioritise</div>
+            ${urgent.map(contractRow).join("")}
+            ${item("Under 12 months remaining — leverage drops fast. Open talks before the January window.", "warn")}
+        </div>` : ""}
+
+        ${monitor.length ? `<div class="aia-block">
+            <div class="aia-block-title">📋 Key Players Entering Final 2 Years</div>
+            ${monitor.map(contractRow).join("")}
+            ${item("Crucial and Important players with under 2 years left. Schedule renewals in the next window.", "ok")}
         </div>` : ""}
 
         ${youngToTie.length ? `<div class="aia-block">
             <div class="aia-block-title">🌟 Tie Down Young Talent</div>
-            ${youngToTie.map(p => `<div class="aia-player-row">
-                <span class="aia-pos-badge">${p.position}</span>
-                <span class="aia-player-name">${p.name}</span>
-                <span class="aia-player-meta">Age ${p.age} · POT ${p.potential}</span>
-            </div>`).join("")}
+            ${youngToTie.map(p => {
+                const m = monthsLeft(p.contractExpiry);
+                return `<div class="aia-player-row">
+                    <span class="aia-pos-badge">${p.position}</span>
+                    <span class="aia-player-name">${p.name}</span>
+                    <span class="aia-player-meta">Age ${p.age} · POT ${p.potential}</span>
+                    <span class="aia-player-meta" style="color:${expiryColor(m)}">${expiryLabel(m)}</span>
+                </div>`;
+            }).join("")}
             ${item("Long-term contracts protect resale value and deter rival clubs from approaching.", "ok")}
         </div>` : ""}
 
@@ -324,7 +386,7 @@ function buildContractAdvice(players) {
             ${item("Rotation players aged 33+ will cost wages without meaningful contribution. Free the wage budget.", "warn")}
         </div>` : ""}
 
-        ${!agingKey.length && !youngToTie.length && !letGo.length
+        ${!critical.length && !urgent.length && !monitor.length && !youngToTie.length && !letGo.length
             ? `<div class="aia-block">${item("✓ Squad contract situation looks stable. No immediate action required.", "ok")}</div>`
             : ""}
     </div>`;
@@ -436,23 +498,21 @@ function buildTab(tab, players, matches, scoutReport) {
 
 // ── Public ────────────────────────────────────────────────────
 
-export async function renderAIAssistant(players, matches) {
-    const scoutReport = await fetch(`data/scout-report.json?v=${Date.now()}`).then(r => r.json()).catch(() => null);
-
+export function renderAIAssistant(players, matches, scoutReport, season) {
+    _clubName = season?.club ?? "Real Madrid";
     return `<section class="aia-wrap">
         ${tabBar()}
         <div id="aia-body">${buildTab(_activeTab, players, matches, scoutReport)}</div>
     </section>`;
 }
 
-export function initializeAIAssistant(players, matches) {
-    fetch(`data/scout-report.json?v=${Date.now()}`).then(r => r.json()).catch(() => null).then(scoutReport => {
-        document.getElementById("aia-tabs")?.addEventListener("click", e => {
-            const btn = e.target.closest(".aia-tab");
-            if (!btn) return;
-            _activeTab = btn.dataset.tab;
-            document.querySelectorAll(".aia-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === _activeTab));
-            document.getElementById("aia-body").innerHTML = buildTab(_activeTab, players, matches, scoutReport);
-        });
+export function initializeAIAssistant(players, matches, scoutReport, season) {
+    _clubName = season?.club ?? "Real Madrid";
+    document.getElementById("aia-tabs")?.addEventListener("click", e => {
+        const btn = e.target.closest(".aia-tab");
+        if (!btn) return;
+        _activeTab = btn.dataset.tab;
+        document.querySelectorAll(".aia-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === _activeTab));
+        document.getElementById("aia-body").innerHTML = buildTab(_activeTab, players, matches, scoutReport);
     });
 }

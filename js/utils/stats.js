@@ -1,5 +1,5 @@
 // ==========================================
-// CareerOS — Derived Season Stats
+// CareerOS — Derived Stats
 // All values computed from matches.json.
 // No calculated values are ever stored.
 // ==========================================
@@ -80,5 +80,108 @@ export function deriveSeasonStats(matches, players = []) {
         topAssists:   tAssistEntry ? { id: Number(tAssistEntry[0]), name: resolveName(tAssistEntry[0]), assists: tAssistEntry[1] } : null,
         topRated:     tRatedEntry  ? { id: Number(tRatedEntry[0]),  name: resolveName(tRatedEntry[0]),  rating:  avgRatingMap[tRatedEntry[0]].toFixed(2) } : null,
         avgTeamRating
+    };
+}
+
+// ── Per-player stats (derived from match data) ──────────────────
+// Returns all match-level statistics for a single player.
+// Used by PlayerProfile, AI Assistant, and Analytics.
+
+export function derivePlayerStats(player, matches) {
+    const id     = player.id;
+    const played = matches.filter(m => m.result);
+    const byComp = {};
+    const appearanceList = [];
+    let totalMinutes = 0;
+    let totalYellow  = 0;
+    let totalRed     = 0;
+    const injuries   = [];
+
+    for (const match of played) {
+        const inXI   = match.startingXI?.includes(id);
+        const subOn  = match.substitutions?.find(s => s.playerOn  === id);
+        const subOff = match.substitutions?.find(s => s.playerOff === id);
+        const perf   = match.performances?.find(p => p.player     === id);
+
+        const isStart = !!inXI;
+        const isSub   = !inXI && !!subOn;
+        if (!isStart && !isSub) continue;
+
+        const minsOn  = isStart ? (subOff ? subOff.minute : 90) : (90 - subOn.minute);
+        totalMinutes += minsOn;
+
+        const goals   = (match.goals      ?? []).filter(g => g.player === id).length;
+        const assists = (match.assists     ?? []).filter(a => a.player === id).reduce((s, a) => s + (a.count ?? 1), 0);
+        const yellow  = (match.yellowCards ?? []).filter(c => c.player === id).length;
+        const red     = (match.redCards    ?? []).filter(c => c.player === id).length;
+        totalYellow  += yellow;
+        totalRed     += red;
+
+        for (const inj of (match.injuries ?? [])) {
+            if (inj.player === id) injuries.push({ match, ...inj });
+        }
+
+        if (!byComp[match.competition]) {
+            byComp[match.competition] = { apps: 0, starts: 0, goals: 0, assists: 0, minutes: 0, ratings: [] };
+        }
+        const c = byComp[match.competition];
+        c.apps++;
+        if (isStart) c.starts++;
+        c.goals   += goals;
+        c.assists += assists;
+        c.minutes += minsOn;
+        if (perf) c.ratings.push(perf.rating);
+
+        appearanceList.push({
+            matchId:     match.id,
+            opponent:    match.opponent,
+            competition: match.competition,
+            result:      match.result,
+            date:        match.date,
+            isStart,
+            minutes:     minsOn,
+            goals,
+            assists,
+            yellow,
+            red,
+            rating:      perf?.rating ?? null
+        });
+    }
+
+    Object.values(byComp).forEach(c => {
+        c.avgRating = c.ratings.length
+            ? (c.ratings.reduce((s, r) => s + r, 0) / c.ratings.length).toFixed(1)
+            : null;
+    });
+
+    const totals = Object.values(byComp).reduce(
+        (acc, c) => ({ apps: acc.apps + c.apps, starts: acc.starts + c.starts,
+                       goals: acc.goals + c.goals, assists: acc.assists + c.assists }),
+        { apps: 0, starts: 0, goals: 0, assists: 0 }
+    );
+
+    const allRatings = appearanceList.filter(a => a.rating).map(a => a.rating);
+    const avgRating  = allRatings.length
+        ? (allRatings.reduce((s, r) => s + r, 0) / allRatings.length).toFixed(1)
+        : null;
+
+    return {
+        // Canonical shape (as per spec)
+        goals:                 totals.goals,
+        assists:               totals.assists,
+        appearances:           totals.apps,
+        starts:                totals.starts,
+        substituteAppearances: totals.apps - totals.starts,
+        minutes:               totalMinutes,
+        averageRating:         avgRating,
+        // Aliases used by PlayerProfile UI
+        apps:     totals.apps,
+        subApps:  totals.apps - totals.starts,
+        avgRating,
+        yellowCards:    totalYellow,
+        redCards:       totalRed,
+        byComp,
+        appearanceList,
+        injuries
     };
 }

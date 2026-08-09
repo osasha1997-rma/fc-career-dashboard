@@ -1076,9 +1076,49 @@
   {
     "id": 7, "season": "2027/28", "competition": "laliga", "stage": "League",
     "matchday": 6, "date": "2027-09-24", "venue": "Home", "opponent": "Valencia CF",
-    "result": null, "scoreFor": null, "scoreAgainst": null,
-    "startingXI": [], "bench": [], "goals": [], "goalsConceded": [], "assists": [],
-    "substitutions": [], "performances": [], "yellowCards": [], "redCards": [], "injuries": []
+    "result": "W", "scoreFor": 5, "scoreAgainst": 0,
+    "startingXI": [1, 10, 7, 6, 4, 11, 12, 23, 13, 14, 15],
+    "bench": [2, 44, 8, 9, 39, 38, 22, 27, 45],
+    "goals": [
+      { "minute": 22, "player": 15 },
+      { "minute": 30, "player": 13 },
+      { "minute": 35, "player": 13 },
+      { "minute": 48, "player": 13 },
+      { "minute": 92, "player": 27 }
+    ],
+    "goalsConceded": [],
+    "assists": [
+      { "player": 14, "count": 1 },
+      { "player": 12, "count": 1 },
+      { "player": 4,  "count": 1 },
+      { "player": 22, "count": 1 }
+    ],
+    "substitutions": [
+      { "minute": 68, "playerOn": 22, "playerOff": 13 },
+      { "minute": 68, "playerOn": 27, "playerOff": 23 },
+      { "minute": 84, "playerOn": 38, "playerOff": 11 },
+      { "minute": 88, "playerOn": 45, "playerOff": 15 },
+      { "minute": 88, "playerOn": 44, "playerOff": 10 }
+    ],
+    "performances": [
+      { "player": 1,  "rating": 8.6 },
+      { "player": 13, "rating": 8.1 },
+      { "player": 6,  "rating": 8.1 },
+      { "player": 4,  "rating": 7.6 },
+      { "player": 12, "rating": 7.5 },
+      { "player": 14, "rating": 7.3 },
+      { "player": 22, "rating": 7.1 },
+      { "player": 27, "rating": 7.0 },
+      { "player": 7,  "rating": 7.0 },
+      { "player": 11, "rating": 7.0 },
+      { "player": 15, "rating": 6.8 },
+      { "player": 23, "rating": 6.8 },
+      { "player": 38, "rating": 6.2 },
+      { "player": 44, "rating": 6.2 },
+      { "player": 10, "rating": 6.2 },
+      { "player": 45, "rating": 6.0 }
+    ],
+    "yellowCards": [], "redCards": [], "injuries": []
   },
   {
     "id": 8, "season": "2027/28", "competition": "ucl", "stage": "League Phase",

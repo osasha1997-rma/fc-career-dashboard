@@ -115,8 +115,7 @@ function renderSection(s) {
     </div>`;
 }
 
-export async function renderSquadReport() {
-    const data = await fetch(`data/scout-report.json?v=${Date.now()}`).then(r => r.json()).catch(() => null);
+export function renderSquadReport(data) {
     if (!data) return `<section class="sqr-wrap"><p style="color:var(--text-secondary);padding:20px">Failed to load report.</p></section>`;
 
     const meta = `<div class="sqr-meta">Generated ${data.generated} · Source: ${data.source}</div>`;

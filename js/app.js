@@ -1,7 +1,7 @@
 // ==========================================
 // Career Hub
 // Main Application
-// Version 0.1.0 Alpha
+// Version 0.2.0 Beta
 // ==========================================
 
 import { loadAll } from "./api.js";
@@ -41,6 +41,8 @@ const state = {
     matches: [],
     standings: {},
     leagueStats: {},
+    scoutReport: null,
+    academy: [],
     selectedPlayer: null
 };
 
@@ -131,7 +133,7 @@ registerRoute("matches", () => {
 registerRoute("competitions", () => {
     setHeader("Competitions", "2027/28");
     return {
-        html: createCompetitions(state.matches, state.standings, state.leagueStats),
+        html: createCompetitions(state.matches, state.standings, state.leagueStats, state.season.club),
         init: initializeCompetitions
     };
 });
@@ -156,25 +158,24 @@ registerRoute("transfers", () => {
     setHeader("Transfer Hub", "FC 26 Database");
     return {
         html: renderTransfers(state.players, state.matches, state.season),
-        init: initializeTransfers
+        init: () => initializeTransfers(state.scoutReport)
     };
 });
 
-registerRoute("ai-assistant", async () => {
+registerRoute("ai-assistant", () => {
     setHeader("AI Assistant", "2027/28");
-    const html = await renderAIAssistant(state.players, state.matches);
-    return { html, init: () => initializeAIAssistant(state.players, state.matches) };
+    const html = renderAIAssistant(state.players, state.matches, state.scoutReport, state.season);
+    return { html, init: () => initializeAIAssistant(state.players, state.matches, state.scoutReport, state.season) };
 });
 
-registerRoute("squad-report", async () => {
+registerRoute("squad-report", () => {
     setHeader("Squad Report", "2027/28");
-    const html = await renderSquadReport();
-    return html;
+    return { html: renderSquadReport(state.scoutReport) };
 });
 
 registerRoute("development", () => {
-    setHeader("Development");
-    return renderDevelopment();
+    setHeader("Development", "2027/28");
+    return { html: renderDevelopment(state.players, state.academy) };
 });
 
 async function showScreen(name) {
@@ -214,11 +215,13 @@ async function loadApplicationData() {
     if (!data.season || !data.players || !data.matches) {
         throw new Error("Failed to load required data");
     }
-    state.season    = data.season;
-    state.players   = data.players;
-    state.matches   = data.matches;
+    state.season      = data.season;
+    state.players     = data.players;
+    state.matches     = data.matches;
     state.standings   = data.standings   ?? {};
     state.leagueStats = data.leagueStats ?? {};
+    state.scoutReport = data.scoutReport ?? null;
+    state.academy     = data.academy     ?? [];
     initPlayers(data.players);
 }
 

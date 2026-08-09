@@ -11,14 +11,16 @@ const COMP_ORDER = ["laliga", "ucl", "copadelrey", "clubworldcup", "supercopa"];
 let _matches     = [];
 let _standings   = {};
 let _leagueStats = {};
+let _clubName    = "Real Madrid";
 let _activeComp  = "laliga";
 let _activeTab   = "table";
 let _activeStat  = "scorers";
 
-export function createCompetitions(matches = [], standings = {}, leagueStats = {}) {
+export function createCompetitions(matches = [], standings = {}, leagueStats = {}, clubName = "Real Madrid") {
     _matches     = matches;
     _standings   = standings;
     _leagueStats = leagueStats;
+    _clubName    = clubName;
 
     const available = COMP_ORDER.filter(c =>
         matches.some(m => m.competition === c) || (standings[c]?.length > 0)
@@ -100,7 +102,7 @@ function renderTable(table, comp) {
             </thead>
             <tbody>
                 ${table.map(row => {
-                    const isUs = row.team === "Real Madrid";
+                    const isUs = row.team === _clubName;
                     const gd   = (row.gf ?? 0) - (row.ga ?? 0);
                     const logo = getClubLogo(row.team);
                     const crest = logo
