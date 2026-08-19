@@ -403,7 +403,7 @@
 
 .md-tab-body { padding: 16px 18px; }
 
-.md-ratings-block { margin-top: 20px; }
+.md-ratings-block { margin-top: 20px; padding: 20px; }
 
 .md-potm {
     display: flex;

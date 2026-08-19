@@ -103,7 +103,7 @@ function collectEvents(match) {
         events.push({ minute: g.minute ?? null, type: "goal", player: g.player, side: "home" }));
 
     match.goalsConceded?.forEach(g =>
-        events.push({ minute: g.minute ?? null, type: "conceded", player: g.player, side: "away" }));
+        events.push({ minute: g.minute ?? null, type: "conceded", player: g.scorer ?? g.player ?? "Unknown", side: "away" }));
 
     match.yellowCards?.forEach(c =>
         events.push({ minute: c.minute ?? null, type: "yellow", player: c.player, side: "home" }));

@@ -61,7 +61,7 @@ function renderScoreHeader(match, name, awayColor) {
         `<div class="md-scorer" style="color:${HOME_COLOR}">${name(g.player)} ${g.minute}'</div>`
     ).join("");
     const theirScorers = (match.goalsConceded ?? []).map(g =>
-        `<div class="md-scorer" style="color:${awayColor}">${g.player}${g.minute != null ? ` ${g.minute}'` : ""}</div>`
+        `<div class="md-scorer" style="color:${awayColor}">${g.scorer ?? g.player ?? "Unknown"}${g.minute != null ? ` ${g.minute}'` : ""}</div>`
     ).join("");
 
     const cc = getCompetitionColor(match.competition);
@@ -287,7 +287,7 @@ function renderAnalysis(match, players, name, awayColor) {
     const keyMomentsSection = () => {
         const events = [];
         (match.goals ?? []).forEach(g => events.push({ min: g.minute, type: "goal",    label: `⚽ ${name(g.player)} scores`, team: "home" }));
-        (match.goalsConceded ?? []).forEach(g => { if (g.minute) events.push({ min: g.minute, type: "conceded", label: `⚽ ${g.player} scores for ${match.opponent}`, team: "away" }); });
+        (match.goalsConceded ?? []).forEach(g => { if (g.minute) events.push({ min: g.minute, type: "conceded", label: `⚽ ${g.scorer ?? g.player ?? "Unknown"} scores for ${match.opponent}`, team: "away" }); });
         (match.yellowCards ?? []).forEach(c => { if (c.minute) events.push({ min: c.minute, type: "yellow", label: `🟨 ${name(c.player)} booked`, team: "home" }); });
         (match.redCards ?? []).forEach(c => { if (c.minute) events.push({ min: c.minute, type: "red", label: `🟥 ${name(c.player)} sent off`, team: "home" }); });
         (match.injuries ?? []).forEach(i => { if (i.minute) events.push({ min: i.minute, type: "injury", label: `🚑 ${name(i.player)} injured (${i.daysOut} days)`, team: "home" }); });

@@ -154,7 +154,7 @@ function renderLoanWatch(loaned) {
         </div>
         <div class="dev-loan-list">
             ${loaned.map(p => {
-                const ml = monthsLeft(p.contractExpiry);
+                const ml = monthsLeft(p.contractExpiry, p);
                 const contractCol = ml !== null && ml <= 12 ? "#f59e0b" : "var(--text-secondary)";
                 return `<div class="dev-loan-row">
                     <div class="dev-loan-left">

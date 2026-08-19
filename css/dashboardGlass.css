@@ -1,0 +1,846 @@
+/* ==========================================
+   CareerOS — Glass Dashboard Layout
+   ========================================== */
+
+.gdb-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 16px 20px 24px;
+    min-height: 100%;
+}
+
+/* ── Mid grid: Next Match (tall) + 2×2 stat cards ── */
+
+.gdb-mid-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 14px;
+}
+
+.gdb-next-match {
+    grid-column: 1 / 3;
+    grid-row: 1 / 4;
+}
+
+.gdb-season-info {
+    grid-column: 3 / 5;
+    grid-row: 3;
+}
+
+/* ── Hero card ── */
+
+.gdb-hero {
+    background: rgba(255,255,255,.10);
+    backdrop-filter: blur(48px) saturate(180%);
+    -webkit-backdrop-filter: blur(48px) saturate(180%);
+    border: 1px solid rgba(255,255,255,.22);
+    box-shadow: 0 8px 40px rgba(0,0,0,.40), inset 0 1px 0 rgba(255,255,255,.30);
+    border-radius: 24px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Subtle gradient tint across hero */
+.gdb-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(59,175,255,.12) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.gdb-hero-main {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 24px 28px 20px;
+    flex: 1;
+    position: relative;
+}
+
+/* Large faded logo as decorative bg element */
+.gdb-hero-bg-logo {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    opacity: 0.07;
+    pointer-events: none;
+}
+
+.gdb-hero-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 20px rgba(0,0,0,.50));
+    flex-shrink: 0;
+}
+
+.gdb-hero-text { display: flex; flex-direction: column; gap: 6px; }
+
+.gdb-hero-greeting {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,.50);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.gdb-hero-club {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    text-shadow: 0 2px 20px rgba(59,175,255,.30);
+}
+
+.gdb-hero-meta {
+    font-size: 0.80rem;
+    color: rgba(255,255,255,.42);
+    font-weight: 500;
+}
+
+/* Hero bottom strip — record */
+.gdb-hero-strip {
+    display: flex;
+    gap: 0;
+    border-top: 1px solid rgba(255,255,255,.10);
+    padding: 12px 28px;
+    position: relative;
+}
+
+.gdb-hero-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    padding-right: 16px;
+    border-right: 1px solid rgba(255,255,255,.08);
+}
+.gdb-hero-stat:first-child { padding-left: 0; }
+.gdb-hero-stat:last-child  { border-right: none; }
+
+.gdb-hero-stat-val {
+    font-size: 1.3rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.gdb-hero-stat-lbl {
+    font-size: 0.70rem;
+    color: rgba(255,255,255,.45);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+}
+
+/* ── Next Match card ── */
+
+.gdb-next-match {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+.gdb-nm-comp {
+    font-size: 0.80rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    margin-bottom: 4px;
+}
+
+.gdb-nm-teams {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+}
+
+.gdb-nm-team {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.gdb-nm-crest {
+    width: 200px;
+    height: 200px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,.40));
+}
+
+.gdb-nm-crest--initial {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.12);
+    border: 1px solid rgba(255,255,255,.20);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.2rem;
+    color: #fff;
+}
+
+.gdb-nm-name {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: rgba(255,255,255,.90);
+    text-align: center;
+    line-height: 1.2;
+}
+
+.gdb-nm-vs {
+    font-size: 2rem;
+    font-weight: 900;
+    color: rgba(255,255,255,.35);
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: 12px;
+    padding: 8px 18px;
+}
+
+.gdb-nm-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255,255,255,.10);
+    padding-top: 12px;
+    gap: 8px;
+}
+
+.gdb-nm-date {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: -0.01em;
+}
+
+.gdb-nm-venue {
+    font-size: 0.90rem;
+    color: rgba(255,255,255,.50);
+    font-weight: 600;
+    text-align: right;
+}
+
+/* ── Shared glass card ── */
+
+.gdb-card {
+    background: rgba(255,255,255,.09) !important;
+    backdrop-filter: blur(40px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(40px) saturate(160%) !important;
+    border: 1px solid rgba(255,255,255,.16) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.20) !important;
+    border-radius: 22px !important;
+    padding: 20px 18px 16px !important;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.gdb-card-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,.45);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* ── Stat cards (2×2 inside mid-grid) ── */
+
+.gdb-stat-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 20px 18px;
+    position: relative;
+    overflow: hidden;
+}
+
+.gdb-stat-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(var(--sc-rgb, 255,255,255), .08) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.gdb-sc-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.gdb-sc-val {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--sc-accent, #fff);
+    letter-spacing: -0.04em;
+    line-height: 1;
+}
+
+.gdb-sc-lbl {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.45);
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+/* ── Season Info card ── */
+
+.gdb-season-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 18px;
+}
+
+.gdb-si-players {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.gdb-si-player {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 12px;
+    padding: 8px 10px;
+}
+
+.gdb-si-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: rgba(255,255,255,.10);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,.4);
+}
+
+.gdb-si-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+}
+
+.gdb-si-pinfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.gdb-si-prole {
+    font-size: 0.60rem;
+    font-weight: 700;
+    color: rgba(255,255,255,.38);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.gdb-si-pname {
+    font-size: 0.90rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gdb-si-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 14px;
+}
+
+.gdb-si-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+}
+
+.gdb-si-icon { font-size: 1rem; flex-shrink: 0; }
+
+.gdb-si-lbl {
+    color: rgba(255,255,255,.42);
+    font-weight: 500;
+    flex: 1;
+}
+
+.gdb-si-val {
+    color: #fff;
+    font-weight: 700;
+    text-align: right;
+}
+
+/* ── Bottom 3-column row ── */
+
+.gdb-bottom-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    flex: 1;
+    min-height: 340px;
+}
+
+.gdb-card--full { height: 100%; }
+
+/* Rows stretch to fill card height */
+.gdb-card--full .gdb-match-row,
+.gdb-card--full .gdb-perf-row {
+    flex: 1;
+}
+
+/* ── Recent matches ── */
+
+.gdb-match-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 14px 0 0;
+    border-radius: 16px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.09);
+    transition: background 0.15s;
+    flex: 1;
+    overflow: hidden;
+}
+.gdb-match-row:hover { background: rgba(255,255,255,.10); }
+
+/* Colored left accent */
+.gdb-match-accent {
+    width: 5px;
+    align-self: stretch;
+    flex-shrink: 0;
+    border-radius: 0;
+}
+.gdb-match-accent--win  { background: linear-gradient(180deg, #4ade80, #22c55e); }
+.gdb-match-accent--draw { background: linear-gradient(180deg, #facc15, #eab308); }
+.gdb-match-accent--loss { background: linear-gradient(180deg, #f87171, #ef4444); }
+
+.gdb-match-badge {
+    font-size: 0.78rem;
+    font-weight: 900;
+    padding: 6px 11px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    letter-spacing: 0.04em;
+    text-align: center;
+}
+.gdb-match-badge--win  { background: rgba(74,222,128,.15);  color: #4ade80; }
+.gdb-match-badge--draw { background: rgba(250,204,21,.15);   color: #facc15; }
+.gdb-match-badge--loss { background: rgba(248,113,113,.15);  color: #f87171; }
+
+.gdb-match-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+    padding: 16px 0;
+}
+
+.gdb-match-crest {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.gdb-match-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.gdb-match-opp {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gdb-match-comp {
+    font-size: 0.70rem;
+    color: rgba(255,255,255,.38);
+    font-weight: 500;
+}
+
+.gdb-comp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 3px 9px;
+    border-radius: 6px;
+    border: 1px solid;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 1;
+    filter: brightness(1.4) saturate(1.2);
+}
+
+.gdb-match-score {
+    font-size: 1.25rem;
+    font-weight: 900;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+}
+.gdb-match-score--win  { color: #4ade80; }
+.gdb-match-score--draw { color: #facc15; }
+.gdb-match-score--loss { color: #f87171; }
+
+/* ── Top performers ── */
+
+.gdb-perf-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 0 14px 0 0;
+    border-radius: 16px;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.09);
+    transition: background 0.15s;
+    flex: 1;
+    overflow: hidden;
+}
+.gdb-perf-row:hover { background: rgba(255,255,255,.10); }
+
+.gdb-perf-rank {
+    width: 5px;
+    align-self: stretch;
+    flex-shrink: 0;
+    border-radius: 0;
+}
+.gdb-perf-rank--1 { background: linear-gradient(180deg, #fde68a, #f59e0b); }
+.gdb-perf-rank--2 { background: linear-gradient(180deg, #e2e8f0, #94a3b8); }
+.gdb-perf-rank--3 { background: linear-gradient(180deg, #fca5a5, #cd7c4e); }
+
+.gdb-perf-avatar-wrap {
+    padding: 14px 0 14px 14px;
+    flex-shrink: 0;
+}
+
+.gdb-perf-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    object-fit: cover;
+    object-position: top center;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    display: block;
+}
+
+.gdb-perf-avatar--icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+}
+
+.gdb-perf-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+}
+
+.gdb-perf-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.gdb-perf-label {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,.38);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.gdb-perf-val {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    flex-shrink: 0;
+    padding: 10px 14px 10px 0;
+}
+
+.gdb-perf-val-num {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--primary);
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.gdb-perf-val-unit {
+    font-size: 0.60rem;
+    color: rgba(255,255,255,.35);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+/* ── Formation / Squad Overview ── */
+
+.gdb-f-form {
+    font-size: 0.70rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: none;
+    letter-spacing: 0;
+    background: rgba(59,175,255,.12);
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(59,175,255,.25);
+}
+
+/* Pitch outer wrapper fills remaining card space */
+.gdb-pitch {
+    flex: 1;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    min-height: 280px;
+    background:
+        repeating-linear-gradient(
+            180deg,
+            rgba(22,101,52,.75)  0px, rgba(22,101,52,.75)  24px,
+            rgba(15, 70,36,.85) 24px, rgba(15, 70,36,.85)  48px
+        );
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: inset 0 0 50px rgba(0,0,0,.35);
+}
+
+/* Outer pitch border lines — absolute on .gdb-pitch */
+.gdb-pitch-inner {
+    position: absolute;
+    inset: 8px 12px;
+    border: 1.5px solid rgba(255,255,255,.22);
+    border-radius: 3px;
+    pointer-events: none;
+}
+
+/* Halfway line — relative to .gdb-pitch-inner */
+.gdb-pitch-halfway {
+    position: absolute;
+    left: -1px; right: -1px;
+    top: 50%;
+    height: 1.5px;
+    background: rgba(255,255,255,.22);
+}
+
+/* Centre circle */
+.gdb-pitch-circle {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,.22);
+}
+
+/* Centre dot */
+.gdb-pitch-dot {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.30);
+}
+
+/* Penalty areas */
+.gdb-pitch-penalty {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 52%;
+    height: 18%;
+    border: 1.5px solid rgba(255,255,255,.20);
+}
+.gdb-pitch-penalty--top { top: -1px;    border-top: none; }
+.gdb-pitch-penalty--bot { bottom: -1px; border-bottom: none; }
+
+/* Goal areas */
+.gdb-pitch-goal {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24%;
+    height: 7%;
+    border: 1px solid rgba(255,255,255,.16);
+}
+.gdb-pitch-goal--top { top: -1px;    border-top: none; }
+.gdb-pitch-goal--bot { bottom: -1px; border-bottom: none; }
+
+/* Formation — absolute on .gdb-pitch, NOT .gdb-pitch-inner */
+.gdb-formation {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+}
+
+/* Each row absolutely placed at a tactical depth */
+.gdb-f-row {
+    position: absolute;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    transform: translateY(-50%);
+}
+.gdb-f-row--att  { top: 14%; }
+.gdb-f-row--cam  { top: 34%; }
+.gdb-f-row--cdm  { top: 55%; }
+.gdb-f-row--def  { top: 73%; }
+.gdb-f-row--gk   { top: 88%; }
+
+.gdb-f-dot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: default;
+    min-width: 48px;
+}
+
+/* Player circle with initial */
+.gdb-f-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(59,175,255,.28);
+    border: 2.5px solid rgba(59,175,255,.90);
+    box-shadow: 0 0 14px rgba(59,175,255,.55), 0 3px 8px rgba(0,0,0,.60);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.88rem;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0,0,0,.70);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.gdb-f-dot:hover .gdb-f-avatar {
+    transform: scale(1.15);
+    box-shadow: 0 0 22px rgba(59,175,255,.75), 0 3px 10px rgba(0,0,0,.60);
+}
+
+/* GK gets gold ring */
+.gdb-f-row--gk .gdb-f-avatar {
+    background: rgba(250,204,21,.22);
+    border-color: rgba(250,204,21,.95);
+    box-shadow: 0 0 14px rgba(250,204,21,.50), 0 3px 8px rgba(0,0,0,.60);
+}
+
+.gdb-f-name {
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: #fff;
+    white-space: nowrap;
+    text-shadow: 0 1px 6px rgba(0,0,0,.90), 0 0 12px rgba(0,0,0,.80);
+    text-align: center;
+    max-width: 72px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background: rgba(0,0,0,.40);
+    padding: 1px 6px;
+    border-radius: 4px;
+}
+
+.gdb-f-ovr {
+    font-size: 0.58rem;
+    font-weight: 800;
+    color: rgba(255,255,255,.65);
+    text-shadow: 0 1px 4px rgba(0,0,0,.90);
+    background: rgba(0,0,0,.30);
+    padding: 0 4px;
+    border-radius: 3px;
+}
+
+/* ── View all button ── */
+
+.gdb-view-all {
+    margin-top: auto;
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 12px;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.13);
+    color: rgba(255,255,255,.55);
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    font-family: var(--font-body);
+    letter-spacing: 0.03em;
+}
+.gdb-view-all:hover {
+    background: rgba(255,255,255,.13);
+    border-color: rgba(255,255,255,.22);
+    color: #fff;
+}
+
+/* ── Empty state ── */
+.gdb-empty {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,.28);
+    text-align: center;
+    padding: 20px 0;
+}

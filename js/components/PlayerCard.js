@@ -13,7 +13,7 @@ const ROLE_CLASS = {
 
 export function createPlayerCard(player) {
     const roleClass = ROLE_CLASS[player.role] ?? "rotation";
-    const renderSrc = `assets/renders/${player.id}.png`;
+    const renderSrc = player.photo || `assets/renders/${player.id}.png`;
     const loanBanner = player.loan
         ? `<div class="sq-loan-bar">🔁 On Loan · ${player.loanClub ?? "Unknown Club"}</div>`
         : "";

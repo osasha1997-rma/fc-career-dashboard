@@ -5,6 +5,7 @@
 import { createPlayerCard, createPositionGroup } from "./components/PlayerCard.js";
 import { createSearchBar, attachSearchListener } from "./components/SearchBar.js";
 import { createFilterBar, attachFilterListener } from "./components/FilterBar.js";
+import { deriveSeasonStats } from "./utils/stats.js";
 
 // ── Position ordering & grouping ──────────────────────────────
 
@@ -35,47 +36,400 @@ function sortPlayers(players) {
 
 // ── State ─────────────────────────────────────────────────────
 
-const squadState = { players: [], search: "", filter: "ALL" };
+const squadState = { players: [], matches: [], season: {}, search: "", filter: "ALL" };
 
 // ── Render ────────────────────────────────────────────────────
 
-export function renderSquad(players = []) {
+export function renderSquad(players = [], season = {}, matches = []) {
     squadState.players = sortPlayers(players);
-    const active = players.filter(p => !p.loan);
-    const avgOvr = active.length
-        ? Math.round(active.reduce((s, p) => s + p.overall, 0) / active.length)
-        : 0;
-    const gkCount  = active.filter(p => posGroup(p.position) === "GK").length;
-    const defCount = active.filter(p => posGroup(p.position) === "DEF").length;
-    const midCount = active.filter(p => posGroup(p.position) === "MID").length;
-    const fwdCount = active.filter(p => posGroup(p.position) === "FWD").length;
+    squadState.season  = season;
+    squadState.matches = matches;
 
     return `
-    <section class="fade">
-        <div class="sq-summary">
-            <span>👥 ${active.length} Players</span>
-            <span>⭐ ${avgOvr} Avg OVR</span>
+    <section class="fade sq-screen">
+        <div class="sq-tabs">
+            <button class="sq-tab sq-tab--active" data-sq-tab="overview">Overview</button>
+            <button class="sq-tab" data-sq-tab="players">Players</button>
+            <button class="sq-tab" data-sq-tab="depth-chart">Depth Chart</button>
+            <button class="sq-tab" data-sq-tab="stats">Stats</button>
+            <button class="sq-tab" data-sq-tab="contracts">Contracts</button>
+            <button class="sq-tab" data-sq-tab="development">Development</button>
+            <button class="sq-tab" data-sq-tab="roles">Roles</button>
         </div>
-        <div class="sq-depth-bar">
-            <span class="sq-depth-item">GK <b>${gkCount}</b></span>
-            <span class="sq-depth-item">DEF <b>${defCount}</b></span>
-            <span class="sq-depth-item">MID <b>${midCount}</b></span>
-            <span class="sq-depth-item">FWD <b>${fwdCount}</b></span>
-        </div>
-
         <div id="sq-tab-body">
-            ${renderSquadTab()}
+            ${renderOverviewTab(players, season)}
         </div>
     </section>`;
 }
 
-function renderSquadTab() {
+function renderOverviewTab(players, season) {
+    const active  = players.filter(p => !p.loan);
+    const loanOut = players.filter(p => p.loan);
+    const avgOvr  = active.length
+        ? Math.round(active.reduce((s, p) => s + p.overall, 0) / active.length) : 0;
+
+    const gks  = active.filter(p => posGroup(p.position) === "GK");
+    const defs = active.filter(p => posGroup(p.position) === "DEF");
+    const mids = active.filter(p => posGroup(p.position) === "MID");
+    const fwds = active.filter(p => posGroup(p.position) === "FWD");
+
+    const depthScore = Math.min(100, Math.round(
+        (Math.min(gks.length,3)/3 + Math.min(defs.length,6)/6 + Math.min(mids.length,6)/6 + Math.min(fwds.length,4)/4) / 4 * 100
+    ));
+    const depthLabel = depthScore >= 80 ? "Very Strong" : depthScore >= 60 ? "Strong" : depthScore >= 40 ? "Average" : "Weak";
+    const depthColor = depthScore >= 80 ? "#22c55e" : depthScore >= 60 ? "#84cc16" : depthScore >= 40 ? "#f59e0b" : "#ef4444";
+
+    const formation = season.formation ?? "4-3-3";
+
+    const posClass = pos => {
+        if (pos === "GK") return "sqov-sub-pos--gk";
+        if (["LB","CB","RB","LWB","RWB"].includes(pos)) return "sqov-sub-pos--def";
+        if (["CDM","CM","CAM","LM","RM"].includes(pos)) return "sqov-sub-pos--mid";
+        return "sqov-sub-pos--fwd";
+    };
+
+    // Use manager-set XI/subs if stored, otherwise auto-pick by formation
+    const byId = id => active.find(p => p.id === id);
+
+    let xi, formationRows, subs;
+    if (season.startingXI?.length) {
+        xi = season.startingXI.map(byId).filter(Boolean);
+        const subList = (season.substitutes ?? []).map(byId).filter(Boolean);
+        const xiIds = new Set(xi.map(p => p.id));
+        // Build formation rows from the XI order (GK last in array = bottom of pitch)
+        formationRows = buildFixedFormationRows(xi, formation);
+        subs = subList;
+    } else {
+        const result = buildFormationXI(active, formation);
+        xi = result.xi;
+        formationRows = result.formationRows;
+        const xiIds = new Set(xi.map(p => p.id));
+        subs = [...active].sort((a, b) => b.overall - a.overall).filter(p => !xiIds.has(p.id)).slice(0, 7);
+    }
+
+    // Ensure xiIds is defined for downstream use
+    const xiIds = new Set(xi.map(p => p.id));
+
+    const totalValue = active.reduce((s, p) => s + (p.marketValue ?? 0), 0);
+    const valLabel = totalValue >= 1e9 ? `€${(totalValue/1e9).toFixed(2)}B` : totalValue > 0 ? `€${(totalValue/1e6).toFixed(0)}M` : "—";
+    const totalWage = active.reduce((s, p) => s + (p.wage ?? 0), 0);
+    const wageLabel = totalWage > 0 ? `£${(totalWage/1000).toFixed(0)}K /wk` : "—";
+
     return `
-        ${createFilterBar()}
-        ${createSearchBar("Search players...")}
-        <div id="player-list">
-            ${renderPlayerList(squadState.players)}
+    <div class="sqov-stats-bar">
+        <div class="sqov-stat-pill">
+            <span class="sqov-stat-label">TOTAL PLAYERS</span>
+            <span class="sqov-stat-val">${active.length}</span>
+        </div>
+        <div class="sqov-stat-pill">
+            <span class="sqov-stat-label">AVERAGE OVR</span>
+            <span class="sqov-stat-val">${avgOvr}</span>
+        </div>
+        <div class="sqov-stat-pill">
+            <span class="sqov-stat-label">TOTAL VALUE</span>
+            <span class="sqov-stat-val">${valLabel}</span>
+        </div>
+        <div class="sqov-stat-pill">
+            <span class="sqov-stat-label">SQUAD DEPTH</span>
+            <span class="sqov-stat-val" style="color:${depthColor}">${depthLabel}</span>
+        </div>
+        <div class="sqov-stat-pill">
+            <span class="sqov-stat-label">WAGE BUDGET</span>
+            <span class="sqov-stat-val">${wageLabel}</span>
+        </div>
+    </div>
+
+    <div class="sqov-layout">
+
+        <!-- Squad Summary -->
+        <div class="sqov-card sqov-summary">
+            <div class="sqov-card-title">Squad Summary</div>
+            <div class="sqov-total">${active.length}<span>Total Players</span></div>
+            <div class="sqov-depth-rows">
+                ${[["🧤","Goalkeepers",gks],["🛡️","Defenders",defs],["⚙️","Midfielders",mids],["⚡","Forwards",fwds]].map(([icon,lbl,grp]) => `
+                <div class="sqov-depth-row">
+                    <span class="sqov-depth-icon">${icon}</span>
+                    <span class="sqov-depth-lbl">${lbl}</span>
+                    <span class="sqov-depth-num">${grp.length}</span>
+                </div>`).join("")}
+            </div>
+            <div class="sqov-avg-wrap">
+                <div class="sqov-avg-info">
+                    <span class="sqov-avg-label">Average OVR</span>
+                    <span class="sqov-avg-val">${avgOvr}</span>
+                </div>
+                <div class="sqov-avg-ring">
+                    <svg viewBox="0 0 44 44" class="sqov-ring-svg">
+                        <circle cx="22" cy="22" r="18" class="sqov-ring-bg"/>
+                        <circle cx="22" cy="22" r="18" class="sqov-ring-fill"
+                            stroke-dasharray="${(avgOvr / 100 * 113).toFixed(1)} 113"
+                            transform="rotate(-90 22 22)"/>
+                    </svg>
+                    <span class="sqov-ring-val">${avgOvr}</span>
+                </div>
+            </div>
+            <div class="sqov-depth-strip">
+                <div class="sqov-card-title" style="margin-bottom:6px">Squad Depth</div>
+                <div class="sqov-depth-label" style="color:${depthColor}">${depthLabel}</div>
+                <div class="sqov-depth-bar-wrap" style="margin-top:6px">
+                    <div class="sqov-depth-bar-fill" style="width:${depthScore}%;background:${depthColor}"></div>
+                </div>
+                ${loanOut.length ? `<div class="sqov-loan-note" style="margin-top:8px">+${loanOut.length} on loan</div>` : ""}
+            </div>
+        </div>
+
+        <!-- Starting XI -->
+        <div class="sqov-card sqov-xi-card">
+            <div class="sqov-card-title">Starting XI <span class="sqov-formation-lbl">${formation}</span></div>
+            <div class="sqov-xi-pitch">
+                ${formationRows}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Substitutes — horizontal bottom strip -->
+    <div class="sqov-card sqov-subs-bottom">
+        <div class="sqov-card-title">Substitutes</div>
+        <div class="sqov-subs-strip">
+            ${subs.map(p => {
+                const src = p.photo || `assets/renders/${p.id}.png`;
+                return `
+                <div class="sqov-sub-chip" data-player-id="${p.id}">
+                    <div class="sqov-sub-avatar">
+                        <img src="${src}" alt="${p.name}" onerror="this.style.display='none'">
+                    </div>
+                    <span class="sqov-sub-ovr">${p.overall}</span>
+                    <div class="sqov-sub-info">
+                        <div class="sqov-sub-name">${p.name.split(" ").at(-1)}</div>
+                        <div class="sqov-sub-pos">${p.position}</div>
+                    </div>
+                </div>`;
+            }).join("")}
+        </div>
+    </div>`;
+}
+
+// Slot templates: each entry is an ordered list of preferred positions for that slot.
+// Lines are defined left-to-right. Count determines which template to use.
+// Renders a fixed XI (array of 11 players, GK first) onto formation rows.
+function buildFixedFormationRows(xi, formation) {
+    const lines = formation.split("-").map(s => parseInt(s, 10)).filter(n => !isNaN(n));
+    const nLines = lines.length;
+
+    // Determine display position label for each line
+    const lineDisplayPos = lines.map((_, i) => {
+        if (i === 0) return null;                         // DEF: use actual position
+        if (i === nLines - 1) return null;                // FWD: use actual position
+        const midLines = nLines - 2;
+        const midIdx   = i - 1;
+        return (midLines >= 2 && midIdx < Math.floor(midLines / 2)) ? "CDM" : null;
+    });
+
+    const playerEl = (p, posOverride) => `
+        <div class="sqov-xi-player" data-player-id="${p.id}">
+            <div class="sqov-xi-avatar">
+                <img src="${p.photo || `assets/renders/${p.id}.png`}" alt="${p.name}" onerror="this.style.display='none'">
+                <span class="sqov-xi-ovr">${p.overall}</span>
+                <div class="sqov-xi-info">
+                    <div class="sqov-xi-name">${p.name.split(" ").at(-1)}</div>
+                    <div class="sqov-xi-pos">${posOverride ?? p.position}</div>
+                </div>
+            </div>
         </div>`;
+
+    const gk = xi.slice(0, 1);
+    let offset = 1;
+    const lineRows = lines.map((n, i) => ({ players: xi.slice(offset, (offset += n, offset)), posOverride: lineDisplayPos[i] }));
+
+    return [...lineRows].reverse().map(({ players, posOverride }) =>
+        `<div class="sqov-xi-row">${players.map(p => playerEl(p, posOverride)).join("")}</div>`
+    ).join("") + `<div class="sqov-xi-row">${gk.map(p => playerEl(p, null)).join("")}</div>`;
+}
+
+const DEF_SLOTS = {
+    3: [["CB","LCB"],                ["CB"],                    ["CB","RCB"]],
+    4: [["LB","LWB","CB"],           ["CB"],                    ["CB"],           ["RB","RWB","CB"]],
+    5: [["LWB","LB"],                ["CB"],                    ["CB"],           ["CB"],           ["RWB","RB"]],
+};
+const MID_SLOTS = {
+    // defensive-mid lines
+    cdm: {
+        1: [["CDM","CM","CAM"]],
+        2: [["CDM","CM"],             ["CDM","CM","CAM"]],
+        3: [["CDM","CM"],             ["CDM","CM"],             ["CM","CAM"]],
+    },
+    // wide/attacking-mid lines
+    cam: {
+        1: [["CAM","CM","ST"]],
+        2: [["LM","LW","CAM"],        ["RM","RW","CAM"]],
+        3: [["LM","LW","CAM"],        ["CAM","CM"],             ["RM","RW","CAM"]],
+        4: [["LM","LW"],              ["CAM","CM"],             ["CAM","CM"],     ["RM","RW"]],
+        5: [["LM","LW"],              ["CAM","CM"],             ["CM","CDM"],     ["CAM","CM"],     ["RM","RW"]],
+    },
+};
+const FWD_SLOTS = {
+    1: [["ST","CF","LW","RW","CAM"]],
+    2: [["LW","LM","ST","CF"],        ["ST","CF","RW","RM"]],
+    3: [["LW","LM","ST"],             ["ST","CF"],              ["RW","RM","ST"]],
+};
+
+function buildFormationXI(players, formation) {
+    const sorted = [...players].sort((a, b) => b.overall - a.overall);
+    const lines  = formation.split("-").map(s => parseInt(s, 10)).filter(n => !isNaN(n));
+
+    const used = new Set();
+
+    // Pick one player for a slot given ordered position preferences
+    const pickSlot = prefs => {
+        for (const pos of prefs) {
+            for (const p of sorted) {
+                if (!used.has(p.id) && p.position === pos) {
+                    used.add(p.id); return p;
+                }
+            }
+        }
+        // fallback: best remaining
+        for (const p of sorted) {
+            if (!used.has(p.id)) { used.add(p.id); return p; }
+        }
+        return null;
+    };
+
+    const pickLine = slots => slots.map(pickSlot).filter(Boolean);
+
+    // GK
+    const gkRow = pickLine([["GK"]]);
+
+    // Defensive line
+    const nLines = lines.length;
+    const lineRows = lines.map((count, i) => {
+        if (i === 0) {
+            const slots = DEF_SLOTS[count] ?? Array(count).fill(["CB","LB","RB","LWB","RWB"]);
+            return pickLine(slots);
+        }
+        if (i === nLines - 1) {
+            const slots = FWD_SLOTS[count] ?? Array(count).fill(["ST","CF","LW","RW"]);
+            return pickLine(slots);
+        }
+        // Middle lines — earlier = more defensive
+        const midLines = nLines - 2;
+        const midIdx   = i - 1; // 0-based
+        const isCdm    = midLines >= 2 && midIdx < Math.floor(midLines / 2);
+        const table    = isCdm ? MID_SLOTS.cdm : MID_SLOTS.cam;
+        const slots    = table[count] ?? Array(count).fill(isCdm ? ["CDM","CM"] : ["CAM","CM","LM","RM"]);
+        return pickLine(slots);
+    });
+
+    const xi = [...gkRow, ...lineRows.flat()];
+
+    const playerEl = p => `
+        <div class="sqov-xi-player" data-player-id="${p.id}">
+            <div class="sqov-xi-avatar">
+                <img src="${p.photo || `assets/renders/${p.id}.png`}" alt="${p.name}" onerror="this.style.display='none'">
+                <span class="sqov-xi-ovr">${p.overall}</span>
+                <div class="sqov-xi-info">
+                    <div class="sqov-xi-name">${p.name.split(" ").at(-1)}</div>
+                    <div class="sqov-xi-pos">${p.position}</div>
+                </div>
+            </div>
+        </div>`;
+
+    // Render top-to-bottom: attack → defense → GK
+    const formationRows = [...lineRows].reverse().map(row =>
+        `<div class="sqov-xi-row">${row.map(playerEl).join("")}</div>`
+    ).join("") + `<div class="sqov-xi-row">${gkRow.map(playerEl).join("")}</div>`;
+
+    return { xi, formationRows };
+}
+
+function renderSquadTab() {
+    const active  = squadState.players.filter(p => !p.loan);
+    const loanOut = squadState.players.filter(p => p.loan);
+    const allPlayers = [...active, ...loanOut];
+
+    // Derive form (last 5 appearances) from matches
+    const played = (squadState.matches ?? []).filter(m => m.result);
+    const formMap = {};
+    played.slice(-15).forEach(m => {
+        const involved = [...(m.startingXI ?? []), ...(m.substitutions ?? []).map(s => s.playerOn)];
+        involved.forEach(id => {
+            if (!formMap[id]) formMap[id] = [];
+            if (formMap[id].length < 5) formMap[id].unshift(m.result);
+        });
+    });
+
+    const fmtVal  = v => v ? (v >= 1e9 ? `€${(v/1e9).toFixed(1)}B` : `€${(v/1e6).toFixed(0)}M`) : "—";
+    const fmtWage = w => w ? `£${(w/1000).toFixed(0)}K` : "—";
+
+    const formDots = id => {
+        const results = formMap[id] ?? [];
+        return results.slice(-5).map(r => {
+            const cls = r === "W" ? "form-dot--w" : r === "D" ? "form-dot--d" : "form-dot--l";
+            return `<span class="form-dot ${cls}"></span>`;
+        }).join("") || `<span style="color:rgba(167,183,255,.25);font-size:.65rem">No data</span>`;
+    };
+
+    const rows = allPlayers.map((p, i) => {
+        const isLoan = !!p.loan;
+        const src = p.photo || `assets/renders/${p.id}.png`;
+        const potDiff = p.potential && p.potential > p.overall ? `<span class="sq-tbl-pot-diff">+${p.potential - p.overall}</span>` : "";
+        return `
+        <tr class="sq-tbl-row${isLoan ? " sq-tbl-row--loan" : ""}" data-player-id="${p.id}">
+            <td class="sq-tbl-num">${i + 1}</td>
+            <td class="sq-tbl-player">
+                <img src="${src}" alt="" onerror="this.style.display='none'" class="sq-tbl-avatar">
+                <div>
+                    <div class="sq-tbl-name">${p.name}</div>
+                    <div class="sq-tbl-nat">${p.nationality ?? ""}${isLoan ? ' <span class="sq-loan-tag">LOAN</span>' : ""}</div>
+                </div>
+            </td>
+            <td><span class="sq-tbl-pos-badge">${p.position}</span></td>
+            <td class="sq-tbl-num">${p.age ?? "—"}</td>
+            <td class="sq-tbl-ovr">${p.overall}</td>
+            <td class="sq-tbl-pot">${p.potential ?? "—"}${potDiff}</td>
+            <td class="sq-tbl-form">${formDots(p.id)}</td>
+            <td class="sq-tbl-val">${fmtVal(p.marketValue)}</td>
+            <td class="sq-tbl-val">${fmtWage(p.wage)}/wk</td>
+            <td class="sq-tbl-contract">${p.contract ?? "—"}</td>
+        </tr>`;
+    }).join("");
+
+    return `
+    <div class="sq-tbl-wrap">
+        <div class="sq-tbl-header-bar">
+            <span class="sq-tbl-count">All Players (${allPlayers.length})</span>
+            <div class="sq-tbl-filters">
+                <select class="sq-tbl-filter-sel" id="sq-pos-filter">
+                    <option value="ALL">All Positions</option>
+                    <option value="GK">Goalkeepers</option>
+                    <option value="DEF">Defenders</option>
+                    <option value="MID">Midfielders</option>
+                    <option value="FWD">Forwards</option>
+                </select>
+                <input class="sq-tbl-search" id="sq-tbl-search" type="text" placeholder="Search players…">
+            </div>
+        </div>
+        <div class="sq-tbl-scroll">
+        <table class="sq-tbl">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Player</th>
+                    <th>Pos</th>
+                    <th>Age</th>
+                    <th>OVR</th>
+                    <th>POT</th>
+                    <th>Form</th>
+                    <th>Value</th>
+                    <th>Wage</th>
+                    <th>Contract</th>
+                </tr>
+            </thead>
+            <tbody id="sq-tbl-body">${rows}</tbody>
+        </table>
+        </div>
+    </div>`;
 }
 
 function _removed_renderAdviceTab(players) {
@@ -349,14 +703,453 @@ function updatePlayerList() {
 // ── Init ──────────────────────────────────────────────────────
 
 export function initializeSquad(onPlayerSelect) {
-    wireSquadTab(onPlayerSelect);
+    // Tab switching
+    document.querySelectorAll(".sq-tab").forEach(btn => {
+        btn.addEventListener("click", () => {
+            document.querySelectorAll(".sq-tab").forEach(b => b.classList.remove("sq-tab--active"));
+            btn.classList.add("sq-tab--active");
+            const tab = btn.dataset.sqTab;
+            const body = document.getElementById("sq-tab-body");
+            if (tab === "overview") {
+                body.innerHTML = renderOverviewTab(squadState.players, squadState.season ?? {});
+                wireOverviewClicks(onPlayerSelect);
+            } else if (tab === "players") {
+                body.innerHTML = renderSquadTab();
+                wireSquadTab(onPlayerSelect);
+            } else if (tab === "depth-chart") {
+                body.innerHTML = renderDepthChartTab(squadState.players);
+            } else if (tab === "stats") {
+                body.innerHTML = renderStatsTab(squadState.players, squadState.season ?? {}, squadState.matches ?? []);
+            } else if (tab === "contracts") {
+                body.innerHTML = renderContractsTab(squadState.players);
+            } else if (tab === "development") {
+                body.innerHTML = renderDevelopmentTab(squadState.players);
+            } else if (tab === "roles") {
+                body.innerHTML = renderRolesTab(squadState.players, squadState.season ?? {}, squadState.matches ?? []);
+            }
+        });
+    });
+
+    // Default tab wiring
+    wireOverviewClicks(onPlayerSelect);
+}
+
+function wireOverviewClicks(onPlayerSelect) {
+    document.getElementById("sq-tab-body")?.addEventListener("click", e => {
+        const el = e.target.closest("[data-player-id]");
+        if (el) onPlayerSelect?.(el.dataset.playerId);
+    });
 }
 
 function wireSquadTab(onPlayerSelect) {
-    attachSearchListener(text => { squadState.search = text.toLowerCase(); updatePlayerList(); });
-    attachFilterListener(f    => { squadState.filter = f;                   updatePlayerList(); });
-    document.getElementById("player-list")?.addEventListener("click", e => {
-        const card = e.target.closest(".sq-card");
-        if (card) onPlayerSelect?.(card.dataset.playerId);
+    const body = document.getElementById("sq-tbl-body");
+
+    const filterAndRender = () => {
+        const pos  = document.getElementById("sq-pos-filter")?.value ?? "ALL";
+        const srch = (document.getElementById("sq-tbl-search")?.value ?? "").toLowerCase();
+        const all  = [...squadState.players];
+        const filtered = all.filter(p => {
+            const matchPos  = pos === "ALL" || posGroup(p.position) === pos;
+            const matchSrch = !srch || p.name.toLowerCase().includes(srch) || p.position.toLowerCase().includes(srch);
+            return matchPos && matchSrch;
+        });
+        // Re-render just the tbody rows without rebuilding whole tab
+        const played = (squadState.matches ?? []).filter(m => m.result);
+        const formMap = {};
+        played.slice(-15).forEach(m => {
+            const involved = [...(m.startingXI ?? []), ...(m.substitutions ?? []).map(s => s.playerOn)];
+            involved.forEach(id => { if (!formMap[id]) formMap[id] = []; if (formMap[id].length < 5) formMap[id].unshift(m.result); });
+        });
+        const fmtVal  = v => v ? (v >= 1e9 ? `€${(v/1e9).toFixed(1)}B` : `€${(v/1e6).toFixed(0)}M`) : "—";
+        const fmtWage = w => w ? `£${(w/1000).toFixed(0)}K` : "—";
+        const formDots = id => {
+            const results = formMap[id] ?? [];
+            return results.slice(-5).map(r => `<span class="form-dot form-dot--${r.toLowerCase()}"></span>`).join("") || `<span style="color:rgba(167,183,255,.25);font-size:.65rem">No data</span>`;
+        };
+        if (body) body.innerHTML = filtered.map((p, i) => {
+            const isLoan = !!p.loan;
+            const src = p.photo || `assets/renders/${p.id}.png`;
+            const potDiff = p.potential && p.potential > p.overall ? `<span class="sq-tbl-pot-diff">+${p.potential - p.overall}</span>` : "";
+            return `<tr class="sq-tbl-row${isLoan ? " sq-tbl-row--loan" : ""}" data-player-id="${p.id}">
+                <td class="sq-tbl-num">${i + 1}</td>
+                <td class="sq-tbl-player"><img src="${src}" alt="" onerror="this.style.display='none'" class="sq-tbl-avatar"><div><div class="sq-tbl-name">${p.name}</div><div class="sq-tbl-nat">${p.nationality ?? ""}${isLoan ? ' <span class="sq-loan-tag">LOAN</span>' : ""}</div></div></td>
+                <td><span class="sq-tbl-pos-badge">${p.position}</span></td>
+                <td class="sq-tbl-num">${p.age ?? "—"}</td>
+                <td class="sq-tbl-ovr">${p.overall}</td>
+                <td class="sq-tbl-pot">${p.potential ?? "—"}${potDiff}</td>
+                <td class="sq-tbl-form">${formDots(p.id)}</td>
+                <td class="sq-tbl-val">${fmtVal(p.marketValue)}</td>
+                <td class="sq-tbl-val">${fmtWage(p.wage)}/wk</td>
+                <td class="sq-tbl-contract">${p.contract ?? "—"}</td>
+            </tr>`;
+        }).join("");
+    };
+
+    document.getElementById("sq-pos-filter")?.addEventListener("change", filterAndRender);
+    document.getElementById("sq-tbl-search")?.addEventListener("input", filterAndRender);
+
+    document.getElementById("sq-tbl-body")?.addEventListener("click", e => {
+        const row = e.target.closest("[data-player-id]");
+        if (row) onPlayerSelect?.(row.dataset.playerId);
     });
+}
+
+// ── Depth Chart Tab ───────────────────────────────────────────
+
+function renderDepthChartTab(players) {
+    const active = players.filter(p => !p.loan);
+
+    const sections = [
+        { label: "STRIKERS",         positions: ["ST","CF"] },
+        { label: "ATTACKING MIDS",   positions: ["CAM","LW","RW"] },
+        { label: "CENTRAL MIDS",     positions: ["CM","CDM","LM","RM"] },
+        { label: "DEFENDERS",        positions: ["CB","LB","RB","LWB","RWB"] },
+        { label: "GOALKEEPERS",      positions: ["GK"] },
+    ];
+
+    const choiceLabels = ["1ST CHOICE", "2ND CHOICE", "3RD CHOICE", "4TH CHOICE"];
+
+    const posStrength = pos => {
+        const candidates = active.filter(p => pos.includes(p.position));
+        const avgOvr = candidates.length ? Math.round(candidates.reduce((s,p) => s + p.overall, 0) / candidates.length) : 0;
+        if (avgOvr >= 88) return { label: "Excellent", color: "#22c55e" };
+        if (avgOvr >= 84) return { label: "Very Strong", color: "#84cc16" };
+        if (avgOvr >= 80) return { label: "Strong", color: "#f59e0b" };
+        if (avgOvr >= 76) return { label: "Average", color: "#f97316" };
+        return { label: "Weak", color: "#ef4444" };
+    };
+
+    const playerCard = (p, rank) => {
+        const src = p.photo || `assets/renders/${p.id}.png`;
+        return `
+        <div class="dc2-card">
+            <div class="dc2-rank">${rank}</div>
+            <div class="dc2-portrait">
+                <img src="${src}" alt="${p.name}" onerror="this.style.display='none'">
+                <div class="dc2-ovr-badge">${p.overall}</div>
+            </div>
+            <div class="dc2-info">
+                <div class="dc2-name">${p.name.split(" ").slice(-1)[0]}</div>
+                <div class="dc2-meta">${p.position} · ${p.age ?? "?"} yrs</div>
+            </div>
+        </div>`;
+    };
+
+    const emptyCard = rank => `
+        <div class="dc2-card dc2-card--empty">
+            <div class="dc2-rank">${rank}</div>
+            <div class="dc2-portrait dc2-portrait--empty"><span>?</span></div>
+            <div class="dc2-info"><div class="dc2-name" style="color:rgba(167,183,255,.3)">Vacant</div></div>
+        </div>`;
+
+    const sectionsHtml = sections.map(sec => {
+        const candidates = active
+            .filter(p => sec.positions.includes(p.position))
+            .sort((a,b) => b.overall - a.overall)
+            .slice(0, 4);
+
+        const strength = posStrength(sec.positions);
+        const avgOvr = candidates.length ? Math.round(candidates.reduce((s,p) => s + p.overall, 0) / candidates.length) : 0;
+
+        const cards = choiceLabels.map((lbl, i) =>
+            candidates[i] ? playerCard(candidates[i], lbl) : emptyCard(lbl)
+        ).join("");
+
+        return `
+        <div class="dc2-section">
+            <div class="dc2-section-header">
+                <span class="dc2-section-title">${sec.label}</span>
+                <span class="dc2-section-strength" style="color:${strength.color}">${strength.label}</span>
+                ${avgOvr ? `<span class="dc2-section-avg">${avgOvr} avg OVR</span>` : ""}
+            </div>
+            <div class="dc2-cards">${cards}</div>
+        </div>`;
+    }).join("");
+
+    return `<div class="dc2-wrap">${sectionsHtml}</div>`;
+}
+
+// ── Stats Tab ─────────────────────────────────────────────────
+
+function renderStatsTab(players, season, matches) {
+    const played = matches.filter(m => m.result);
+
+    // Aggregate from match data
+    const wins         = played.filter(m => m.result === "W").length;
+    const draws        = played.filter(m => m.result === "D").length;
+    const losses       = played.filter(m => m.result === "L").length;
+    const goalsFor     = played.reduce((s, m) => s + (m.scoreFor ?? 0), 0);
+    const goalsAgainst = played.reduce((s, m) => s + (m.scoreAgainst ?? 0), 0);
+    const cleanSheets  = played.filter(m => (m.scoreAgainst ?? 1) === 0).length;
+    const yellowCards  = played.reduce((s, m) => s + (m.yellowCards?.length ?? 0), 0);
+    const winRate      = played.length ? Math.round(wins / played.length * 100) : null;
+
+    const posMatches   = played.filter(m => m.teamStats?.possession != null);
+    const avgPossession = posMatches.length ? Math.round(posMatches.reduce((s, m) => s + m.teamStats.possession, 0) / posMatches.length) : null;
+    const passMatches  = played.filter(m => m.teamStats?.passAccuracy != null);
+    const avgPass      = passMatches.length ? Math.round(passMatches.reduce((s, m) => s + m.teamStats.passAccuracy, 0) / passMatches.length) : null;
+    const shotMatches  = played.filter(m => m.teamStats?.shots != null);
+    const avgShots     = shotMatches.length ? (shotMatches.reduce((s, m) => s + m.teamStats.shots, 0) / shotMatches.length).toFixed(1) : null;
+
+    // Per-player goal/assist totals from match data
+    const goalMap = {}, assistMap = {};
+    played.forEach(m => {
+        m.goals?.forEach(g => { if (typeof g.player === "number") goalMap[g.player] = (goalMap[g.player] ?? 0) + 1; });
+        m.assists?.forEach(a => { if (typeof a.player === "number") assistMap[a.player] = (assistMap[a.player] ?? 0) + (a.count ?? 1); });
+    });
+
+    const byId = id => players.find(p => p.id === Number(id));
+
+    const topScorers = Object.entries(goalMap)
+        .sort((a, b) => b[1] - a[1]).slice(0, 5)
+        .map(([id, g]) => ({ player: byId(id), goals: g })).filter(x => x.player);
+
+    const topAssists = Object.entries(assistMap)
+        .sort((a, b) => b[1] - a[1]).slice(0, 5)
+        .map(([id, a]) => ({ player: byId(id), assists: a })).filter(x => x.player);
+
+    const stat = (label, val, color) => `
+    <div class="sqst-card">
+        <div class="sqst-val" ${color ? `style="color:${color}"` : ""}>${val ?? "—"}</div>
+        <div class="sqst-label">${label}</div>
+    </div>`;
+
+    const playerRow = (p, val, icon) => `
+    <div class="sqst-player-row">
+        <img src="${p.photo || `assets/renders/${p.id}.png`}" alt="${p.name}" onerror="this.style.display='none'" class="sqst-avatar">
+        <span class="sqst-player-name">${p.name.split(" ").slice(-1)[0]}</span>
+        <span class="sqst-player-pos">${p.position}</span>
+        <span class="sqst-player-val">${icon} ${val}</span>
+    </div>`;
+
+    return `
+    <div class="sqst-wrap">
+        <div class="sqst-section-title">TEAM STATISTICS</div>
+        <div class="sqst-grid">
+            ${stat("Matches Played", played.length)}
+            ${stat("Wins", wins, "#22c55e")}
+            ${stat("Draws", draws, "#f59e0b")}
+            ${stat("Losses", losses, "#ef4444")}
+            ${stat("Goals For", goalsFor)}
+            ${stat("Goals Against", goalsAgainst)}
+            ${stat("Win Rate", winRate != null ? `${winRate}%` : null)}
+            ${stat("Pass Accuracy", avgPass != null ? `${avgPass}%` : null)}
+            ${stat("Possession", avgPossession != null ? `${avgPossession}%` : null)}
+            ${stat("Shots / Game", avgShots)}
+            ${stat("Clean Sheets", cleanSheets)}
+            ${stat("Yellow Cards", yellowCards)}
+        </div>
+        <div class="sqst-leaderboards">
+            <div class="sqst-board">
+                <div class="sqst-board-title">TOP SCORERS</div>
+                ${topScorers.length ? topScorers.map(({ player: p, goals }) => playerRow(p, goals, "⚽")).join("") : `<div class="sqst-empty">No goal data</div>`}
+            </div>
+            <div class="sqst-board">
+                <div class="sqst-board-title">TOP ASSISTS</div>
+                ${topAssists.length ? topAssists.map(({ player: p, assists }) => playerRow(p, assists, "🎯")).join("") : `<div class="sqst-empty">No assist data</div>`}
+            </div>
+        </div>
+    </div>`;
+}
+
+// ── Contracts Tab ─────────────────────────────────────────────
+
+function renderContractsTab(players) {
+    const active = [...players.filter(p => !p.loan)].sort((a, b) => {
+        const ay = parseInt(a.contract) || 9999;
+        const by = parseInt(b.contract) || 9999;
+        return ay - by;
+    });
+
+    const currentYear = new Date().getFullYear();
+
+    const statusChip = (contract) => {
+        const yr = parseInt(contract);
+        if (!yr) return `<span class="sqct-chip sqct-chip--unknown">Unknown</span>`;
+        const yrs = yr - currentYear;
+        if (yrs <= 1) return `<span class="sqct-chip sqct-chip--expiring">Expiring</span>`;
+        if (yrs <= 2) return `<span class="sqct-chip sqct-chip--soon">Expires Soon</span>`;
+        return `<span class="sqct-chip sqct-chip--ok">Contracted</span>`;
+    };
+
+    const fmt = (v, prefix="£") => v ? `${prefix}${(v/1000).toFixed(0)}K` : "—";
+    const fmtM = (v) => v ? (v >= 1e9 ? `€${(v/1e9).toFixed(1)}B` : `€${(v/1e6).toFixed(0)}M`) : "—";
+
+    const rows = active.map(p => `
+    <tr class="sqct-row">
+        <td class="sqct-player">
+            <img src="${p.photo || `assets/renders/${p.id}.png`}" alt="" onerror="this.style.display='none'" class="sqct-avatar">
+            <div>
+                <div class="sqct-name">${p.name}</div>
+                <div class="sqct-pos">${p.position}</div>
+            </div>
+        </td>
+        <td class="sqct-ovr">${p.overall}</td>
+        <td class="sqct-age">${p.age ?? "—"}</td>
+        <td class="sqct-wage">${fmt(p.wage)}/wk</td>
+        <td class="sqct-value">${fmtM(p.marketValue)}</td>
+        <td class="sqct-end">${p.contract ?? "—"}</td>
+        <td>${statusChip(p.contract)}</td>
+    </tr>`).join("");
+
+    const totalWage = active.reduce((s, p) => s + (p.wage ?? 0), 0);
+    const expiring = active.filter(p => { const y = parseInt(p.contract); return y && (y - currentYear) <= 1; }).length;
+
+    return `
+    <div class="sqct-wrap">
+        <div class="sqct-summary">
+            <div class="sqct-sum-pill"><div class="sqct-sum-val">£${(totalWage/1000).toFixed(0)}K</div><div class="sqct-sum-label">WEEKLY WAGE BILL</div></div>
+            <div class="sqct-sum-pill"><div class="sqct-sum-val" style="color:#ef4444">${expiring}</div><div class="sqct-sum-label">EXPIRING CONTRACTS</div></div>
+            <div class="sqct-sum-pill"><div class="sqct-sum-val">${active.length}</div><div class="sqct-sum-label">TOTAL PLAYERS</div></div>
+        </div>
+        <div class="sqct-table-wrap">
+        <table class="sqct-table">
+            <thead>
+                <tr>
+                    <th>Player</th><th>OVR</th><th>Age</th><th>Weekly Wage</th><th>Market Value</th><th>Contract End</th><th>Status</th>
+                </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+        </table>
+        </div>
+    </div>`;
+}
+
+// ── Development Tab ───────────────────────────────────────────
+
+function renderDevelopmentTab(players) {
+    const active = players.filter(p => !p.loan);
+    const withPot = active.filter(p => p.potential && p.potential > p.overall);
+
+    const topProspects = [...withPot]
+        .sort((a, b) => (b.potential - b.overall) - (a.potential - a.overall))
+        .slice(0, 8);
+
+    const topOvr = [...active].sort((a,b) => b.overall - a.overall).slice(0, 5);
+
+    const potBar = (ovr, pot) => {
+        const max = Math.max(pot, 99);
+        const ovrPct = (ovr / max * 100).toFixed(1);
+        const potPct = (pot / max * 100).toFixed(1);
+        return `
+        <div class="sqdev-bar-wrap">
+            <div class="sqdev-bar-bg">
+                <div class="sqdev-bar-pot" style="width:${potPct}%"></div>
+                <div class="sqdev-bar-ovr" style="width:${ovrPct}%"></div>
+            </div>
+            <span class="sqdev-bar-labels"><span>${ovr} OVR</span><span style="color:#a78bfa">${pot} POT</span></span>
+        </div>`;
+    };
+
+    const prospectCards = topProspects.map(p => `
+    <div class="sqdev-card">
+        <img src="${p.photo || `assets/renders/${p.id}.png`}" alt="${p.name}" onerror="this.style.display='none'" class="sqdev-avatar">
+        <div class="sqdev-info">
+            <div class="sqdev-name">${p.name}</div>
+            <div class="sqdev-meta">${p.position} · ${p.age ?? "?"} yrs</div>
+            ${potBar(p.overall, p.potential)}
+        </div>
+        <div class="sqdev-gap">+${p.potential - p.overall}</div>
+    </div>`).join("");
+
+    const keyPlayers = topOvr.map(p => `
+    <div class="sqdev-key-row">
+        <img src="${p.photo || `assets/renders/${p.id}.png`}" alt="" onerror="this.style.display='none'" class="sqdev-avatar sqdev-avatar--sm">
+        <span class="sqdev-name">${p.name.split(" ").slice(-1)[0]}</span>
+        <span class="sqdev-pos">${p.position}</span>
+        <span class="sqdev-ovr">${p.overall}</span>
+    </div>`).join("");
+
+    return `
+    <div class="sqdev-wrap">
+        <div class="sqdev-col">
+            <div class="sqdev-section-title">DEVELOPMENT PROSPECTS</div>
+            <div class="sqdev-cards">${prospectCards || `<div class="sqst-empty">No prospects with growth potential found</div>`}</div>
+        </div>
+        <div class="sqdev-col sqdev-col--right">
+            <div class="sqdev-section-title">KEY PLAYERS</div>
+            <div class="sqdev-key-list">${keyPlayers}</div>
+            <div class="sqdev-section-title" style="margin-top:24px">SQUAD OVERVIEW</div>
+            <div class="sqdev-overview-grid">
+                <div class="sqdev-ov-item"><div class="sqdev-ov-val">${withPot.length}</div><div class="sqdev-ov-label">With Potential</div></div>
+                <div class="sqdev-ov-item"><div class="sqdev-ov-val">${active.filter(p => (p.age??99) <= 21).length}</div><div class="sqdev-ov-label">U21 Players</div></div>
+                <div class="sqdev-ov-item"><div class="sqdev-ov-val">${active.filter(p => (p.potential??0) >= 90).length}</div><div class="sqdev-ov-label">90+ Potential</div></div>
+                <div class="sqdev-ov-item"><div class="sqdev-ov-val">${active.filter(p => p.overall >= 88).length}</div><div class="sqdev-ov-label">Elite (88+ OVR)</div></div>
+            </div>
+        </div>
+    </div>`;
+}
+
+// ── Roles Tab ─────────────────────────────────────────────────
+
+function renderRolesTab(players, season, matches) {
+    const active = players.filter(p => !p.loan);
+    const byId   = id => active.find(p => p.id === Number(id));
+    const sorted = [...active].sort((a,b) => b.overall - a.overall);
+    const gks    = active.filter(p => p.position === "GK").sort((a,b) => b.overall - a.overall);
+    const outfield = sorted.filter(p => p.position !== "GK");
+
+    // Captain from season data
+    const captainP    = (season.captainId ? byId(season.captainId) : null) ?? sorted[0];
+    const viceP       = (season.viceCaptainId ? byId(season.viceCaptainId) : null) ?? sorted[1];
+    const thirdP      = sorted.find(p => p.id !== captainP?.id && p.id !== viceP?.id);
+
+    // Derive penalty/freekick takers from most goals/assists in matches
+    const goalMap = {}, assistMap = {};
+    matches.filter(m => m.result).forEach(m => {
+        m.goals?.forEach(g => { if (typeof g.player === "number") goalMap[g.player] = (goalMap[g.player] ?? 0) + 1; });
+        m.assists?.forEach(a => { if (typeof a.player === "number") assistMap[a.player] = (assistMap[a.player] ?? 0) + (a.count ?? 1); });
+    });
+
+    const topByGoals   = [...outfield].sort((a,b) => (goalMap[b.id]??0) - (goalMap[a.id]??0));
+    const topByAssists = [...outfield].sort((a,b) => (assistMap[b.id]??0) - (assistMap[a.id]??0));
+
+    const chip = (p, label, sub) => p ? `
+    <div class="sqrl-chip">
+        <img src="${p.photo || `assets/renders/${p.id}.png`}" alt="" onerror="this.style.display='none'" class="sqrl-avatar">
+        <div>
+            <div class="sqrl-chip-name">${p.name.split(" ").slice(-1)[0]}</div>
+            <div class="sqrl-chip-label">${label}${sub ? ` <span style="color:rgba(167,183,255,.4);font-size:.58rem">${sub}</span>` : ""}</div>
+        </div>
+    </div>` : "";
+
+    return `
+    <div class="sqrl-wrap">
+        <div class="sqrl-block">
+            <div class="sqrl-block-title">CAPTAINS</div>
+            <div class="sqrl-chips">
+                ${chip(captainP, "Captain", `${captainP?.overall} OVR`)}
+                ${chip(viceP, "Vice Captain", `${viceP?.overall} OVR`)}
+                ${chip(thirdP, "3rd Captain", `${thirdP?.overall} OVR`)}
+            </div>
+        </div>
+        <div class="sqrl-block">
+            <div class="sqrl-block-title">PENALTY TAKERS</div>
+            <div class="sqrl-chips">
+                ${chip(topByGoals[0], "1st Choice", goalMap[topByGoals[0]?.id] ? `${goalMap[topByGoals[0].id]} goals` : null)}
+                ${chip(topByGoals[1], "2nd Choice", goalMap[topByGoals[1]?.id] ? `${goalMap[topByGoals[1].id]} goals` : null)}
+            </div>
+        </div>
+        <div class="sqrl-block">
+            <div class="sqrl-block-title">FREE KICK TAKERS</div>
+            <div class="sqrl-chips">
+                ${chip(topByAssists[0], "1st Choice", assistMap[topByAssists[0]?.id] ? `${assistMap[topByAssists[0].id]} assists` : null)}
+                ${chip(topByAssists[1], "2nd Choice", assistMap[topByAssists[1]?.id] ? `${assistMap[topByAssists[1].id]} assists` : null)}
+            </div>
+        </div>
+        <div class="sqrl-block">
+            <div class="sqrl-block-title">CORNER TAKERS</div>
+            <div class="sqrl-chips">
+                ${chip(topByAssists[0], "1st Choice")}
+                ${chip(topByAssists[2], "2nd Choice")}
+            </div>
+        </div>
+        <div class="sqrl-block">
+            <div class="sqrl-block-title">GOALKEEPER</div>
+            <div class="sqrl-chips">
+                ${chip(gks[0], "1st Choice", `${gks[0]?.overall} OVR`)}
+                ${chip(gks[1] ?? null, "2nd Choice", gks[1] ? `${gks[1].overall} OVR` : null)}
+            </div>
+        </div>
+    </div>`;
 }

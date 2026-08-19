@@ -3,9 +3,9 @@
 // ==========================================
 
 export function setHeader(title, subtitle = "", actionHtml = "") {
-    const header = document.getElementById("header");
-
-    header.innerHTML = `
+    const main = document.getElementById("header-main");
+    if (!main) return;
+    main.innerHTML = `
         <div class="header-content">
             ${actionHtml ? `<div class="header-action">${actionHtml}</div>` : ""}
             <h2>${title}</h2>

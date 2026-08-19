@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: careeros-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: NODE_ENV
+        value: production

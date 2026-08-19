@@ -1,0 +1,688 @@
+/* ==========================================================
+   CareerOS — Five Design Languages
+   Each theme is a completely different platform personality.
+   ==========================================================
+
+   1. classic      — Professional web dashboard (Linear / Vercel)
+   2. liquid-glass — Apple design language (iOS 18 / Vision Pro)
+   3. material3    — Google Material You
+   4. fluent       — Windows 11 Fluent Design (Mica / Acrylic)
+   5. fc           — EA SPORTS FC in-game UI
+   ========================================================== */
+
+
+/* ══════════════════════════════════════════════════════════
+   1. CLASSIC — Professional Web Dashboard
+   Dark navy, gold accent, tight data density, Linear energy
+   ══════════════════════════════════════════════════════════ */
+
+:root,
+[data-theme="classic"] {
+    --bg:             #0F172A;
+    --surface:        #1E293B;
+    --surface-light:  #334155;
+    --primary:        #D4AF37;
+    --primary-muted:  rgba(212,175,55,.12);
+    --text:           #F8FAFC;
+    --text-secondary: #94A3B8;
+    --border:         rgba(255,255,255,.07);
+    --border-accent:  rgba(212,175,55,.30);
+    --shadow:         0 4px 20px rgba(0,0,0,.35);
+    --radius:         14px;
+    --radius-sm:      8px;
+    --radius-lg:      20px;
+    --nav-bg:         #0B1120;
+    --nav-btn-active: rgba(212,175,55,.10);
+    --header-bg:      rgba(11,17,32,.96);
+    --transition:     .18s ease;
+    --font-body:      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    --letter-spacing: 0;
+    --glass-blur:     none;
+    --surface-border: rgba(255,255,255,.07);
+}
+
+/* Classic nav — left accent bar on active, like Linear */
+[data-theme="classic"] .nav-btn { position: relative; }
+[data-theme="classic"] .nav-btn.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 22px;
+    background: var(--primary);
+    border-radius: 0 3px 3px 0;
+}
+[data-theme="classic"] .nav-btn.active {
+    background: rgba(212,175,55,.08);
+    border-radius: 10px;
+}
+
+/* Classic cards — data-table feel with subtle hover accent */
+[data-theme="classic"] .player-card:hover,
+[data-theme="classic"] #screen-container div[class*="-card"]:not([class*="-card-"]):hover {
+    border-left: 3px solid var(--primary) !important;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   2. LIQUID GLASS — Apple
+   Floating pill nav, frosted surfaces, vivid depth gradient,
+   SF Pro system font, no hard edges, pure translucency
+   ══════════════════════════════════════════════════════════ */
+
+[data-theme="liquid-glass"] {
+    /* Bernabéu Liquid Glass palette */
+    --bg:             #0B0E14;
+    --surface:        rgba(26,34,51,.50);
+    --surface-light:  rgba(47,59,92,.55);
+    --primary:        #A7B7FF;
+    --primary-muted:  rgba(167,183,255,.14);
+    --text:           #F0F4FF;
+    --text-secondary: rgba(167,183,255,.55);
+    --border:         rgba(167,183,255,.14);
+    --border-accent:  rgba(167,183,255,.45);
+    --shadow:         0 8px 40px rgba(0,0,0,.60), inset 0 1px 0 rgba(167,183,255,.14);
+    --radius:         22px;
+    --radius-sm:      14px;
+    --radius-lg:      32px;
+    --nav-bg:         rgba(11,14,20,.58);
+    --nav-btn-active: rgba(167,183,255,.15);
+    --header-bg:      rgba(11,14,20,.55);
+    --transition:     .3s cubic-bezier(.4,0,.2,1);
+    --font-body:      -apple-system, "SF Pro Display", BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+    --letter-spacing: -0.015em;
+    --glass-blur:     blur(32px) saturate(160%);
+    --surface-border: rgba(167,183,255,.16);
+    /* Glass fill tokens */
+    --glass-fill:     rgba(26,34,51,.42);
+    --glass-border:   rgba(167,183,255,.18);
+    --glass-shine:    rgba(167,183,255,.12);
+}
+
+/* Stadium image — full presence Bernabéu night */
+[data-theme="liquid-glass"] body {
+    background-color: #0B0E14;
+}
+
+/* Layer 1 — stadium photo at high opacity */
+[data-theme="liquid-glass"] body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: url("../assets/images/glass.png") center 30% / cover no-repeat;
+    opacity: 0.78;
+    pointer-events: none;
+}
+
+/* Layer 2 — dark gradient overlay: preserves stadium glow, ensures readability */
+[data-theme="liquid-glass"] body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+        linear-gradient(180deg,
+            rgba(11,14,20,.55) 0%,
+            rgba(11,14,20,.30) 40%,
+            rgba(11,14,20,.65) 100%
+        ),
+        linear-gradient(90deg,
+            rgba(11,14,20,.45) 0%,
+            transparent 50%,
+            rgba(11,14,20,.35) 100%
+        );
+    pointer-events: none;
+}
+
+/* Ensure all content sits above the pseudo layers */
+[data-theme="liquid-glass"] #app {
+    position: relative;
+    z-index: 1;
+}
+
+/* Apple: dev-block — no box, just section dividers (iOS grouped list pattern) */
+[data-theme="liquid-glass"] #screen-container .dev-block {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-bottom: 1px solid rgba(255,255,255,.07) !important;
+    margin-bottom: 8px;
+}
+
+/* Apple: floating pill nav — detached from edge */
+[data-theme="liquid-glass"] #side-nav {
+    left: 9px;
+    top: 9px;
+    bottom: 9px;
+    width: 60px;
+    height: calc(100vh - 18px);
+    border-radius: 26px;
+    background: rgba(255,255,255,.07);
+    backdrop-filter: blur(50px) saturate(220%);
+    -webkit-backdrop-filter: blur(50px) saturate(220%);
+    border: 1px solid rgba(255,255,255,.13);
+    box-shadow: 0 8px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.10);
+    padding: 18px 0 0;
+    gap: 4px;
+}
+[data-theme="liquid-glass"] #main-content { margin-left: 78px; }
+
+/* Apple: icon-only nav, no labels */
+[data-theme="liquid-glass"] .nav-btn small { display: none; }
+[data-theme="liquid-glass"] .nav-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.35rem;
+    gap: 0;
+}
+[data-theme="liquid-glass"] .nav-btn:hover {
+    background: rgba(255,255,255,.12);
+}
+[data-theme="liquid-glass"] .nav-btn.active {
+    background: rgba(167,183,255,.18);
+    box-shadow: inset 0 0 16px rgba(167,183,255,.10);
+}
+
+/* Apple: frosted header */
+[data-theme="liquid-glass"] #header {
+    background: var(--header-bg);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border-bottom: 1px solid rgba(255,255,255,.07);
+}
+
+/* Glass surfaces — navy-tinted Bernabéu glassmorphism */
+[data-theme="liquid-glass"] #screen-container div[class*="-card"]:not([class*="-card-"]),
+[data-theme="liquid-glass"] #screen-container div[class*="-block"]:not([class*="-block-"]),
+[data-theme="liquid-glass"] #screen-container div[class*="-pill"]:not([class*="-pill-"]):not(.dev-pills):not(.gdb-pills),
+[data-theme="liquid-glass"] #screen-container div[class*="-panel"]:not([class*="-panel-"]),
+[data-theme="liquid-glass"] #screen-container .hero-card,
+[data-theme="liquid-glass"] #screen-container .stat,
+[data-theme="liquid-glass"] #screen-container .card {
+    background: rgba(18,24,38,.52) !important;
+    backdrop-filter: blur(32px) saturate(150%);
+    -webkit-backdrop-filter: blur(32px) saturate(150%);
+    border: 1px solid rgba(167,183,255,.18) !important;
+    box-shadow: 0 8px 40px rgba(0,0,0,.50), inset 0 1px 0 rgba(167,183,255,.14) !important;
+    border-radius: var(--radius) !important;
+}
+
+/* Apple: dashboard stat pills — small iOS widgets with accent tint */
+[data-theme="liquid-glass"] .db-stat-pill {
+    background: rgba(167,183,255,.10) !important;
+    border: 1px solid rgba(167,183,255,.28) !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,.40), inset 0 1px 0 rgba(167,183,255,.20) !important;
+    border-radius: 20px !important;
+    padding: 16px 12px !important;
+}
+[data-theme="liquid-glass"] .db-stat-pill-value {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.02em;
+}
+
+/* Apple: dashboard sections — medium iOS widgets */
+[data-theme="liquid-glass"] .db-section {
+    background: rgba(255,255,255,.09) !important;
+    backdrop-filter: blur(40px) saturate(160%);
+    -webkit-backdrop-filter: blur(40px) saturate(160%);
+    border: 1px solid rgba(255,255,255,.18) !important;
+    box-shadow: 0 8px 32px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.22) !important;
+    border-radius: 22px !important;
+    padding: 16px !important;
+    margin-bottom: 10px;
+}
+
+/* Apple: hero card — large widget with stronger glass */
+[data-theme="liquid-glass"] .hero-card {
+    background: rgba(255,255,255,.10) !important;
+    border: 1px solid rgba(255,255,255,.25) !important;
+    box-shadow: 0 12px 48px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.35) !important;
+    border-radius: 28px !important;
+}
+
+/* Apple: compact theme switcher in pill nav */
+[data-theme="liquid-glass"] .theme-switcher {
+    padding: 8px 0 12px;
+    gap: 4px;
+}
+[data-theme="liquid-glass"] .theme-switcher-label { display: none; }
+[data-theme="liquid-glass"] .theme-dot { width: 6px; height: 6px; }
+[data-theme="liquid-glass"] .theme-select { width: 50px; font-size: 0.58rem; }
+
+
+/* ══════════════════════════════════════════════════════════
+   3. MATERIAL 3 — Google
+   Wide pill nav, deep purple surfaces, tonal elevation,
+   Roboto, very large rounded corners, state layers
+   ══════════════════════════════════════════════════════════ */
+
+[data-theme="material3"] {
+    --bg:             #0C0A17;
+    --surface:        #1A1728;
+    --surface-light:  #26223C;
+    --primary:        #CFBCFF;
+    --primary-muted:  rgba(207,188,255,.12);
+    --text:           #E7E1F5;
+    --text-secondary: #9D96B4;
+    --border:         rgba(207,188,255,.09);
+    --border-accent:  rgba(207,188,255,.42);
+    --shadow:         0 1px 3px rgba(0,0,0,.5), 0 6px 22px rgba(0,0,0,.25);
+    --radius:         28px;
+    --radius-sm:      16px;
+    --radius-lg:      36px;
+    --nav-bg:         #13102A;
+    --nav-btn-active: rgba(207,188,255,.16);
+    --header-bg:      rgba(12,10,23,.98);
+    --transition:     .25s cubic-bezier(.2,0,0,1);
+    --font-body:      Roboto, "Google Sans", "Segoe UI", Arial, sans-serif;
+    --letter-spacing: 0.01em;
+    --glass-blur:     none;
+    --surface-border: rgba(207,188,255,.09);
+}
+
+/* M3: purple atmospheric gradient */
+[data-theme="material3"] body {
+    background: var(--bg);
+    background-image:
+        radial-gradient(ellipse 80% 60% at 25% 15%,  rgba(90,50,180,.30) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 45% at 80% 85%,  rgba(130,80,220,.18) 0%, transparent 50%);
+    background-attachment: fixed;
+}
+
+/* M3: wider nav with full-width pill active state */
+[data-theme="material3"] #side-nav {
+    width: 90px;
+    background: var(--nav-bg);
+    border-right: 1px solid rgba(207,188,255,.07);
+    padding: 20px 0 0;
+    gap: 2px;
+}
+[data-theme="material3"] #main-content { margin-left: 90px; }
+
+/* M3: pill-shaped nav buttons (Material You signature) */
+[data-theme="material3"] .nav-btn {
+    width: 82px;
+    border-radius: 50px;
+    padding: 10px 0;
+    gap: 4px;
+    transition: background .2s cubic-bezier(.2,0,0,1);
+}
+[data-theme="material3"] .nav-btn small {
+    font-size: 0.58rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+}
+[data-theme="material3"] .nav-btn:hover {
+    background: rgba(207,188,255,.10);
+}
+[data-theme="material3"] .nav-btn.active {
+    background: rgba(207,188,255,.18);
+    border-radius: 50px;
+    color: var(--primary);
+}
+
+/* M3: tonal surfaces, very rounded cards */
+[data-theme="material3"] #screen-container div[class*="-card"]:not([class*="-card-"]),
+[data-theme="material3"] #screen-container div[class*="-block"]:not([class*="-block-"]),
+[data-theme="material3"] .card,
+[data-theme="material3"] .player-card,
+[data-theme="material3"] .stat {
+    border-radius: 28px !important;
+    border: 1px solid rgba(207,188,255,.07) !important;
+    background: var(--surface) !important;
+}
+[data-theme="material3"] #screen-container div[class*="-card"]:not([class*="-card-"]):hover,
+[data-theme="material3"] .card:hover,
+[data-theme="material3"] .player-card:hover {
+    /* State layer: 8% primary tint on hover */
+    background: color-mix(in srgb, var(--surface) 92%, var(--primary) 8%) !important;
+}
+
+/* M3: large display numbers for stats */
+[data-theme="material3"] .stat-value,
+[data-theme="material3"] .db-stat-pill-value {
+    font-size: 2.2rem !important;
+    font-weight: 400 !important;
+    letter-spacing: -0.02em;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   4. FLUENT — Windows 11
+   Narrow icon-only nav, Mica background, acrylic surfaces,
+   Segoe UI, left-bar active indicator, precise 8px radius
+   ══════════════════════════════════════════════════════════ */
+
+[data-theme="fluent"] {
+    --bg:             #141418;
+    --surface:        rgba(255,255,255,.055);
+    --surface-light:  rgba(255,255,255,.09);
+    --primary:        #60CDFF;
+    --primary-muted:  rgba(96,205,255,.10);
+    --text:           #FFFFFF;
+    --text-secondary: rgba(255,255,255,.54);
+    --border:         rgba(255,255,255,.08);
+    --border-accent:  rgba(96,205,255,.55);
+    --shadow:         0 2px 8px rgba(0,0,0,.38), 0 8px 22px rgba(0,0,0,.20);
+    --radius:         8px;
+    --radius-sm:      4px;
+    --radius-lg:      12px;
+    --nav-bg:         rgba(20,20,24,.88);
+    --nav-btn-active: rgba(96,205,255,.10);
+    --header-bg:      rgba(20,20,24,.92);
+    --transition:     .15s ease;
+    --font-body:      "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    --letter-spacing: 0;
+    --glass-blur:     blur(28px) saturate(1.8);
+    --surface-border: rgba(255,255,255,.08);
+}
+
+/* Fluent: Mica effect (dark + subtle Windows blue warmth) */
+[data-theme="fluent"] body {
+    background: var(--bg);
+    background-image:
+        radial-gradient(ellipse 110% 55% at 50% 0%, rgba(96,205,255,.06) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 30% at 90% 55%,  rgba(96,205,255,.03) 0%, transparent 50%);
+    background-attachment: fixed;
+}
+
+/* Fluent: narrow icon-only nav — Windows taskbar feel */
+[data-theme="fluent"] #side-nav {
+    width: 52px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(30px) saturate(1.8);
+    -webkit-backdrop-filter: blur(30px) saturate(1.8);
+    border-right: 1px solid rgba(255,255,255,.06);
+    padding: 12px 0 0;
+    gap: 1px;
+}
+[data-theme="fluent"] #main-content { margin-left: 52px; }
+
+/* Fluent: icon-only nav buttons */
+[data-theme="fluent"] .nav-btn small { display: none; }
+[data-theme="fluent"] .nav-btn {
+    width: 46px;
+    border-radius: 6px;
+    padding: 12px 0;
+    font-size: 1.2rem;
+    gap: 0;
+    position: relative;
+}
+[data-theme="fluent"] .nav-btn:hover {
+    background: rgba(255,255,255,.07);
+}
+/* Fluent: left reveal bar on active (Windows 11 signature) */
+[data-theme="fluent"] .nav-btn.active {
+    background: rgba(96,205,255,.09);
+    border-radius: 6px;
+    color: var(--primary);
+}
+[data-theme="fluent"] .nav-btn.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 18px;
+    background: var(--primary);
+    border-radius: 0 3px 3px 0;
+    box-shadow: 0 0 8px rgba(96,205,255,.6);
+}
+
+/* Fluent: frosted header (command bar feel) */
+[data-theme="fluent"] #header {
+    backdrop-filter: blur(30px) saturate(1.8);
+    -webkit-backdrop-filter: blur(30px) saturate(1.8);
+    border-bottom: 1px solid rgba(255,255,255,.06);
+    padding: 14px 18px;
+}
+
+/* Fluent: acrylic cards */
+[data-theme="fluent"] #screen-container div[class*="-card"]:not([class*="-card-"]),
+[data-theme="fluent"] #screen-container div[class*="-block"]:not([class*="-block-"]),
+[data-theme="fluent"] .card,
+[data-theme="fluent"] .player-card,
+[data-theme="fluent"] .stat {
+    background: rgba(255,255,255,.05) !important;
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+    border: 1px solid rgba(255,255,255,.07) !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,.30) !important;
+}
+[data-theme="fluent"] .card:hover,
+[data-theme="fluent"] .player-card:hover,
+[data-theme="fluent"] #screen-container div[class*="-card"]:not([class*="-card-"]):hover {
+    background: rgba(255,255,255,.08) !important;
+    border-color: rgba(96,205,255,.25) !important;
+}
+
+/* Fluent: compact theme switcher for narrow nav */
+[data-theme="fluent"] .theme-switcher { padding: 8px 0 12px; gap: 4px; }
+[data-theme="fluent"] .theme-switcher-label { display: none; }
+[data-theme="fluent"] .theme-dot { display: none; }
+[data-theme="fluent"] .theme-select { width: 44px; font-size: 0.58rem; }
+
+
+/* ══════════════════════════════════════════════════════════
+   5. FC — EA SPORTS
+   Near-black navy, teal accent, bold condensed typography,
+   sharp 3px radius, diagonal pitch texture, in-game card feel
+   ══════════════════════════════════════════════════════════ */
+
+[data-theme="fc"] {
+    --bg:             #040910;
+    --surface:        #07111E;
+    --surface-light:  #0D1C30;
+    --primary:        #00D4FF;
+    --primary-muted:  rgba(0,212,255,.10);
+    --text:           #E8F4FF;
+    --text-secondary: rgba(168,210,240,.50);
+    --border:         rgba(0,212,255,.12);
+    --border-accent:  rgba(0,212,255,.60);
+    --shadow:         0 4px 24px rgba(0,0,0,.65);
+    --radius:         3px;
+    --radius-sm:      2px;
+    --radius-lg:      5px;
+    --nav-bg:         #030810;
+    --nav-btn-active: rgba(0,212,255,.10);
+    --header-bg:      rgba(4,9,16,.98);
+    --transition:     .12s ease;
+    --font-body:      -apple-system, "Segoe UI", "Arial Narrow", Arial, sans-serif;
+    --letter-spacing: 0.04em;
+    --glass-blur:     none;
+    --surface-border: rgba(0,212,255,.14);
+}
+
+/* FC: deep dark background with subtle pitch diagonal lines */
+[data-theme="fc"] body {
+    background: var(--bg);
+    background-image:
+        repeating-linear-gradient(
+            -52deg,
+            transparent,
+            transparent 55px,
+            rgba(0,212,255,.018) 55px,
+            rgba(0,212,255,.018) 56px
+        ),
+        radial-gradient(ellipse 90% 50% at 50% 100%, rgba(0,20,50,.80) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 30% at 80% 5%,   rgba(0,80,120,.20) 0%, transparent 50%);
+    background-attachment: fixed;
+}
+
+/* FC: wider bold nav with game-UI style */
+[data-theme="fc"] #side-nav {
+    width: 78px;
+    background: var(--nav-bg);
+    border-right: 1px solid rgba(0,212,255,.18);
+    padding: 16px 0 0;
+    gap: 2px;
+}
+[data-theme="fc"] #main-content { margin-left: 78px; }
+
+/* FC: game-style nav buttons — bold, uppercase labels */
+[data-theme="fc"] .nav-btn {
+    width: 70px;
+    border-radius: 3px;
+    padding: 10px 0;
+    font-size: 1.25rem;
+    gap: 3px;
+}
+[data-theme="fc"] .nav-btn small {
+    font-size: 0.48rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+[data-theme="fc"] .nav-btn:hover {
+    background: rgba(0,212,255,.07);
+    color: var(--text);
+}
+[data-theme="fc"] .nav-btn.active {
+    background: rgba(0,212,255,.10);
+    border-left: 3px solid var(--primary);
+    color: var(--primary);
+    border-radius: 0 3px 3px 0;
+    box-shadow: inset 4px 0 16px rgba(0,212,255,.08);
+}
+
+/* FC: teal accent line under header */
+[data-theme="fc"] #header {
+    border-bottom: 1px solid rgba(0,212,255,.25);
+    padding: 14px 18px;
+}
+
+/* FC: in-game dark card feel — sharp, dark, teal-bordered */
+[data-theme="fc"] #screen-container div[class*="-card"]:not([class*="-card-"]),
+[data-theme="fc"] #screen-container div[class*="-block"]:not([class*="-block-"]),
+[data-theme="fc"] .card,
+[data-theme="fc"] .player-card,
+[data-theme="fc"] .stat {
+    background: rgba(4,14,28,.85) !important;
+    border: 1px solid rgba(0,212,255,.14) !important;
+    border-radius: 3px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,.55) !important;
+}
+[data-theme="fc"] .card:hover,
+[data-theme="fc"] .player-card:hover,
+[data-theme="fc"] #screen-container div[class*="-card"]:not([class*="-card-"]):hover {
+    border-color: rgba(0,212,255,.50) !important;
+    box-shadow: 0 0 16px rgba(0,212,255,.10), 0 4px 20px rgba(0,0,0,.55) !important;
+}
+
+/* FC: bold stat numbers like in-game overlays */
+[data-theme="fc"] .stat-value,
+[data-theme="fc"] .db-stat-pill-value {
+    font-size: 2rem !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.01em;
+    color: var(--primary) !important;
+}
+[data-theme="fc"] .stat-label,
+[data-theme="fc"] .db-stat-pill-label {
+    text-transform: uppercase !important;
+    font-size: 0.6rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.12em !important;
+}
+
+
+/* ==========================================================
+   Shared structural rules (apply to all themes)
+   ========================================================== */
+
+[data-theme] body {
+    font-family: var(--font-body);
+    letter-spacing: var(--letter-spacing);
+    background: var(--bg);
+    transition: background .3s ease;
+}
+
+[data-theme] #side-nav {
+    background: var(--nav-bg);
+    border-right-color: var(--border);
+}
+
+[data-theme] .nav-btn.active {
+    background: var(--nav-btn-active);
+    color: var(--primary);
+}
+
+[data-theme] #header {
+    background: var(--header-bg);
+    border-bottom-color: var(--border);
+}
+
+
+/* ==========================================================
+   Theme Switcher Widget
+   ========================================================== */
+
+.theme-switcher {
+    margin-top: auto;
+    padding: 10px 8px 14px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    width: 100%;
+}
+
+.theme-switcher-label {
+    font-size: 0.58rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.theme-select {
+    width: 68px;
+    background: var(--surface-light);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 4px 2px;
+    font-size: 0.65rem;
+    font-family: var(--font-body);
+    cursor: pointer;
+    text-align: center;
+    appearance: none;
+    -webkit-appearance: none;
+    outline: none;
+    transition: var(--transition);
+}
+
+.theme-select:hover,
+.theme-select:focus {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.theme-select option {
+    background: #1a1a2e;
+    color: #fff;
+    font-size: 0.75rem;
+}
+
+.theme-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
+    flex-shrink: 0;
+    transition: background .3s, box-shadow .3s;
+}

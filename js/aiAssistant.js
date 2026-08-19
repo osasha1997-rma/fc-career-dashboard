@@ -293,7 +293,11 @@ function buildTransferAdvice(scoutReport) {
 // In-game current date: 2027-09-24 (next fixture vs Valencia CF)
 const CONTRACT_REF_YEAR = 2027, CONTRACT_REF_MONTH = 9;
 
-function monthsLeft(expiry) {
+function monthsLeft(expiry, player) {
+    // New format: years/months remaining stored directly on player
+    if (player && (player.contractYearsLeft != null || player.contractMonthsLeft != null)) {
+        return (player.contractYearsLeft ?? 0) * 12 + (player.contractMonthsLeft ?? 0);
+    }
     if (!expiry || expiry === "-") return null;
     const [y, m] = expiry.split("-").map(Number);
     return (y - CONTRACT_REF_YEAR) * 12 + (m - CONTRACT_REF_MONTH);
@@ -320,12 +324,12 @@ function expiryColor(months) {
 function buildContractAdvice(players) {
     const active = players.filter(p => !p.loan);
 
-    const critical   = active.filter(p => { const m = monthsLeft(p.contractExpiry); return m !== null && m <= 6; })
+    const critical   = active.filter(p => { const m = monthsLeft(p.contractExpiry, p); return m !== null && m <= 6; })
         .sort((a, b) => monthsLeft(a.contractExpiry) - monthsLeft(b.contractExpiry));
-    const urgent     = active.filter(p => { const m = monthsLeft(p.contractExpiry); return m !== null && m > 6 && m <= 12; })
+    const urgent     = active.filter(p => { const m = monthsLeft(p.contractExpiry, p); return m !== null && m > 6 && m <= 12; })
         .sort((a, b) => monthsLeft(a.contractExpiry) - monthsLeft(b.contractExpiry));
     const monitor    = active.filter(p => {
-        const m = monthsLeft(p.contractExpiry);
+        const m = monthsLeft(p.contractExpiry, p);
         return m !== null && m > 12 && m <= 24 && (p.role === "Crucial" || p.role === "Important");
     }).sort((a, b) => monthsLeft(a.contractExpiry) - monthsLeft(b.contractExpiry));
     const youngToTie = active.filter(p => p.age <= 23 && p.potential >= 80 && p.role !== "Prospect");
@@ -334,7 +338,7 @@ function buildContractAdvice(players) {
     const item = (text, type) => `<div class="aia-advice-item aia-advice-${type}">${text}</div>`;
 
     const contractRow = p => {
-        const m = monthsLeft(p.contractExpiry);
+        const m = monthsLeft(p.contractExpiry, p);
         return `<div class="aia-player-row">
             <span class="aia-pos-badge">${p.position}</span>
             <span class="aia-player-name">${p.name}</span>
@@ -365,7 +369,7 @@ function buildContractAdvice(players) {
         ${youngToTie.length ? `<div class="aia-block">
             <div class="aia-block-title">🌟 Tie Down Young Talent</div>
             ${youngToTie.map(p => {
-                const m = monthsLeft(p.contractExpiry);
+                const m = monthsLeft(p.contractExpiry, p);
                 return `<div class="aia-player-row">
                     <span class="aia-pos-badge">${p.position}</span>
                     <span class="aia-player-name">${p.name}</span>

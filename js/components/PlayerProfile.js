@@ -7,15 +7,16 @@ import { derivePlayerStats } from "../utils/stats.js";
 
 const RENDER_PATH = "assets/renders/";
 
-export function createPlayerProfile(player, matches = []) {
+export function createPlayerProfile(player, matches = [], canEdit = false) {
     const stats = derivePlayerStats(player, matches);
+    const photoSrc = player.photo || `${RENDER_PATH}${player.id}.png`;
 
     return `
     <section class="player-profile fade">
 
         <div class="player-profile-header">
             <div class="player-render-wrap">
-                <img src="${RENDER_PATH}${player.id}.png" class="player-render" alt="${player.name}"
+                <img src="${photoSrc}" class="player-render" alt="${player.name}"
                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
                 <div class="player-render-fallback" style="display:none">
                     <span class="player-overall">${player.overall}</span>
@@ -25,6 +26,16 @@ export function createPlayerProfile(player, matches = []) {
             <h1>${player.name}</h1>
             <p>#${player.number} &middot; ${player.position}</p>
             <p>${player.nationality}</p>
+            ${canEdit ? `
+            <div class="pp-actions">
+                <button class="pp-action-btn pp-action-btn--edit" id="pp-edit-btn">✏️ Edit</button>
+                <button class="pp-action-btn pp-action-btn--delete" id="pp-delete-btn">🗑️ Delete</button>
+            </div>
+            <div class="pp-delete-confirm" id="pp-delete-confirm" style="display:none">
+                <span>Remove <strong>${player.name}</strong> from squad?</span>
+                <button class="pp-action-btn pp-action-btn--delete" id="pp-delete-confirm-yes">Yes, Delete</button>
+                <button class="pp-action-btn pp-action-btn--edit" id="pp-delete-confirm-no">Cancel</button>
+            </div>` : ""}
         </div>
 
         ${renderSummaryPills(stats)}
