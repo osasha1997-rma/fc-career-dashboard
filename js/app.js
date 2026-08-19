@@ -370,7 +370,7 @@ async function setupSettings() {
             try {
                 const _apiBase = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:4000/api"
-    : "https://careeros-api.onrender.com/api";
+    : "https://fc-career-dashboard.onrender.com/api";
                 await fetch(`${_apiBase}/careers/${state.careerId}`, {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
