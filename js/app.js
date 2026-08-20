@@ -368,10 +368,10 @@ async function setupSettings() {
         // Persist to MongoDB if connected
         if (state.careerId) {
             try {
-                const _apiBase = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+                const _settingsApiBase = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
     ? "http://localhost:4000/api"
     : "https://fc-career-dashboard.onrender.com/api";
-                await fetch(`${_apiBase}/careers/${state.careerId}`, {
+                await fetch(`${_settingsApiBase}/careers/${state.careerId}`, {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ season: state.season, players: state.players }),
@@ -923,8 +923,12 @@ async function saveMatch() {
     btn.textContent = "Saving…";
     btn.disabled = true;
 
+    const _apiBase = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? "http://localhost:4000/api"
+        : "https://fc-career-dashboard.onrender.com/api";
+
     try {
-        await fetch(`/api/careers/${state.careerId}`, {
+        await fetch(`${_apiBase}/careers/${state.careerId}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ matches: updatedMatches }),
