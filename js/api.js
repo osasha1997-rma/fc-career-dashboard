@@ -6,51 +6,22 @@ const API = window.location.hostname === "localhost" || window.location.hostname
     ? "http://localhost:4000/api"
     : "https://fc-career-dashboard.onrender.com/api";
 
-async function loadJson(path) {
-    const response = await fetch(path);
-    if (!response.ok) throw new Error(`Failed to load ${path}: ${response.status}`);
-    return response.json();
-}
-
-// Try the live backend; fall back to static JSON files
-async function tryBackend() {
-    try {
-        const res = await fetch(`${API}/careers/active`, { signal: AbortSignal.timeout(2000) });
-        if (!res.ok) return null;
-        return res.json();
-    } catch {
-        return null;
-    }
-}
-
-export async function loadAll() {
-    const career = await tryBackend();
-
-    if (career) {
-        // ✅ Backend is live — use MongoDB data
-        return {
-            season:      career.season,
-            players:     career.players,
-            matches:     career.matches,
-            standings:   career.standings   ?? {},
-            leagueStats: career.leagueStats ?? {},
-            scoutReport: career.scoutReport ?? null,
-            academy:     career.academy     ?? [],
-            careerId:    career._id,
-        };
-    }
-
-    // ⚡ Fallback to static JSON files
-    const [season, players, matches, standings, leagueStats, scoutReport, academy] = await Promise.all([
-        loadJson("data/season.json"),
-        loadJson("data/players.json"),
-        loadJson("data/matches.json"),
-        loadJson("data/standings.json").catch(() => ({})),
-        loadJson("data/leagueStats.json").catch(() => ({})),
-        loadJson("data/scout-report.json").catch(() => null),
-        loadJson("data/academy.json").catch(() => [])
-    ]);
-    return { season, players, matches, standings, leagueStats, scoutReport, academy };
+// Load active career from DB — no JSON fallback
+export async function loadAll(careerId = null) {
+    const url = careerId ? `${API}/careers/${careerId}` : `${API}/careers/active`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    if (!res.ok) throw new Error("Could not reach backend. Make sure the server is running.");
+    const career = await res.json();
+    return {
+        season:      career.season,
+        players:     career.players      ?? [],
+        matches:     career.matches      ?? [],
+        standings:   career.standings    ?? {},
+        leagueStats: career.leagueStats  ?? {},
+        scoutReport: career.scoutReport  ?? null,
+        academy:     career.academy      ?? [],
+        careerId:    career._id,
+    };
 }
 
 // Fetch lightweight list of all careers
@@ -63,11 +34,11 @@ export async function fetchCareers() {
     }
 }
 
-// Switch active career — returns full career data
+// Switch active career — returns full career data scoped to that career
 export async function activateCareer(id) {
     const res = await fetch(`${API}/careers/${id}/activate`, { method: "PATCH" });
     if (!res.ok) throw new Error("Failed to activate career");
-    return loadAll();
+    return loadAll(id);
 }
 
 // Add a player to a career

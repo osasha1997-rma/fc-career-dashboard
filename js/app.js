@@ -1026,7 +1026,7 @@ async function startApp() {
     } catch (err) {
         console.error(err);
         document.getElementById("loading-screen").innerHTML =
-            `<div class="loader"><h1>⚽ CareerOS</h1><p style="color:var(--danger)">Failed to load data. Please refresh.</p></div>`;
+            `<div class="loader"><h1>⚽ CareerOS</h1><p style="color:var(--danger)">${err.message || "Could not connect to server. Make sure the backend is running."}</p></div>`;
     }
 }
 
