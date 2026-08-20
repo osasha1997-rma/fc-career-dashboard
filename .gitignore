@@ -1,7 +1,7 @@
 .DS_Store
 Thumbs.db
 data/ai-config.json
-data/fc26.json
+data/fc26-raw/
 data/fc26-raw/
 server/.env
 node_modules/
