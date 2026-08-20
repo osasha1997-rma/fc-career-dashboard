@@ -10,7 +10,10 @@ import {
     setHeader,
     renderScreen,
     hideLoadingScreen,
-    setActiveNavigation
+    setActiveNavigation,
+    showLoader,
+    hideLoader,
+    showToast
 } from "./ui.js";
 
 import { registerRoute, getRoute } from "./router.js";
@@ -490,6 +493,7 @@ async function renderCareerWidget(season) {
             if (el.classList.contains("cw-option--active")) return;
             document.getElementById("cw-dropdown").classList.remove("cw-dropdown--open");
             try {
+                showLoader("Switching career…");
                 const data = await activateCareer(id);
                 state.season      = data.season;
                 state.players     = data.players;
@@ -501,9 +505,12 @@ async function renderCareerWidget(season) {
                 state.transfers   = data.transfers   ?? { ins: [], outs: [], loans: [] };
                 state.careerId    = data.careerId;
                 await renderCareerWidget(state.season);
+                hideLoader();
+                showToast(`Switched to ${data.season?.club ?? "career"} ${data.season?.season ?? ""}`);
                 showScreen("dashboard");
             } catch {
-                alert("Could not switch career — is the server running?");
+                hideLoader();
+                showToast("Could not switch career — is the server running?", "error");
             }
         });
     });
@@ -634,11 +641,11 @@ function setupAddPlayerModal() {
         };
 
         const btn = document.getElementById("ap-save");
-        btn.textContent = "Saving…";
         btn.disabled = true;
 
         const editId = modal.dataset.editPlayerId ? parseInt(modal.dataset.editPlayerId) : null;
 
+        showLoader(editId != null ? "Updating player…" : "Adding player…");
         try {
             let saved;
             if (editId != null) {
@@ -667,13 +674,16 @@ function setupAddPlayerModal() {
             document.getElementById("ap-photo").value = "";
             document.getElementById("ap-photo-preview").innerHTML = `<span class="ap-photo-icon">⚽</span>`;
             document.getElementById("ap-photo-btn").textContent = "📷 Upload Photo";
+            hideLoader();
+            showToast(editId != null ? "Player updated" : "Player added");
             if (editId != null) {
                 showScreen("player-profile");
             } else {
                 showScreen("squad");
             }
         } catch (err) {
-            alert("Could not save player: " + err.message);
+            hideLoader();
+            showToast("Could not save player: " + err.message, "error");
         } finally {
             btn.textContent = editId != null ? "Save Changes" : "Add Player";
             btn.disabled = false;
@@ -924,13 +934,13 @@ async function saveMatch() {
     const updatedMatches = [...state.matches, newMatch];
 
     const btn = document.getElementById("am-save");
-    btn.textContent = "Saving…";
     btn.disabled = true;
 
     const _apiBase = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
         ? "http://localhost:4000/api"
         : "https://fc-career-dashboard.onrender.com/api";
 
+    showLoader("Saving match…");
     try {
         await fetch(`${_apiBase}/careers/${state.careerId}`, {
             method: "PATCH",
@@ -939,11 +949,13 @@ async function saveMatch() {
         });
         state.matches = updatedMatches;
         document.getElementById("add-match-modal").style.display = "none";
+        hideLoader();
+        showToast("Match saved");
         showScreen("matches");
     } catch (e) {
-        alert("Failed to save match: " + e.message);
+        hideLoader();
+        showToast("Failed to save match: " + e.message, "error");
     } finally {
-        btn.textContent = "Save Match";
         btn.disabled = false;
     }
 }

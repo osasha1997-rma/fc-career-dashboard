@@ -28,6 +28,26 @@ export function renderScreen(html, init) {
     }, 250);
 }
 
+export function showLoader(msg = "Loading…") {
+    const el = document.getElementById("global-loader");
+    if (el) { document.getElementById("gl-msg").textContent = msg; el.style.display = "flex"; }
+}
+
+export function hideLoader() {
+    const el = document.getElementById("global-loader");
+    if (el) el.style.display = "none";
+}
+
+let _toastTimer;
+export function showToast(msg, type = "success") {
+    const el = document.getElementById("global-toast");
+    if (!el) return;
+    clearTimeout(_toastTimer);
+    el.textContent = msg;
+    el.className = `g-toast${type === "error" ? " g-toast--error" : ""}`;
+    _toastTimer = setTimeout(() => { el.classList.add("g-toast--hidden"); }, 2500);
+}
+
 export function hideLoadingScreen() {
     document.getElementById("loading-screen").style.display = "none";
     document.getElementById("app").classList.remove("hidden");

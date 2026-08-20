@@ -658,7 +658,18 @@
             document.documentElement.setAttribute("data-theme", t);
         })();
     </script>
-    <script type="module" src="js/app.js?v=54"></script>
+    <script type="module" src="js/app.js?v=55"></script>
+
+    <!-- Global loader overlay -->
+    <div id="global-loader" style="display:none">
+        <div class="gl-box">
+            <div class="gl-spinner"></div>
+            <div class="gl-msg" id="gl-msg">Loading…</div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="global-toast" class="g-toast g-toast--hidden"></div>
 
 </body>
 </html>
