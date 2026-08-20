@@ -236,8 +236,8 @@ registerRoute("ai-assistant", () => {
 });
 
 registerRoute("squad-report", () => {
-    setHeader("Squad Report", "2027/28");
-    return { html: renderSquadReport(state.scoutReport) };
+    setHeader("Squad Report", state.season?.season ?? "");
+    return { html: renderSquadReport(state.players, state.matches, state.season ?? {}) };
 });
 
 registerRoute("development", () => {
@@ -1041,8 +1041,12 @@ async function startApp() {
         showScreen("dashboard");
     } catch (err) {
         console.error(err);
+        const isAbort = err.name === "AbortError" || err.message?.includes("aborted") || err.message?.includes("abort");
+        const msg = isAbort
+            ? "Server is waking up — this can take up to 30 seconds on first load. Please refresh and try again."
+            : (err.message || "Could not connect to server.");
         document.getElementById("loading-screen").innerHTML =
-            `<div class="loader"><h1>⚽ CareerOS</h1><p style="color:var(--danger)">${err.message || "Could not connect to server. Make sure the backend is running."}</p></div>`;
+            `<div class="loader"><h1>⚽ CareerOS</h1><p style="color:var(--danger);max-width:320px;text-align:center;line-height:1.5">${msg}</p><button onclick="location.reload()" style="margin-top:16px;padding:10px 24px;border-radius:8px;background:#6366f1;color:#fff;border:none;font-weight:700;cursor:pointer">Try Again</button></div>`;
     }
 }
 

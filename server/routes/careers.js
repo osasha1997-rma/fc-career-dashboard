@@ -68,13 +68,29 @@ router.patch("/:id", async (req, res) => {
     }
 });
 
+// Derive contractEnd from the career's last played match + player's duration fields
+function calcContractEnd(career, playerData) {
+    const years  = playerData.contractYearsLeft  ?? 0;
+    const months = playerData.contractMonthsLeft ?? 0;
+    if (years === 0 && months === 0) return undefined;
+    const played = (career.matches ?? [])
+        .filter(m => m.result && m.date)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+    if (!played.length) return undefined;
+    const base = new Date(played[0].date);
+    base.setFullYear(base.getFullYear() + years);
+    base.setMonth(base.getMonth() + months);
+    return base.toISOString().slice(0, 10);
+}
+
 // POST /api/careers/:id/players — add a player to a career
 router.post("/:id/players", async (req, res) => {
     try {
         const career = await Career.findById(req.params.id);
         if (!career) return res.status(404).json({ error: "Career not found" });
         const newId = (career.players.reduce((max, p) => Math.max(max, p.id ?? 0), 0)) + 1;
-        const player = { id: newId, ...req.body };
+        const contractEnd = calcContractEnd(career, req.body);
+        const player = { id: newId, ...req.body, ...(contractEnd ? { contractEnd } : {}) };
         career.players.push(player);
         await career.save();
         res.status(201).json(player);
@@ -91,7 +107,10 @@ router.patch("/:id/players/:playerId", async (req, res) => {
         const pid = parseInt(req.params.playerId);
         const idx = career.players.findIndex(p => p.id === pid);
         if (idx === -1) return res.status(404).json({ error: "Player not found" });
-        Object.assign(career.players[idx], req.body);
+        const merged = { ...career.players[idx], ...req.body };
+        const contractEnd = calcContractEnd(career, merged);
+        if (contractEnd) merged.contractEnd = contractEnd;
+        Object.assign(career.players[idx], merged);
         career.markModified("players");
         await career.save();
         res.json(career.players[idx]);

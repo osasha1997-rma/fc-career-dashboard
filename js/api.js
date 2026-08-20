@@ -6,10 +6,18 @@ const API = window.location.hostname === "localhost" || window.location.hostname
     ? "http://localhost:4000/api"
     : "https://fc-career-dashboard.onrender.com/api";
 
+// Safari-safe timeout signal (AbortSignal.timeout not available on iOS < 16)
+function timeoutSignal(ms) {
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), ms);
+    return ctrl.signal;
+}
+
 // Load active career from DB — no JSON fallback
 export async function loadAll(careerId = null) {
     const url = careerId ? `${API}/careers/${careerId}` : `${API}/careers/active`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+    // 35s to survive Render cold-start (free tier can take 20-30s)
+    const res = await fetch(url, { signal: timeoutSignal(35000) });
     if (!res.ok) throw new Error("Could not reach backend. Make sure the server is running.");
     const career = await res.json();
     return {
@@ -28,7 +36,7 @@ export async function loadAll(careerId = null) {
 // Fetch lightweight list of all careers
 export async function fetchCareers() {
     try {
-        const res = await fetch(`${API}/careers`, { signal: AbortSignal.timeout(2000) });
+        const res = await fetch(`${API}/careers`, { signal: timeoutSignal(35000) });
         return res.ok ? res.json() : [];
     } catch {
         return [];

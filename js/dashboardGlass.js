@@ -239,27 +239,35 @@ function renderTopPerformers(stats, players) {
 }
 
 function renderFormation(season, players) {
-    // Hardcoded starting XI — ordered L→R within each line
-    const XI = {
-        gk:   ["Courtois"],
-        def:  ["Cucurella", "Bastoni", "Militão", "Alexander-Arnold"],
-        cdm:  ["Rodri", "Valverde"],
-        cam:  ["Vinícius Júnior", "Bellingham", "Olise"],
-        att:  ["Mbappé"],
-    };
+    const formation = season.formation ?? "4-3-3";
+    const byId = id => players.find(p => p.id === id);
 
-    const byName = name => {
-        const n = name.toLowerCase();
-        return players.find(p => p.name && p.name.toLowerCase().includes(n.split(" ").at(-1)));
-    };
+    let gk, defs, cdms, cams, atts;
 
-    const resolve = names => names.map(n => byName(n) ?? { name: n, overall: null });
-
-    const gk   = resolve(XI.gk);
-    const defs = resolve(XI.def);
-    const cdms = resolve(XI.cdm);
-    const cams = resolve(XI.cam);
-    const atts = resolve(XI.att);
+    if (season.startingXI?.length === 11) {
+        // Use saved XI — split into lines based on formation
+        const xi = season.startingXI.map(byId).filter(Boolean);
+        const lines = formation.split("-").map(n => parseInt(n)).filter(n => !isNaN(n));
+        // xi order: GK first, then line by line from attack to defence
+        // buildFixedFormationRows puts GK last; here startingXI is stored GK first
+        let cursor = 0;
+        gk   = [xi[cursor++]];
+        // lines go attack→defence in storage (matches buildFixedFormationRows input)
+        const lineGroups = lines.map(n => xi.slice(cursor, cursor += n));
+        // lineGroups[0] = DEF, last = ATT (same order as formation string "4-2-3-1")
+        defs = lineGroups[0] ?? [];
+        cdms = lineGroups[1] ?? [];
+        cams = lineGroups[2] ?? [];
+        atts = lineGroups[lineGroups.length - 1] ?? [];
+    } else {
+        // Fallback hardcoded
+        const byName = name => players.find(p => p.name?.toLowerCase().includes(name.toLowerCase().split(" ").at(-1)));
+        gk   = [byName("Courtois")].filter(Boolean);
+        defs = ["Cucurella","Bastoni","Militão","Alexander-Arnold"].map(byName).filter(Boolean);
+        cdms = ["Rodri","Valverde"].map(byName).filter(Boolean);
+        cams = ["Vinícius Júnior","Bellingham","Olise"].map(byName).filter(Boolean);
+        atts = ["Mbappé"].map(byName).filter(Boolean);
+    }
 
     const initial  = p => p?.name?.split(/[\s-]/).find(x => x.length > 1)?.[0]?.toUpperCase() ?? "?";
     const shortName = p => {
@@ -291,7 +299,7 @@ function renderFormation(season, players) {
 
     return `
     <div class="gdb-card gdb-card--full">
-        <div class="gdb-card-label">Team Management <span class="gdb-f-form">4-2-3-1</span></div>
+        <div class="gdb-card-label">Team Management <span class="gdb-f-form">${formation}</span></div>
         <div class="gdb-pitch">
             <div class="gdb-pitch-inner">
                 <div class="gdb-pitch-halfway"></div>

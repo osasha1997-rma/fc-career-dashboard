@@ -391,7 +391,7 @@ function renderSquadTab() {
             <td class="sq-tbl-form">${formDots(p.id)}</td>
             <td class="sq-tbl-val">${fmtVal(p.marketValue)}</td>
             <td class="sq-tbl-val">${fmtWage(p.wage)}/wk</td>
-            <td class="sq-tbl-contract">${p.contract ?? "—"}</td>
+            <td class="sq-tbl-contract">${p.contractEnd ? new Date(p.contractEnd).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "—"}</td>
         </tr>`;
     }).join("");
 
@@ -780,7 +780,7 @@ function wireSquadTab(onPlayerSelect) {
                 <td class="sq-tbl-form">${formDots(p.id)}</td>
                 <td class="sq-tbl-val">${fmtVal(p.marketValue)}</td>
                 <td class="sq-tbl-val">${fmtWage(p.wage)}/wk</td>
-                <td class="sq-tbl-contract">${p.contract ?? "—"}</td>
+                <td class="sq-tbl-contract">${p.contractEnd ? new Date(p.contractEnd).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "—"}</td>
             </tr>`;
         }).join("");
     };
@@ -800,23 +800,30 @@ function renderDepthChartTab(players) {
     const active = players.filter(p => !p.loan);
 
     const sections = [
-        { label: "STRIKERS",         positions: ["ST","CF"] },
-        { label: "ATTACKING MIDS",   positions: ["CAM","LW","RW"] },
-        { label: "CENTRAL MIDS",     positions: ["CM","CDM","LM","RM"] },
-        { label: "DEFENDERS",        positions: ["CB","LB","RB","LWB","RWB"] },
-        { label: "GOALKEEPERS",      positions: ["GK"] },
+        { label: "STRIKER",            positions: ["ST","CF"] },
+        { label: "LEFT WING",          positions: ["LW"] },
+        { label: "RIGHT WING",         positions: ["RW"] },
+        { label: "ATTACKING MID",      positions: ["CAM"] },
+        { label: "LEFT MID",           positions: ["LM"] },
+        { label: "RIGHT MID",          positions: ["RM"] },
+        { label: "CENTRAL MID",        positions: ["CM"] },
+        { label: "DEFENSIVE MID",      positions: ["CDM"] },
+        { label: "LEFT BACK",          positions: ["LB","LWB"] },
+        { label: "RIGHT BACK",         positions: ["RB","RWB"] },
+        { label: "CENTRE BACK",        positions: ["CB"] },
+        { label: "GOALKEEPER",         positions: ["GK"] },
     ];
 
-    const choiceLabels = ["1ST CHOICE", "2ND CHOICE", "3RD CHOICE", "4TH CHOICE"];
+    const choiceLabel = i => i === 0 ? "1ST" : i === 1 ? "2ND" : i === 2 ? "3RD" : `${i+1}TH`;
 
-    const posStrength = pos => {
-        const candidates = active.filter(p => pos.includes(p.position));
-        const avgOvr = candidates.length ? Math.round(candidates.reduce((s,p) => s + p.overall, 0) / candidates.length) : 0;
-        if (avgOvr >= 88) return { label: "Excellent", color: "#22c55e" };
-        if (avgOvr >= 84) return { label: "Very Strong", color: "#84cc16" };
-        if (avgOvr >= 80) return { label: "Strong", color: "#f59e0b" };
-        if (avgOvr >= 76) return { label: "Average", color: "#f97316" };
-        return { label: "Weak", color: "#ef4444" };
+    const strength = candidates => {
+        if (!candidates.length) return null;
+        const avg = Math.round(candidates.reduce((s,p) => s + p.overall, 0) / candidates.length);
+        if (avg >= 88) return { label: "Excellent",   color: "#22c55e" };
+        if (avg >= 84) return { label: "Very Strong", color: "#84cc16" };
+        if (avg >= 80) return { label: "Strong",      color: "#f59e0b" };
+        if (avg >= 76) return { label: "Average",     color: "#f97316" };
+        return             { label: "Weak",        color: "#ef4444" };
     };
 
     const playerCard = (p, rank) => {
@@ -835,32 +842,24 @@ function renderDepthChartTab(players) {
         </div>`;
     };
 
-    const emptyCard = rank => `
-        <div class="dc2-card dc2-card--empty">
-            <div class="dc2-rank">${rank}</div>
-            <div class="dc2-portrait dc2-portrait--empty"><span>?</span></div>
-            <div class="dc2-info"><div class="dc2-name" style="color:rgba(167,183,255,.3)">Vacant</div></div>
-        </div>`;
-
     const sectionsHtml = sections.map(sec => {
         const candidates = active
-            .filter(p => sec.positions.includes(p.position))
-            .sort((a,b) => b.overall - a.overall)
-            .slice(0, 4);
+            .filter(p => sec.positions.includes(p.position) || (p.secondaryPositions ?? []).some(sp => sec.positions.includes(sp)))
+            .sort((a,b) => b.overall - a.overall);
 
-        const strength = posStrength(sec.positions);
-        const avgOvr = candidates.length ? Math.round(candidates.reduce((s,p) => s + p.overall, 0) / candidates.length) : 0;
+        if (!candidates.length) return "";
 
-        const cards = choiceLabels.map((lbl, i) =>
-            candidates[i] ? playerCard(candidates[i], lbl) : emptyCard(lbl)
-        ).join("");
+        const str = strength(candidates);
+        const avgOvr = Math.round(candidates.reduce((s,p) => s + p.overall, 0) / candidates.length);
+
+        const cards = candidates.map((p, i) => playerCard(p, choiceLabel(i))).join("");
 
         return `
         <div class="dc2-section">
             <div class="dc2-section-header">
                 <span class="dc2-section-title">${sec.label}</span>
-                <span class="dc2-section-strength" style="color:${strength.color}">${strength.label}</span>
-                ${avgOvr ? `<span class="dc2-section-avg">${avgOvr} avg OVR</span>` : ""}
+                <span class="dc2-section-strength" style="color:${str.color}">${str.label}</span>
+                <span class="dc2-section-avg">${avgOvr} avg OVR</span>
             </div>
             <div class="dc2-cards">${cards}</div>
         </div>`;
@@ -955,27 +954,41 @@ function renderStatsTab(players, season, matches) {
 // ── Contracts Tab ─────────────────────────────────────────────
 
 function renderContractsTab(players) {
-    const active = [...players.filter(p => !p.loan)].sort((a, b) => {
-        const ay = parseInt(a.contract) || 9999;
-        const by = parseInt(b.contract) || 9999;
-        return ay - by;
-    });
+    // Use last played match date as in-game "today"
+    const playedMatches = (squadState.matches ?? [])
+        .filter(m => m.result && m.date)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+    const gameDate = playedMatches.length ? new Date(playedMatches[0].date) : new Date();
 
-    const currentYear = new Date().getFullYear();
+    const parseEnd = (p) => p.contractEnd ? new Date(p.contractEnd) : null;
 
-    const statusChip = (contract) => {
-        const yr = parseInt(contract);
-        if (!yr) return `<span class="sqct-chip sqct-chip--unknown">Unknown</span>`;
-        const yrs = yr - currentYear;
-        if (yrs <= 1) return `<span class="sqct-chip sqct-chip--expiring">Expiring</span>`;
-        if (yrs <= 2) return `<span class="sqct-chip sqct-chip--soon">Expires Soon</span>`;
+    const fmtDate = (d) => d ? d.toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "—";
+
+    const monthsFromGame = (endDate) =>
+        (endDate.getFullYear() - gameDate.getFullYear()) * 12 + (endDate.getMonth() - gameDate.getMonth());
+
+    const statusChip = (endDate) => {
+        if (!endDate) return `<span class="sqct-chip sqct-chip--unknown">Unknown</span>`;
+        const m = monthsFromGame(endDate);
+        if (m <= 6)  return `<span class="sqct-chip sqct-chip--expiring">Expiring</span>`;
+        if (m <= 18) return `<span class="sqct-chip sqct-chip--soon">Expires Soon</span>`;
         return `<span class="sqct-chip sqct-chip--ok">Contracted</span>`;
     };
+
+    const active = [...players.filter(p => !p.loan)].sort((a, b) => {
+        const ae = parseEnd(a); const be = parseEnd(b);
+        if (!ae && !be) return 0;
+        if (!ae) return 1;
+        if (!be) return -1;
+        return ae - be;
+    });
 
     const fmt = (v, prefix="£") => v ? `${prefix}${(v/1000).toFixed(0)}K` : "—";
     const fmtM = (v) => v ? (v >= 1e9 ? `€${(v/1e9).toFixed(1)}B` : `€${(v/1e6).toFixed(0)}M`) : "—";
 
-    const rows = active.map(p => `
+    const rows = active.map(p => {
+        const endDate = parseEnd(p);
+        return `
     <tr class="sqct-row">
         <td class="sqct-player">
             <img src="${p.photo || `assets/renders/${p.id}.png`}" alt="" onerror="this.style.display='none'" class="sqct-avatar">
@@ -988,12 +1001,16 @@ function renderContractsTab(players) {
         <td class="sqct-age">${p.age ?? "—"}</td>
         <td class="sqct-wage">${fmt(p.wage)}/wk</td>
         <td class="sqct-value">${fmtM(p.marketValue)}</td>
-        <td class="sqct-end">${p.contract ?? "—"}</td>
-        <td>${statusChip(p.contract)}</td>
-    </tr>`).join("");
+        <td class="sqct-end">${fmtDate(endDate)}</td>
+        <td>${statusChip(endDate)}</td>
+    </tr>`; }).join("");
 
     const totalWage = active.reduce((s, p) => s + (p.wage ?? 0), 0);
-    const expiring = active.filter(p => { const y = parseInt(p.contract); return y && (y - currentYear) <= 1; }).length;
+    const expiring = active.filter(p => {
+        const e = parseEnd(p);
+        if (!e) return false;
+        return monthsFromGame(e) <= 6;
+    }).length;
 
     return `
     <div class="sqct-wrap">

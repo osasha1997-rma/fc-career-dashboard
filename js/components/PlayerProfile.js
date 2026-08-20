@@ -45,6 +45,7 @@ export function createPlayerProfile(player, matches = [], canEdit = false) {
         ${renderDiscipline(stats)}
         ${renderInjuries(stats.injuries)}
         ${renderCareerInfo(player)}
+        ${renderFinancials(player)}
 
     </section>`;
 }
@@ -181,6 +182,55 @@ function renderInjuries(injuries) {
                     <span class="pp-injury-meta">Min ${i.minute ?? "?"} · ${i.daysOut} days out</span>
                 </div>
             </div>`).join("")}
+        </div>
+    </div>`;
+}
+
+function renderFinancials(player) {
+    const fmtWage = v => v ? `£${(v / 1000).toFixed(0)}K / wk` : "—";
+    const fmtVal  = v => v ? (v >= 1e9 ? `€${(v/1e9).toFixed(1)}B` : `€${(v/1e6).toFixed(0)}M`) : "—";
+    const fmtEnd  = v => v ? new Date(v).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "—";
+
+    const endDate = player.contractEnd ? new Date(player.contractEnd) : null;
+    const now = new Date();
+    const monthsLeft = endDate ? (endDate.getFullYear() - now.getFullYear()) * 12 + (endDate.getMonth() - now.getMonth()) : null;
+    const statusColor = monthsLeft === null ? "var(--text-secondary)"
+        : monthsLeft <= 6  ? "#ef4444"
+        : monthsLeft <= 18 ? "#f59e0b"
+        : "#22c55e";
+    const statusLabel = monthsLeft === null ? "Unknown"
+        : monthsLeft <= 6  ? "Expiring"
+        : monthsLeft <= 18 ? "Expires Soon"
+        : "Contracted";
+
+    const dur = (player.contractYearsLeft != null || player.contractMonthsLeft != null)
+        ? `${player.contractYearsLeft ?? 0}y ${player.contractMonthsLeft ?? 0}m remaining`
+        : null;
+
+    return `
+    <div class="pp-section">
+        <div class="pp-section-title">Contract &amp; Finances</div>
+        <div class="profile-grid">
+            <div class="profile-item">
+                <span>Weekly Wage</span>
+                <strong>${fmtWage(player.wage)}</strong>
+            </div>
+            <div class="profile-item">
+                <span>Market Value</span>
+                <strong>${fmtVal(player.marketValue)}</strong>
+            </div>
+            <div class="profile-item">
+                <span>Contract End</span>
+                <strong>${fmtEnd(player.contractEnd)}</strong>
+            </div>
+            <div class="profile-item">
+                <span>Duration Left</span>
+                <strong>${dur ?? "—"}</strong>
+            </div>
+            <div class="profile-item">
+                <span>Status</span>
+                <strong style="color:${statusColor}">${statusLabel}</strong>
+            </div>
         </div>
     </div>`;
 }
