@@ -20,6 +20,7 @@ export async function loadAll(careerId = null) {
         leagueStats: career.leagueStats  ?? {},
         scoutReport: career.scoutReport  ?? null,
         academy:     career.academy      ?? [],
+        transfers:   career.transfers    ?? { ins: [], outs: [], loans: [] },
         careerId:    career._id,
     };
 }

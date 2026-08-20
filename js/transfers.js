@@ -12,6 +12,7 @@ let _season      = {};
 let _budget      = 0;
 let _scoutReport = null;
 let _transferData = null;
+let _careerId     = null;
 
 
 // Active filter state
@@ -45,13 +46,12 @@ export function renderTransfers(players = [], matches = [], season = {}) {
     </section>`;
 }
 
-export async function initializeTransfers(scoutReport) {
-    _scoutReport = scoutReport ?? null;
+export async function initializeTransfers(scoutReport, transferData = null, careerId = null) {
+    _scoutReport  = scoutReport  ?? null;
+    _transferData = transferData ?? { ins: [], outs: [], loans: [] };
+    _careerId     = careerId;
     try {
-        [_fc26, _transferData] = await Promise.all([
-            loadFC26(),
-            fetch(`data/transfers.json?v=${Date.now()}`).then(r => r.json()).catch(() => null),
-        ]);
+        _fc26 = await loadFC26();
         _squadMap = buildSquadFC26Map(_players, _fc26);
         document.getElementById("tr-loading")?.classList.add("hidden");
         const content = document.getElementById("tr-content");

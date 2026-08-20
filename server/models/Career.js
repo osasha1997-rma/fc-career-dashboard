@@ -9,6 +9,7 @@ const careerSchema = new mongoose.Schema({
     leagueStats: { type: Object, default: {} },
     scoutReport: { type: Object, default: null },
     academy:     { type: Array,  default: [] },
+    transfers:   { type: Object, default: () => ({ ins: [], outs: [], loans: [] }) },
     active:      { type: Boolean, default: false },
     createdAt:   { type: Date,   default: Date.now },
 });

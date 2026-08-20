@@ -46,6 +46,7 @@ const state = {
     leagueStats: {},
     scoutReport: null,
     academy: [],
+    transfers: { ins: [], outs: [], loans: [] },
     selectedPlayer: null,
     careerId: null,
 };
@@ -221,7 +222,7 @@ registerRoute("transfers", () => {
     setHeader("Transfer Hub", "FC 26 Database");
     return {
         html: renderTransfers(state.players, state.matches, state.season),
-        init: () => initializeTransfers(state.scoutReport)
+        init: () => initializeTransfers(state.scoutReport, state.transfers, state.careerId)
     };
 });
 
@@ -398,6 +399,7 @@ async function loadApplicationData() {
     state.leagueStats = data.leagueStats ?? {};
     state.scoutReport = data.scoutReport ?? null;
     state.academy     = data.academy     ?? [];
+    state.transfers   = data.transfers   ?? { ins: [], outs: [], loans: [] };
     state.careerId    = data.careerId    ?? null;
     initPlayers(data.players);
 }
@@ -496,6 +498,8 @@ async function renderCareerWidget(season) {
                 state.leagueStats = data.leagueStats ?? {};
                 state.scoutReport = data.scoutReport ?? null;
                 state.academy     = data.academy     ?? [];
+                state.transfers   = data.transfers   ?? { ins: [], outs: [], loans: [] };
+                state.careerId    = data.careerId;
                 await renderCareerWidget(state.season);
                 showScreen("dashboard");
             } catch {
