@@ -41,6 +41,21 @@ import { initPlayers } from "./utils/players.js";
  
 let _photoBase64 = null;
 
+const CLOUDINARY_CLOUD = "liftnro4";
+const CLOUDINARY_PRESET = "careeros_players";
+
+async function uploadToCloudinary(file) {
+    const fd = new FormData();
+    fd.append("file", file);
+    fd.append("upload_preset", CLOUDINARY_PRESET);
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+        method: "POST", body: fd,
+    });
+    if (!res.ok) throw new Error("Photo upload failed");
+    const data = await res.json();
+    return data.secure_url;
+}
+
 const state = {
     season: null,
     players: [],
@@ -574,18 +589,25 @@ function setupAddPlayerModal() {
     syncSlider(overall,  document.getElementById("ap-overall-val"));
     syncSlider(potential, document.getElementById("ap-potential-val"));
 
-    // Photo upload preview
-    document.getElementById("ap-photo").addEventListener("change", e => {
+    // Photo upload — uploads to Cloudinary, stores URL
+    document.getElementById("ap-photo").addEventListener("change", async e => {
         const file = e.target.files[0];
         if (!file) return;
-        const reader = new FileReader();
-        reader.onload = ev => {
-            _photoBase64 = ev.target.result;
+        const btn = document.getElementById("ap-photo-btn");
+        btn.textContent = "Uploading…";
+        btn.disabled = true;
+        try {
+            const url = await uploadToCloudinary(file);
+            _photoBase64 = url;
             const preview = document.getElementById("ap-photo-preview");
-            preview.innerHTML = `<img src="${_photoBase64}" alt="preview">`;
-            document.getElementById("ap-photo-btn").textContent = "📷 Change Photo";
-        };
-        reader.readAsDataURL(file);
+            preview.innerHTML = `<img src="${url}" alt="preview">`;
+            btn.textContent = "📷 Change Photo";
+        } catch {
+            showToast("Photo upload failed");
+            btn.textContent = "📷 Upload Photo";
+        } finally {
+            btn.disabled = false;
+        }
     });
     document.getElementById("ap-photo-btn").addEventListener("click", () => {
         document.getElementById("ap-photo").click();
