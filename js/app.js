@@ -41,23 +41,23 @@ import { initPlayers } from "./utils/players.js";
  
 let _photoBase64 = null;
 
-const _uploadApiBase = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-    ? "http://localhost:4000/api"
-    : "https://fc-career-dashboard.onrender.com/api";
+const IMGBB_KEY = "18ab2f0dbc5f86a3881d4011b56cacd2";
 
 async function uploadToCloudinary(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = async ev => {
             try {
-                const res = await fetch(`${_uploadApiBase}/upload/photo`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ dataUri: ev.target.result }),
+                const base64 = ev.target.result.replace(/^data:image\/[a-z]+;base64,/, "");
+                const fd = new FormData();
+                fd.append("key", IMGBB_KEY);
+                fd.append("image", base64);
+                const res = await fetch("https://api.imgbb.com/1/upload", {
+                    method: "POST", body: fd,
                 });
                 const data = await res.json();
-                if (!res.ok) reject(new Error(data.error ?? "Upload failed"));
-                else resolve(data.url);
+                if (!res.ok || !data.success) reject(new Error(data.error?.message ?? "Upload failed"));
+                else resolve(data.data.url);
             } catch (err) { reject(err); }
         };
         reader.onerror = () => reject(new Error("Failed to read file"));
