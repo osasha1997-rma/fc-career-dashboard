@@ -646,6 +646,30 @@
         </div>
     </div>
 
+    <!-- XI Editor Modal -->
+    <div id="xi-modal" style="display:none" class="modal-overlay">
+        <div class="modal-box" style="max-width:560px">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Starting XI</h2>
+                <button id="xi-close" class="modal-close">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="ap-section">
+                    <div class="ap-section-title">Starting XI (11 players)</div>
+                    <div id="xi-starters" class="xi-slots"></div>
+                </div>
+                <div class="ap-section">
+                    <div class="ap-section-title">Substitutes (up to 9)</div>
+                    <div id="xi-subs" class="xi-slots"></div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="xi-cancel" class="modal-btn modal-btn--ghost">Cancel</button>
+                <button id="xi-save" class="modal-btn modal-btn--primary">Save XI</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Apply saved theme before render to prevent flash
         (function(){
@@ -653,7 +677,7 @@
             document.documentElement.setAttribute("data-theme", t);
         })();
     </script>
-    <script type="module" src="js/app.js?v=59"></script>
+    <script type="module" src="js/app.js?v=60"></script>
 
     <!-- Global loader overlay -->
     <div id="global-loader" style="display:none">

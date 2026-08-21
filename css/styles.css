@@ -3685,3 +3685,18 @@ td{
 }
 .g-toast--hidden { opacity: 0; transform: translateX(-50%) translateY(8px); }
 .g-toast--error  { background: rgba(239,68,68,.9); }
+
+/* ── XI Editor Modal ───────────────────────────────────────── */
+.xi-slots { display: flex; flex-direction: column; gap: 6px; }
+.xi-slot  { display: flex; align-items: center; }
+.xi-select {
+    width: 100%;
+    background: var(--input-bg, rgba(255,255,255,0.06));
+    border: 1px solid var(--border, rgba(255,255,255,0.12));
+    color: var(--text-primary);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+    cursor: pointer;
+}
+.xi-select:focus { outline: none; border-color: var(--accent, #3b82f6); }

@@ -108,6 +108,7 @@ registerRoute("dashboard", () => {
                 document.querySelectorAll(".gdb-view-all[data-screen]").forEach(btn => {
                     btn.addEventListener("click", () => showScreen(btn.dataset.screen));
                 });
+                document.querySelector(".gdb-edit-xi")?.addEventListener("click", openXiModal);
             }
         };
     }
@@ -361,6 +362,94 @@ function closeSettings() {
     document.getElementById("settings-overlay").style.display = "none";
     document.getElementById("settings-panel").classList.remove("settings-panel--open");
 }
+
+// ── XI Editor ──────────────────────────────────────────────
+function openXiModal() {
+    const modal = document.getElementById("xi-modal");
+    const xi    = state.season?.startingXI ?? [];
+    const subs  = state.season?.substitutes ?? [];
+    const all   = state.players.slice().sort((a, b) => (b.overall ?? 0) - (a.overall ?? 0));
+
+    const makeSlot = (label, playerId, slotIdx, containerId) => {
+        const sel = document.createElement("select");
+        sel.className = "xi-select";
+        sel.dataset.slotIdx = slotIdx;
+        sel.dataset.container = containerId;
+        const blank = document.createElement("option");
+        blank.value = ""; blank.textContent = `— ${label} —`;
+        sel.appendChild(blank);
+        all.forEach(p => {
+            const opt = document.createElement("option");
+            opt.value = p.id;
+            opt.textContent = `${p.name} (${p.position ?? "?"}, ${p.overall ?? "?"})`;
+            if (p.id === playerId) opt.selected = true;
+            sel.appendChild(opt);
+        });
+        return sel;
+    };
+
+    const starterLabels = ["GK","LB","CB","CB","RB","CDM","CDM","CAM","LM","RM","ST"];
+    const starterContainer = document.getElementById("xi-starters");
+    const subContainer     = document.getElementById("xi-subs");
+    starterContainer.innerHTML = "";
+    subContainer.innerHTML = "";
+
+    starterLabels.forEach((lbl, i) => {
+        const wrap = document.createElement("div");
+        wrap.className = "xi-slot";
+        wrap.appendChild(makeSlot(lbl, xi[i], i, "xi-starters"));
+        starterContainer.appendChild(wrap);
+    });
+
+    for (let i = 0; i < 9; i++) {
+        const wrap = document.createElement("div");
+        wrap.className = "xi-slot";
+        wrap.appendChild(makeSlot(`Sub ${i + 1}`, subs[i], i, "xi-subs"));
+        subContainer.appendChild(wrap);
+    }
+
+    modal.style.display = "flex";
+}
+
+async function saveXi() {
+    const starterSelects = document.querySelectorAll("#xi-starters .xi-select");
+    const subSelects     = document.querySelectorAll("#xi-subs .xi-select");
+
+    const startingXI  = [...starterSelects].map(s => parseInt(s.value)).filter(v => !isNaN(v));
+    const substitutes = [...subSelects].map(s => parseInt(s.value)).filter(v => !isNaN(v));
+
+    if (startingXI.length !== 11) {
+        showToast("Select exactly 11 starters");
+        return;
+    }
+
+    showLoader("Saving XI…");
+    try {
+        const _api = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+            ? "http://localhost:4000/api" : "https://fc-career-dashboard.onrender.com/api";
+        await fetch(`${_api}/careers/${state.careerId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ "season.startingXI": startingXI, "season.substitutes": substitutes }),
+        });
+        state.season.startingXI  = startingXI;
+        state.season.substitutes = substitutes;
+        document.getElementById("xi-modal").style.display = "none";
+        // Re-render dashboard
+        showScreen("dashboard");
+        showToast("XI saved");
+    } catch (err) {
+        showToast("Failed to save XI");
+    } finally {
+        hideLoader();
+    }
+}
+
+// XI modal close handlers (set up once)
+document.getElementById("xi-close")?.addEventListener("click",  () => { document.getElementById("xi-modal").style.display = "none"; });
+document.getElementById("xi-cancel")?.addEventListener("click", () => { document.getElementById("xi-modal").style.display = "none"; });
+document.getElementById("xi-modal")?.addEventListener("click",  e  => { if (e.target === document.getElementById("xi-modal")) document.getElementById("xi-modal").style.display = "none"; });
+document.getElementById("xi-save")?.addEventListener("click", saveXi);
 
 async function setupSettings() {
     document.getElementById("settings-nav-btn").addEventListener("click", openSettings);

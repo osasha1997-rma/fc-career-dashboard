@@ -60,7 +60,7 @@ router.patch("/:id/activate", async (req, res) => {
 // PATCH /api/careers/:id — update career data (players, matches, season etc.)
 router.patch("/:id", async (req, res) => {
     try {
-        const career = await Career.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const career = await Career.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
         if (!career) return res.status(404).json({ error: "Career not found" });
         res.json(career);
     } catch (err) {

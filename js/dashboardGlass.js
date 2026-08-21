@@ -318,7 +318,10 @@ function renderFormation(season, players) {
                     ${fRow(gk,  "gdb-f-row--gk")}
                 </div>
         </div>
-        <button class="gdb-view-all" data-screen="squad">Full Squad →</button>
+        <div style="display:flex;gap:8px;padding:10px 14px 14px">
+            <button class="gdb-view-all" data-screen="squad" style="flex:1">Full Squad →</button>
+            <button class="gdb-edit-xi" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:var(--text-primary);border-radius:8px;padding:8px 12px;cursor:pointer;font-size:13px">Edit XI</button>
+        </div>
     </div>`;
 }
 
