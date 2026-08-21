@@ -1027,26 +1027,57 @@ function openEditPlayerModal(player) {
     document.getElementById("ap-name").focus();
 }
 
+function setLoadingMsg(msg) {
+    const el = document.getElementById("ls-status");
+    if (el) el.textContent = msg;
+}
+
 async function startApp() {
-    try {
-        await loadApplicationData();
-        setupNavigation();
-        setupThemeSwitcher();
-        seedCareers(state.season);
-        renderCareerWidget(state.season);
-        setupCareerModal();
-        setupAddPlayerModal();
-        setupSettings();
-        hideLoadingScreen();
-        showScreen("dashboard");
-    } catch (err) {
-        console.error(err);
-        const isAbort = err.name === "AbortError" || err.message?.includes("aborted") || err.message?.includes("abort");
-        const msg = isAbort
-            ? "Server is waking up — this can take up to 30 seconds on first load. Please refresh and try again."
-            : (err.message || "Could not connect to server.");
-        document.getElementById("loading-screen").innerHTML =
-            `<div class="loader"><h1>⚽ CareerOS</h1><p style="color:var(--danger);max-width:320px;text-align:center;line-height:1.5">${msg}</p><button onclick="location.reload()" style="margin-top:16px;padding:10px 24px;border-radius:8px;background:#6366f1;color:#fff;border:none;font-weight:700;cursor:pointer">Try Again</button></div>`;
+    const MAX_RETRIES = 4;
+    const RETRY_DELAY = [3000, 6000, 10000, 15000]; // ms between retries
+
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+        try {
+            if (attempt === 0) {
+                setLoadingMsg("Connecting to server…");
+            } else {
+                setLoadingMsg(`Server is waking up — retrying (${attempt}/${MAX_RETRIES})…`);
+            }
+
+            await loadApplicationData();
+            setupNavigation();
+            setupThemeSwitcher();
+            seedCareers(state.season);
+            renderCareerWidget(state.season);
+            setupCareerModal();
+            setupAddPlayerModal();
+            setupSettings();
+            hideLoadingScreen();
+            showScreen("dashboard");
+            return; // success
+
+        } catch (err) {
+            console.error(`Attempt ${attempt + 1} failed:`, err.message);
+
+            if (attempt < MAX_RETRIES) {
+                const delay = RETRY_DELAY[attempt];
+                setLoadingMsg(`Server is waking up — retrying in ${delay / 1000}s… (${attempt + 1}/${MAX_RETRIES})`);
+                await new Promise(r => setTimeout(r, delay));
+            } else {
+                // All retries exhausted
+                document.getElementById("loading-screen").innerHTML = `
+                    <div class="loader">
+                        <h1>⚽ CareerOS</h1>
+                        <p style="color:var(--danger);max-width:320px;text-align:center;line-height:1.6;font-size:.9rem">
+                            Could not reach the server after ${MAX_RETRIES} attempts.<br>
+                            The server may still be waking up — please try again in a moment.
+                        </p>
+                        <button onclick="location.reload()" style="margin-top:16px;padding:10px 28px;border-radius:8px;background:#6366f1;color:#fff;border:none;font-weight:700;cursor:pointer;font-size:.9rem">
+                            Try Again
+                        </button>
+                    </div>`;
+            }
+        }
     }
 }
 
