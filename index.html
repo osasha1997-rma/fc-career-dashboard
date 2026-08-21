@@ -422,15 +422,10 @@
                 <div class="ap-section">
                     <div class="ap-section-title">Contract</div>
                     <div class="ap-grid">
-                        <div class="modal-field">
-                            <span>Contract Remaining</span>
-                            <div class="ap-contract-wrap">
-                                <input id="ap-contract-years" type="number" min="0" max="10" placeholder="2" class="ap-contract-num">
-                                <span class="ap-contract-sep">yrs</span>
-                                <input id="ap-contract-months" type="number" min="0" max="11" placeholder="6" class="ap-contract-num">
-                                <span class="ap-contract-sep">mo</span>
-                            </div>
-                        </div>
+                        <label class="modal-field">
+                            <span>Contract End Date</span>
+                            <input id="ap-contract-end" type="date">
+                        </label>
                         <label class="modal-field ap-check-field">
                             <input id="ap-captain" type="checkbox">
                             <span>Captain</span>
@@ -658,7 +653,7 @@
             document.documentElement.setAttribute("data-theme", t);
         })();
     </script>
-    <script type="module" src="js/app.js?v=56"></script>
+    <script type="module" src="js/app.js?v=57"></script>
 
     <!-- Global loader overlay -->
     <div id="global-loader" style="display:none">

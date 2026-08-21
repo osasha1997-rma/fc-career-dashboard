@@ -630,8 +630,7 @@ function setupAddPlayerModal() {
             captain:            document.getElementById("ap-captain").checked,
             viceCaptain:        document.getElementById("ap-vice").checked,
             role:               document.getElementById("ap-role").value,
-            contractYearsLeft:  parseInt(document.getElementById("ap-contract-years").value)  || 0,
-            contractMonthsLeft: parseInt(document.getElementById("ap-contract-months").value) || 0,
+            contractEnd:        document.getElementById("ap-contract-end").value || null,
             wage:               parseInt(document.getElementById("ap-wage").value)  || null,
             marketValue:        parseFloat(document.getElementById("ap-value").value) * 1e6 || null,
             loan:               loanChk.checked,
@@ -660,7 +659,7 @@ function setupAddPlayerModal() {
             modal.style.display = "none";
             delete modal.dataset.editPlayerId;
             // Reset form
-            ["ap-name","ap-number","ap-age","ap-secondary","ap-wage","ap-value","ap-contract-years","ap-contract-months","ap-loan-club","ap-loan-dur"]
+            ["ap-name","ap-number","ap-age","ap-secondary","ap-wage","ap-value","ap-contract-end","ap-loan-club","ap-loan-dur"]
                 .forEach(id => { document.getElementById(id).value = ""; });
             document.getElementById("ap-position").value = "";
             document.getElementById("ap-captain").checked = false;
@@ -1000,8 +999,7 @@ function openEditPlayerModal(player) {
     document.getElementById("ap-potential-val").textContent = player.potential ?? 80;
     document.getElementById("ap-wage").value               = player.wage ?? "";
     document.getElementById("ap-value").value              = player.marketValue != null ? (player.marketValue / 1e6).toFixed(1) : "";
-    document.getElementById("ap-contract-years").value    = player.contractYearsLeft ?? 0;
-    document.getElementById("ap-contract-months").value   = player.contractMonthsLeft ?? 0;
+    document.getElementById("ap-contract-end").value      = player.contractEnd ?? "";
     document.getElementById("ap-captain").checked         = !!player.captain;
     document.getElementById("ap-vice").checked            = !!player.viceCaptain;
 

@@ -89,7 +89,7 @@ router.post("/:id/players", async (req, res) => {
         const career = await Career.findById(req.params.id);
         if (!career) return res.status(404).json({ error: "Career not found" });
         const newId = (career.players.reduce((max, p) => Math.max(max, p.id ?? 0), 0)) + 1;
-        const contractEnd = calcContractEnd(career, req.body);
+        const contractEnd = req.body.contractEnd || calcContractEnd(career, req.body);
         const player = { id: newId, ...req.body, ...(contractEnd ? { contractEnd } : {}) };
         career.players.push(player);
         await career.save();
@@ -108,7 +108,7 @@ router.patch("/:id/players/:playerId", async (req, res) => {
         const idx = career.players.findIndex(p => p.id === pid);
         if (idx === -1) return res.status(404).json({ error: "Player not found" });
         const merged = { ...career.players[idx], ...req.body };
-        const contractEnd = calcContractEnd(career, merged);
+        const contractEnd = merged.contractEnd || calcContractEnd(career, merged);
         if (contractEnd) merged.contractEnd = contractEnd;
         Object.assign(career.players[idx], merged);
         career.markModified("players");
