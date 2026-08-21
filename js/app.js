@@ -41,19 +41,28 @@ import { initPlayers } from "./utils/players.js";
  
 let _photoBase64 = null;
 
-const CLOUDINARY_CLOUD = "liftnro4";
-const CLOUDINARY_PRESET = "careeros_players";
+const _uploadApiBase = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? "http://localhost:4000/api"
+    : "https://fc-career-dashboard.onrender.com/api";
 
 async function uploadToCloudinary(file) {
-    const fd = new FormData();
-    fd.append("file", file);
-    fd.append("upload_preset", CLOUDINARY_PRESET);
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
-        method: "POST", body: fd,
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async ev => {
+            try {
+                const res = await fetch(`${_uploadApiBase}/upload/photo`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ dataUri: ev.target.result }),
+                });
+                const data = await res.json();
+                if (!res.ok) reject(new Error(data.error ?? "Upload failed"));
+                else resolve(data.url);
+            } catch (err) { reject(err); }
+        };
+        reader.onerror = () => reject(new Error("Failed to read file"));
+        reader.readAsDataURL(file);
     });
-    if (!res.ok) throw new Error("Photo upload failed");
-    const data = await res.json();
-    return data.secure_url;
 }
 
 const state = {
