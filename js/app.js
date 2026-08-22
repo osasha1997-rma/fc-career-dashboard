@@ -445,6 +445,9 @@ async function saveXi() {
     }
 }
 
+// Expose so squad.js can open the modal too
+window.openXiModal = openXiModal;
+
 // XI modal close handlers (set up once)
 document.getElementById("xi-close")?.addEventListener("click",  () => { document.getElementById("xi-modal").style.display = "none"; });
 document.getElementById("xi-cancel")?.addEventListener("click", () => { document.getElementById("xi-modal").style.display = "none"; });

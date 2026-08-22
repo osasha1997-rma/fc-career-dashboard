@@ -180,7 +180,10 @@ function renderOverviewTab(players, season) {
 
         <!-- Starting XI -->
         <div class="sqov-card sqov-xi-card">
-            <div class="sqov-card-title">Starting XI <span class="sqov-formation-lbl">${formation}</span></div>
+            <div class="sqov-card-title" style="display:flex;align-items:center;justify-content:space-between">
+                <span>Starting XI <span class="sqov-formation-lbl">${formation}</span></span>
+                <button class="sqov-edit-xi-btn">Edit XI</button>
+            </div>
             <div class="sqov-xi-pitch">
                 ${formationRows}
             </div>
@@ -736,6 +739,10 @@ export function initializeSquad(onPlayerSelect) {
 
 function wireOverviewClicks(onPlayerSelect) {
     document.getElementById("sq-tab-body")?.addEventListener("click", e => {
+        if (e.target.closest(".sqov-edit-xi-btn")) {
+            window.openXiModal?.();
+            return;
+        }
         const el = e.target.closest("[data-player-id]");
         if (el) onPlayerSelect?.(el.dataset.playerId);
     });
