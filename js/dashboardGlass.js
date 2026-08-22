@@ -242,50 +242,37 @@ function renderFormation(season, players) {
     const formation = season.formation ?? "4-3-3";
     const byId = id => players.find(p => p.id === id);
 
-    let gk, defs, cdms, cams, atts;
+    let gk, lineGroups;
 
     if (season.startingXI?.length === 11) {
-        // Use saved XI — split into lines based on formation
         const xi = season.startingXI.map(byId).filter(Boolean);
         const lines = formation.split("-").map(n => parseInt(n)).filter(n => !isNaN(n));
-        // xi order: GK first, then line by line from attack to defence
-        // buildFixedFormationRows puts GK last; here startingXI is stored GK first
         let cursor = 0;
-        gk   = [xi[cursor++]];
-        // lines go attack→defence in storage (matches buildFixedFormationRows input)
-        const lineGroups = lines.map(n => xi.slice(cursor, cursor += n));
-        // lineGroups[0] = DEF, last = ATT (same order as formation string "4-2-3-1")
-        defs = lineGroups[0] ?? [];
-        cdms = lineGroups[1] ?? [];
-        cams = lineGroups[2] ?? [];
-        atts = lineGroups[lineGroups.length - 1] ?? [];
+        gk = [xi[cursor++]];
+        lineGroups = lines.map(n => xi.slice(cursor, cursor += n));
     } else {
-        // Fallback hardcoded
         const byName = name => players.find(p => p.name?.toLowerCase().includes(name.toLowerCase().split(" ").at(-1)));
-        gk   = [byName("Courtois")].filter(Boolean);
-        defs = ["Cucurella","Bastoni","Militão","Alexander-Arnold"].map(byName).filter(Boolean);
-        cdms = ["Rodri","Valverde"].map(byName).filter(Boolean);
-        cams = ["Vinícius Júnior","Bellingham","Olise"].map(byName).filter(Boolean);
-        atts = ["Mbappé"].map(byName).filter(Boolean);
+        gk = [byName("Courtois")].filter(Boolean);
+        lineGroups = [
+            ["Cucurella","Bastoni","Militão","Alexander-Arnold"].map(byName).filter(Boolean),
+            ["Rodri","Valverde"].map(byName).filter(Boolean),
+            ["Vinícius Júnior","Bellingham","Olise"].map(byName).filter(Boolean),
+            ["Mbappé"].map(byName).filter(Boolean),
+        ];
     }
 
     const initial  = p => p?.name?.split(/[\s-]/).find(x => x.length > 1)?.[0]?.toUpperCase() ?? "?";
     const shortName = p => {
         if (!p?.name) return "";
         const n = p.name;
-        // Known short aliases
         const aliases = {
             "Vinícius Júnior": "Vinícius", "Vinicius Junior": "Vinicius",
             "Alexander-Arnold": "Trent", "Trent Alexander-Arnold": "Trent",
             "Jude Bellingham": "Bellingham",
         };
         if (aliases[n]) return aliases[n];
-        const parts = n.split(" ");
-        // If last name is short enough, just use it
-        const last = parts.at(-1).replace(/[.]/g, "");
-        if (last.length <= 11) return last;
-        // Otherwise truncate
-        return last.slice(0, 10);
+        const last = n.split(" ").at(-1).replace(/[.]/g, "");
+        return last.length <= 11 ? last : last.slice(0, 10);
     };
 
     const dot = p => `
@@ -295,7 +282,10 @@ function renderFormation(season, players) {
             ${p?.overall ? `<span class="gdb-f-ovr">${p.overall}</span>` : ""}
         </div>`;
 
-    const fRow = (ps, cls = "") => `<div class="gdb-f-row ${cls}">${ps.map(dot).join("")}</div>`;
+    const fRow = ps => `<div class="gdb-f-row">${ps.map(dot).join("")}</div>`;
+
+    // Render lines from attack (last group) down to defence (first group), then GK
+    const lineRows = [...lineGroups].reverse().map(fRow).join("");
 
     return `
     <div class="gdb-card gdb-card--full">
@@ -311,12 +301,9 @@ function renderFormation(season, players) {
                 <div class="gdb-pitch-goal gdb-pitch-goal--bot"></div>
             </div>
             <div class="gdb-formation">
-                    ${fRow(atts, "gdb-f-row--att")}
-                    ${fRow(cams, "gdb-f-row--cam")}
-                    ${fRow(cdms, "gdb-f-row--cdm")}
-                    ${fRow(defs, "gdb-f-row--def")}
-                    ${fRow(gk,  "gdb-f-row--gk")}
-                </div>
+                ${lineRows}
+                ${fRow(gk)}
+            </div>
         </div>
         <div style="display:flex;gap:8px;padding:10px 14px 14px">
             <button class="gdb-view-all" data-screen="squad" style="flex:1">Full Squad →</button>
