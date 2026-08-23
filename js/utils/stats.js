@@ -4,6 +4,10 @@
 // No calculated values are ever stored.
 // ==========================================
 
+// Match data can contain player IDs as either numbers or strings.
+// Normalize comparisons so derived player stats remain reliable.
+const samePlayerId = (a, b) => String(a) === String(b);
+
 export function deriveSeasonStats(matches, players = []) {
     const played = matches.filter(m => m.result);
 
@@ -21,24 +25,27 @@ export function deriveSeasonStats(matches, players = []) {
         ? Math.round(posMatches.reduce((s, m) => s + m.teamStats.possession, 0) / posMatches.length)
         : null;
 
-    // ── Per-player accumulators (numeric IDs only) ──────────────
-    const goalMap   = {};   // { id: totalGoals }
-    const assistMap = {};   // { id: totalAssists }
-    const ratingMap = {};   // { id: [r1, r2, ...] }
+    // ── Per-player accumulators ─────────────────────────────────
+    const goalMap   = {};
+    const assistMap = {};
+    const ratingMap = {};
 
     played.forEach(m => {
         m.goals?.forEach(g => {
-            if (typeof g.player === "number")
-                goalMap[g.player] = (goalMap[g.player] ?? 0) + 1;
+            const player = players.find(p => samePlayerId(p.id, g.player));
+            if (player)
+                goalMap[player.id] = (goalMap[player.id] ?? 0) + 1;
         });
         m.assists?.forEach(a => {
-            if (typeof a.player === "number")
-                assistMap[a.player] = (assistMap[a.player] ?? 0) + (a.count ?? 1);
+            const player = players.find(p => samePlayerId(p.id, a.player));
+            if (player)
+                assistMap[player.id] = (assistMap[player.id] ?? 0) + (a.count ?? 1);
         });
         m.performances?.forEach(p => {
-            if (typeof p.player === "number") {
-                if (!ratingMap[p.player]) ratingMap[p.player] = [];
-                ratingMap[p.player].push(p.rating);
+            const player = players.find(x => samePlayerId(x.id, p.player));
+            if (player) {
+                if (!ratingMap[player.id]) ratingMap[player.id] = [];
+                ratingMap[player.id].push(p.rating);
             }
         });
     });
@@ -56,7 +63,7 @@ export function deriveSeasonStats(matches, players = []) {
         : null;
 
     // ── Helpers ─────────────────────────────────────────────────
-    const resolveName = id => players.find(p => p.id === Number(id))?.name ?? String(id);
+    const resolveName = id => players.find(p => samePlayerId(p.id, id))?.name ?? String(id);
     const topOf = map => {
         const entries = Object.entries(map);
         if (!entries.length) return null;
@@ -76,9 +83,9 @@ export function deriveSeasonStats(matches, players = []) {
         goalsAgainst,
         cleanSheets,
         avgPossession,
-        topScorer:    tScorerEntry ? { id: Number(tScorerEntry[0]), name: resolveName(tScorerEntry[0]), goals:   tScorerEntry[1] } : null,
-        topAssists:   tAssistEntry ? { id: Number(tAssistEntry[0]), name: resolveName(tAssistEntry[0]), assists: tAssistEntry[1] } : null,
-        topRated:     tRatedEntry  ? { id: Number(tRatedEntry[0]),  name: resolveName(tRatedEntry[0]),  rating:  avgRatingMap[tRatedEntry[0]].toFixed(2) } : null,
+        topScorer:    tScorerEntry ? { id: tScorerEntry[0], name: resolveName(tScorerEntry[0]), goals:   tScorerEntry[1] } : null,
+        topAssists:   tAssistEntry ? { id: tAssistEntry[0], name: resolveName(tAssistEntry[0]), assists: tAssistEntry[1] } : null,
+        topRated:     tRatedEntry  ? { id: tRatedEntry[0],  name: resolveName(tRatedEntry[0]),  rating:  avgRatingMap[tRatedEntry[0]].toFixed(2) } : null,
         avgTeamRating
     };
 }
@@ -98,10 +105,10 @@ export function derivePlayerStats(player, matches) {
     const injuries   = [];
 
     for (const match of played) {
-        const inXI   = match.startingXI?.includes(id);
-        const subOn  = match.substitutions?.find(s => s.playerOn  === id);
-        const subOff = match.substitutions?.find(s => s.playerOff === id);
-        const perf   = match.performances?.find(p => p.player     === id);
+        const inXI   = match.startingXI?.some(x => samePlayerId(x, id));
+        const subOn  = match.substitutions?.find(s => samePlayerId(s.playerOn, id));
+        const subOff = match.substitutions?.find(s => samePlayerId(s.playerOff, id));
+        const perf   = match.performances?.find(p => samePlayerId(p.player, id));
 
         const isStart = !!inXI;
         const isSub   = !inXI && !!subOn;
@@ -110,15 +117,15 @@ export function derivePlayerStats(player, matches) {
         const minsOn  = isStart ? (subOff ? subOff.minute : 90) : (90 - subOn.minute);
         totalMinutes += minsOn;
 
-        const goals   = (match.goals      ?? []).filter(g => g.player === id).length;
-        const assists = (match.assists     ?? []).filter(a => a.player === id).reduce((s, a) => s + (a.count ?? 1), 0);
-        const yellow  = (match.yellowCards ?? []).filter(c => c.player === id).length;
-        const red     = (match.redCards    ?? []).filter(c => c.player === id).length;
+        const goals   = (match.goals      ?? []).filter(g => samePlayerId(g.player, id)).length;
+        const assists = (match.assists     ?? []).filter(a => samePlayerId(a.player, id)).reduce((s, a) => s + (a.count ?? 1), 0);
+        const yellow  = (match.yellowCards ?? []).filter(c => samePlayerId(c.player, id)).length;
+        const red     = (match.redCards    ?? []).filter(c => samePlayerId(c.player, id)).length;
         totalYellow  += yellow;
         totalRed     += red;
 
         for (const inj of (match.injuries ?? [])) {
-            if (inj.player === id) injuries.push({ match, ...inj });
+            if (samePlayerId(inj.player, id)) injuries.push({ match, ...inj });
         }
 
         if (!byComp[match.competition]) {
@@ -130,7 +137,7 @@ export function derivePlayerStats(player, matches) {
         c.goals   += goals;
         c.assists += assists;
         c.minutes += minsOn;
-        if (perf) c.ratings.push(perf.rating);
+        if (perf && typeof perf.rating === "number") c.ratings.push(perf.rating);
 
         appearanceList.push({
             matchId:     match.id,
@@ -160,7 +167,9 @@ export function derivePlayerStats(player, matches) {
         { apps: 0, starts: 0, goals: 0, assists: 0 }
     );
 
-    const allRatings = appearanceList.filter(a => a.rating).map(a => a.rating);
+    const allRatings = appearanceList
+        .filter(a => a.rating != null)
+        .map(a => a.rating);
     const avgRating  = allRatings.length
         ? (allRatings.reduce((s, r) => s + r, 0) / allRatings.length).toFixed(1)
         : null;
