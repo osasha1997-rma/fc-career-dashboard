@@ -3714,3 +3714,17 @@ td{
     cursor: pointer;
 }
 .sqov-edit-xi-btn:hover { background: rgba(255,255,255,0.14); }
+
+/* ── Injuries Tab ───────────────────────────────────────────── */
+.inj-wrap { padding: 16px; }
+.inj-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.inj-count { font-size: .8rem; opacity: .6; }
+.inj-btn { border-radius: 8px; padding: 6px 14px; font-size: .8rem; cursor: pointer; border: none; font-weight: 600; }
+.inj-btn--add { background: #3b82f6; color: #fff; }
+.inj-btn--add:hover { background: #2563eb; }
+.inj-btn--recover { background: rgba(34,197,94,.15); color: #22c55e; border: 1px solid rgba(34,197,94,.3); }
+.inj-btn--recover:hover { background: rgba(34,197,94,.25); }
+.inj-row--recovered td { opacity: .45; }
+.inj-status { font-size: .72rem; font-weight: 700; padding: 3px 8px; border-radius: 99px; }
+.inj-status--active { background: rgba(239,68,68,.15); color: #ef4444; }
+.inj-status--ok { background: rgba(34,197,94,.15); color: #22c55e; }

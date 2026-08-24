@@ -55,6 +55,7 @@ export function renderSquad(players = [], season = {}, matches = []) {
             <button class="sq-tab" data-sq-tab="contracts">Contracts</button>
             <button class="sq-tab" data-sq-tab="development">Development</button>
             <button class="sq-tab" data-sq-tab="roles">Roles</button>
+            <button class="sq-tab" data-sq-tab="injuries">Injuries</button>
         </div>
         <div id="sq-tab-body">
             ${renderOverviewTab(players, season)}
@@ -745,6 +746,9 @@ export function initializeSquad(onPlayerSelect) {
                 body.innerHTML = renderDevelopmentTab(squadState.players);
             } else if (tab === "roles") {
                 body.innerHTML = renderRolesTab(squadState.players, squadState.season ?? {}, squadState.matches ?? []);
+            } else if (tab === "injuries") {
+                body.innerHTML = renderInjuriesTab(squadState.players, squadState.season ?? {});
+                wireInjuriesTab();
             }
         });
     });
@@ -1192,4 +1196,135 @@ function renderRolesTab(players, season, matches) {
             </div>
         </div>
     </div>`;
+}
+
+// ── Injuries Tab ────────────────────────────────────────────────────────────
+function renderInjuriesTab(players, season) {
+    const injuries = (season.injuries ?? []).slice().sort((a, b) => {
+        // Active injuries first, then by date descending
+        if (a.status === b.status) return new Date(b.date) - new Date(a.date);
+        return a.status === "injured" ? -1 : 1;
+    });
+
+    const byId = id => players.find(p => p.id === id);
+    const fmtDate = d => d ? new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
+
+    const rows = injuries.length ? injuries.map((inj, idx) => {
+        const p = byId(inj.playerId);
+        if (!p) return "";
+        const isActive = inj.status !== "recovered";
+        return `
+        <tr class="inj-row${isActive ? "" : " inj-row--recovered"}">
+            <td class="sq-tbl-player" style="padding:10px 8px">
+                <div class="sq-tbl-name">${p.name}</div>
+                <div class="sq-tbl-nat" style="font-size:.7rem;opacity:.6">${p.position ?? ""}</div>
+            </td>
+            <td>${inj.type ?? "—"}</td>
+            <td>${fmtDate(inj.date)}</td>
+            <td>${fmtDate(inj.expectedReturn)}</td>
+            <td><span class="inj-status ${isActive ? "inj-status--active" : "inj-status--ok"}">${isActive ? "Injured" : "Recovered"}</span></td>
+            <td>
+                ${isActive ? `<button class="inj-btn inj-btn--recover" data-inj-idx="${idx}">✓ Recovered</button>` : ""}
+            </td>
+        </tr>`;
+    }).join("") : `<tr><td colspan="6" style="text-align:center;padding:32px;opacity:.5">No injuries recorded</td></tr>`;
+
+    return `
+    <div class="inj-wrap">
+        <div class="inj-toolbar">
+            <span class="inj-count">${injuries.filter(i => i.status !== "recovered").length} Active · ${injuries.length} Total</span>
+            <button class="inj-btn inj-btn--add" id="inj-add-btn">+ Add Injury</button>
+        </div>
+        <div class="sq-tbl-scroll">
+        <table class="sq-tbl">
+            <thead><tr>
+                <th>Player</th>
+                <th>Type</th>
+                <th>Date</th>
+                <th>Expected Return</th>
+                <th>Status</th>
+                <th></th>
+            </tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- Add Injury Modal -->
+    <div id="inj-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center">
+        <div style="background:var(--card-bg,#1a1f2e);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:24px;width:340px;max-width:90vw">
+            <h3 style="margin:0 0 16px;font-size:1rem">Add Injury</h3>
+            <div style="display:flex;flex-direction:column;gap:10px">
+                <select id="inj-player-sel" class="xi-select">
+                    <option value="">— Select player —</option>
+                    ${players.map(p => `<option value="${p.id}">${p.name} (${p.position ?? "?"})</option>`).join("")}
+                </select>
+                <input id="inj-type" class="xi-select" placeholder="Injury type (e.g. Hamstring)" style="padding:8px 10px">
+                <label style="font-size:.75rem;opacity:.6">Injury Date</label>
+                <input id="inj-date" type="date" class="xi-select">
+                <label style="font-size:.75rem;opacity:.6">Expected Return</label>
+                <input id="inj-return" type="date" class="xi-select">
+            </div>
+            <div style="display:flex;gap:8px;margin-top:16px">
+                <button id="inj-modal-cancel" class="modal-btn modal-btn--ghost" style="flex:1">Cancel</button>
+                <button id="inj-modal-save" class="modal-btn modal-btn--primary" style="flex:1">Save</button>
+            </div>
+        </div>
+    </div>`;
+}
+
+function wireInjuriesTab() {
+    const apiBase = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+        ? "http://localhost:4000/api" : "https://fc-career-dashboard.onrender.com/api";
+
+    const saveInjuries = async (injuries) => {
+        const careerId = window._careerId;
+        if (!careerId) return;
+        await fetch(`${apiBase}/careers/${careerId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ "season.injuries": injuries }),
+        });
+        squadState.season.injuries = injuries;
+    };
+
+    // Recover button
+    document.querySelector(".inj-wrap")?.addEventListener("click", async e => {
+        const recoverBtn = e.target.closest(".inj-btn--recover");
+        if (recoverBtn) {
+            const idx = parseInt(recoverBtn.dataset.injIdx);
+            const injuries = (squadState.season.injuries ?? []).slice();
+            injuries[idx] = { ...injuries[idx], status: "recovered", recoveredDate: new Date().toISOString().slice(0, 10) };
+            await saveInjuries(injuries);
+            document.getElementById("sq-tab-body").innerHTML = renderInjuriesTab(squadState.players, squadState.season);
+            wireInjuriesTab();
+        }
+    });
+
+    // Add injury modal open
+    document.getElementById("inj-add-btn")?.addEventListener("click", () => {
+        document.getElementById("inj-date").value = new Date().toISOString().slice(0, 10);
+        document.getElementById("inj-modal").style.display = "flex";
+    });
+
+    // Add injury modal close
+    document.getElementById("inj-modal-cancel")?.addEventListener("click", () => {
+        document.getElementById("inj-modal").style.display = "none";
+    });
+
+    // Save new injury
+    document.getElementById("inj-modal-save")?.addEventListener("click", async () => {
+        const playerId = parseInt(document.getElementById("inj-player-sel").value);
+        const type     = document.getElementById("inj-type").value.trim();
+        const date     = document.getElementById("inj-date").value;
+        const ret      = document.getElementById("inj-return").value;
+        if (!playerId || !type || !date) { alert("Player, type and date are required."); return; }
+
+        const injuries = (squadState.season.injuries ?? []).slice();
+        injuries.push({ playerId, type, date, expectedReturn: ret || null, status: "injured" });
+        await saveInjuries(injuries);
+        document.getElementById("inj-modal").style.display = "none";
+        document.getElementById("sq-tab-body").innerHTML = renderInjuriesTab(squadState.players, squadState.season);
+        wireInjuriesTab();
+    });
 }

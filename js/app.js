@@ -447,6 +447,7 @@ async function saveXi() {
 
 // Expose so squad.js can open the modal too
 window.openXiModal = openXiModal;
+window._careerId = null; // set after data loads
 
 // XI modal close handlers (set up once)
 document.getElementById("xi-close")?.addEventListener("click",  () => { document.getElementById("xi-modal").style.display = "none"; });
@@ -520,6 +521,7 @@ async function loadApplicationData() {
     state.academy     = data.academy     ?? [];
     state.transfers   = data.transfers   ?? { ins: [], outs: [], loans: [] };
     state.careerId    = data.careerId    ?? null;
+    window._careerId  = state.careerId;
     initPlayers(data.players);
 }
 
