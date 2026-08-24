@@ -234,6 +234,52 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
         </div>`;
     };
 
+    // ── Statistics tab data ───────────────
+    const compLabels = { laliga: "La Liga", ucl: "UCL", copadelrey: "Copa del Rey", supercopa: "Supercopa", clubworldcup: "Club World Cup" };
+    const compMap = {};
+    played.forEach(m => {
+        const k = m.competition ?? "other";
+        if (!compMap[k]) compMap[k] = { w:0, d:0, l:0, gf:0, ga:0, cs:0, mp:0 };
+        compMap[k].mp++;
+        if (m.result === "W") compMap[k].w++;
+        else if (m.result === "D") compMap[k].d++;
+        else compMap[k].l++;
+        compMap[k].gf += m.scoreFor ?? 0;
+        compMap[k].ga += m.scoreAgainst ?? 0;
+        if ((m.scoreAgainst ?? 0) === 0) compMap[k].cs++;
+    });
+    const compRows = Object.entries(compMap).sort((a,b) => b[1].mp - a[1].mp);
+
+    const topScorers = Object.entries(goalMap).map(([id, g]) => {
+        const p = byId(Number(id));
+        return p ? { name: p.name, position: p.position, goals: g, photo: p.photo, id: p.id } : null;
+    }).filter(Boolean).sort((a,b) => b.goals - a.goals).slice(0, 6);
+
+    const monthBuckets = {};
+    played.forEach(m => {
+        if (!m.date) return;
+        const key = m.date.slice(0, 7);
+        if (!monthBuckets[key]) monthBuckets[key] = { gf: 0, ga: 0 };
+        monthBuckets[key].gf += m.scoreFor ?? 0;
+        monthBuckets[key].ga += m.scoreAgainst ?? 0;
+    });
+    const monthKeys = Object.keys(monthBuckets).sort();
+    const maxMonthGoals = Math.max(...monthKeys.map(k => monthBuckets[k].gf), 1);
+    const monthBar = (key) => {
+        const { gf, ga } = monthBuckets[key];
+        const hFor  = Math.max(4, Math.round((gf / maxMonthGoals) * 80));
+        const hAga  = Math.max(4, Math.round((ga / maxMonthGoals) * 80));
+        const label = new Date(key + "-01").toLocaleDateString("en-GB", { month: "short" });
+        return `
+        <div class="sqrep-mb-col">
+            <div class="sqrep-mb-bars">
+                <div class="sqrep-mb-bar sqrep-mb-bar--for" style="height:${hFor}px" title="${gf} scored"></div>
+                <div class="sqrep-mb-bar sqrep-mb-bar--aga" style="height:${hAga}px" title="${ga} conceded"></div>
+            </div>
+            <span class="sqrep-mb-label">${label}</span>
+        </div>`;
+    };
+
     // ── Position table row ────────────────
     const posRow = g => {
         const barW = Math.min(100, g.count * 12);
@@ -258,6 +304,7 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
         <div class="sqrep-tab-bar">
             <button class="sqrep-tab sqrep-tab--active" data-sqrep-tab="overview">Overview</button>
             <button class="sqrep-tab" data-sqrep-tab="player-analysis">Player Analysis</button>
+            <button class="sqrep-tab" data-sqrep-tab="statistics">Statistics</button>
         </div>
 
         <!-- ── OVERVIEW TAB ── -->
@@ -417,6 +464,72 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
             </div>
 
         </div><!-- /sqrep-player-analysis -->
+
+        <!-- ── STATISTICS TAB ── -->
+        <div class="sqrep-tab-panel sqrep-tab-panel--hidden" id="sqrep-statistics">
+
+            <!-- Goals by month -->
+            <div class="sqrep-card">
+                <div class="sqrep-card-hd">
+                    Goals by Month
+                    <span class="sqrep-stat-legend">
+                        <span class="sqrep-mb-dot sqrep-mb-dot--for"></span> Scored
+                        <span class="sqrep-mb-dot sqrep-mb-dot--aga"></span> Conceded
+                    </span>
+                </div>
+                ${monthKeys.length ? `
+                <div class="sqrep-mb-chart">
+                    ${monthKeys.map(monthBar).join("")}
+                </div>` : `<div style="opacity:.4;font-size:.8rem;padding:16px 0">No match data yet</div>`}
+            </div>
+
+            <!-- By competition + top scorers -->
+            <div class="sqrep-row sqrep-row--pa">
+
+                <div class="sqrep-card">
+                    <div class="sqrep-card-hd">By Competition</div>
+                    <div class="sqrep-pos-table-wrap">
+                        <table class="sqrep-pos-table">
+                            <thead><tr><th>Competition</th><th>MP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>CS</th></tr></thead>
+                            <tbody>
+                            ${compRows.map(([key, s]) => `
+                            <tr class="sqrep-pos-tr">
+                                <td class="sqrep-pos-name">${compLabels[key] ?? key}</td>
+                                <td class="sqrep-pos-cnt">${s.mp}</td>
+                                <td style="color:#22c55e;font-weight:700">${s.w}</td>
+                                <td style="color:#f59e0b;font-weight:700">${s.d}</td>
+                                <td style="color:#ef4444;font-weight:700">${s.l}</td>
+                                <td>${s.gf}</td>
+                                <td>${s.ga}</td>
+                                <td style="color:#6366f1;font-weight:700">${s.cs}</td>
+                            </tr>`).join("")}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="sqrep-card">
+                    <div class="sqrep-card-hd">Top Scorers</div>
+                    ${topScorers.length ? topScorers.map((p, i) => {
+                        const src = p.photo || `assets/renders/${p.id}.png`;
+                        return `
+                        <div class="sqrep-pa-perf-row">
+                            <span class="sqrep-perf-rank">${i+1}</span>
+                            <img src="${src}" class="sqrep-perf-img" onerror="this.style.display='none'" alt="">
+                            <div class="sqrep-perf-info">
+                                <span class="sqrep-perf-name">${p.name.split(" ").slice(-1)[0]}</span>
+                                <span class="sqrep-perf-meta">${p.position}</span>
+                            </div>
+                            <div class="sqrep-perf-badges">
+                                <div class="sqrep-perf-badge sqrep-perf-badge--goals">${p.goals}<span>G</span></div>
+                            </div>
+                        </div>`;
+                    }).join("") : `<div style="opacity:.4;font-size:.8rem;padding:8px 0">No goal data yet</div>`}
+                </div>
+
+            </div>
+
+        </div><!-- /sqrep-statistics -->
 
     </div>`;
 }

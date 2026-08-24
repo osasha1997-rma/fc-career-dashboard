@@ -2130,6 +2130,19 @@ td{
 .sqrep-xi-name { font-size: .8rem; font-weight: 600; flex: 1; }
 .sqrep-xi-ovr { font-size: .78rem; font-weight: 800; color: rgba(167,183,255,.6); }
 
+/* Statistics tab — goals by month chart */
+.sqrep-stat-legend { display: flex; align-items: center; gap: 10px; font-size: .65rem; color: rgba(167,183,255,.5); margin-left: auto; font-weight: 400; }
+.sqrep-mb-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 3px; }
+.sqrep-mb-dot--for { background: #6366f1; }
+.sqrep-mb-dot--aga { background: #ef4444; }
+.sqrep-mb-chart { display: flex; align-items: flex-end; gap: 8px; height: 100px; padding: 12px 0 0; overflow-x: auto; }
+.sqrep-mb-col { display: flex; flex-direction: column; align-items: center; gap: 3px; flex-shrink: 0; min-width: 36px; }
+.sqrep-mb-bars { display: flex; align-items: flex-end; gap: 2px; height: 80px; }
+.sqrep-mb-bar { width: 10px; border-radius: 3px 3px 0 0; min-height: 4px; }
+.sqrep-mb-bar--for { background: #6366f1; }
+.sqrep-mb-bar--aga { background: #ef444466; }
+.sqrep-mb-label { font-size: .58rem; color: rgba(167,183,255,.4); white-space: nowrap; }
+
 /* Stat banner */
 .sqrep-banner {
     display: grid;
