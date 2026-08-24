@@ -2214,7 +2214,9 @@ td{
 .sqrep-inj-badge { display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 50%; background: #ef4444; color: #fff; font-size: .6rem; font-weight: 900; margin-left: 4px; }
 .sqrep-inj-row  { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(167,183,255,.06); }
 .sqrep-inj-row:last-child { border-bottom: none; }
+.sqrep-inj-row--ok { opacity: .4; }
 .sqrep-inj-dot  { width: 7px; height: 7px; border-radius: 50%; background: #ef4444; flex-shrink: 0; }
+.sqrep-inj-dot--ok { background: #22c55e; }
 .sqrep-inj-name { font-size: .78rem; font-weight: 700; flex: 1; color: rgba(255,255,255,.85); }
 .sqrep-inj-type { font-size: .68rem; color: #f59e0b; }
 .sqrep-inj-days { font-size: .65rem; color: rgba(167,183,255,.4); margin-left: auto; }

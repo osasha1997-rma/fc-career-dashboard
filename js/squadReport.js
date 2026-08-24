@@ -128,14 +128,14 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
     const injuries = [];
     played.forEach(m => (m.injuries??[]).forEach(inj => {
         const key = `${inj.player}_${m.date?.slice(0,10)}`;
-        if (recoveredSet.has(key)) return;
         const p = byId(inj.player);
-        if (p) injuries.push({ name: p.name, type: inj.type ?? "Injury", daysOut: inj.daysOut ?? "?" });
+        if (p) injuries.push({ name: p.name, type: inj.type ?? "Injury", daysOut: inj.daysOut ?? "?", recovered: recoveredSet.has(key) });
     }));
-    seasonInjuries.filter(i => i.source !== "match" && i.status !== "recovered").forEach(inj => {
+    seasonInjuries.filter(i => i.source !== "match").forEach(inj => {
         const p = byId(inj.playerId);
-        if (p) injuries.push({ name: p.name, type: inj.type ?? "Injury", daysOut: inj.expectedReturn ?? "?" });
+        if (p) injuries.push({ name: p.name, type: inj.type ?? "Injury", daysOut: inj.expectedReturn ?? "?", recovered: inj.status === "recovered" });
     });
+    injuries.sort((a, b) => a.recovered - b.recovered);
 
     // ── Contract warnings ─────────────────
     const gameDate = played.length
@@ -302,14 +302,14 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
             <div class="sqrep-card">
                 <div class="sqrep-card-hd">
                     Injury Overview
-                    ${injuries.length ? `<span class="sqrep-inj-badge">${injuries.length}</span>` : ""}
+                    ${injuries.filter(i=>!i.recovered).length ? `<span class="sqrep-inj-badge">${injuries.filter(i=>!i.recovered).length}</span>` : ""}
                 </div>
-                ${injuries.length ? injuries.slice(0,5).map(inj => `
-                <div class="sqrep-inj-row">
-                    <div class="sqrep-inj-dot"></div>
+                ${injuries.length ? injuries.slice(0,6).map(inj => `
+                <div class="sqrep-inj-row${inj.recovered ? " sqrep-inj-row--ok" : ""}">
+                    <div class="sqrep-inj-dot${inj.recovered ? " sqrep-inj-dot--ok" : ""}"></div>
                     <span class="sqrep-inj-name">${inj.name.split(" ").slice(-1)[0]}</span>
                     <span class="sqrep-inj-type">${inj.type}</span>
-                    <span class="sqrep-inj-days">Out ${inj.daysOut}d</span>
+                    <span class="sqrep-inj-days">${inj.recovered ? "✓ OK" : `Out ${inj.daysOut}d`}</span>
                 </div>`).join("") : `
                 <div class="sqrep-inj-clear">
                     <div class="sqrep-inj-clear-icon">✓</div>
