@@ -122,12 +122,20 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
         return { ...g, count:ps.length, avgOvr:a, q:qualityFor(a) };
     }).filter(g => g.count > 0);
 
-    // ── Injuries ──────────────────────────
+    // ── Injuries (same logic as Squad Injuries tab) ────────────
+    const seasonInjuries = season.injuries ?? [];
+    const recoveredSet = new Set(seasonInjuries.filter(i => i.status === "recovered").map(i => i.key ?? `${i.playerId}_${i.date}`));
     const injuries = [];
     played.forEach(m => (m.injuries??[]).forEach(inj => {
+        const key = `${inj.player}_${m.date?.slice(0,10)}`;
+        if (recoveredSet.has(key)) return;
         const p = byId(inj.player);
-        if (p) injuries.push({ name:p.name, type:inj.type??"Injury", daysOut:inj.daysOut??"?" });
+        if (p) injuries.push({ name: p.name, type: inj.type ?? "Injury", daysOut: inj.daysOut ?? "?" });
     }));
+    seasonInjuries.filter(i => i.source !== "match" && i.status !== "recovered").forEach(inj => {
+        const p = byId(inj.playerId);
+        if (p) injuries.push({ name: p.name, type: inj.type ?? "Injury", daysOut: inj.expectedReturn ?? "?" });
+    });
 
     // ── Contract warnings ─────────────────
     const gameDate = played.length
