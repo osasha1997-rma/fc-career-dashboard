@@ -1205,7 +1205,7 @@ function renderInjuriesTab(players, season) {
 
     // Derive injuries from match history
     const matchInjuries = [];
-    const recoveredSet = new Set((season.injuries ?? []).filter(i => i.status === "recovered").map(i => `${i.playerId}_${i.date}`));
+    const recoveredSet = new Set((season.injuries ?? []).filter(i => i.status === "recovered").map(i => i.key ?? `${i.playerId}_${i.date}`));
     for (const m of (squadState.matches ?? []).filter(m => m.result)) {
         for (const inj of (m.injuries ?? [])) {
             const key = `${inj.player}_${m.date?.slice(0,10)}`;
@@ -1305,12 +1305,13 @@ function wireInjuriesTab() {
 
     const saveInjuries = async (injuries) => {
         const careerId = window._careerId;
-        if (!careerId) return;
-        await fetch(`${apiBase}/careers/${careerId}`, {
+        if (!careerId) { console.error("saveInjuries: no careerId"); return; }
+        const res = await fetch(`${apiBase}/careers/${careerId}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ "season.injuries": injuries }),
         });
+        if (!res.ok) console.error("saveInjuries failed", res.status, await res.text());
         squadState.season.injuries = injuries;
     };
 
