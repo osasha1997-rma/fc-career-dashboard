@@ -273,8 +273,8 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
             ${statPill(played.length, "Matches Played", null)}
         </div>
 
-        <!-- Row 1: overview + performers -->
-        <div class="sqrep-row sqrep-row--3">
+        <!-- Row 1: depth + age -->
+        <div class="sqrep-row sqrep-row--2">
 
             <!-- Squad depth -->
             <div class="sqrep-card">
@@ -288,12 +288,6 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
                     <span class="sqrep-cw-num">${expiringCount}</span>
                     <span class="sqrep-cw-lbl">contract${expiringCount !== 1 ? "s" : ""} expiring in 6 months</span>
                 </div>
-            </div>
-
-            <!-- Top performers -->
-            <div class="sqrep-card">
-                <div class="sqrep-card-hd">Top Players</div>
-                ${topPlayers.map((p,i) => perfRow(i, p)).join("")}
             </div>
 
             <!-- Age profile -->
@@ -333,37 +327,15 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
             </div>
         </div>
 
-        <!-- Row 3: summary rings + injuries -->
-        <div class="sqrep-row sqrep-row--2">
-
-            <div class="sqrep-card">
-                <div class="sqrep-card-hd">Squad Summary</div>
-                <div class="sqrep-rings">
-                    ${ring(avgOvr, avgOvr, "Overall Quality", ovrQ.label, ovrQ.color)}
-                    ${ring(Math.min(100,70+totalPlayers), 92, "Chemistry", "Excellent", "#22c55e")}
-                    ${ring(avgPot, avgPot, "Potential", qualityFor(avgPot).label, "#6366f1")}
-                    ${ring(Math.round(expiringCount/totalPlayers*100||0), expiringCount, "Expiring", "contracts", "#f59e0b")}
-                </div>
+        <!-- Row 3: summary rings -->
+        <div class="sqrep-card">
+            <div class="sqrep-card-hd">Squad Summary</div>
+            <div class="sqrep-rings">
+                ${ring(avgOvr, avgOvr, "Overall Quality", ovrQ.label, ovrQ.color)}
+                ${ring(Math.min(100,70+totalPlayers), 92, "Chemistry", "Excellent", "#22c55e")}
+                ${ring(avgPot, avgPot, "Potential", qualityFor(avgPot).label, "#6366f1")}
+                ${ring(Math.round(expiringCount/totalPlayers*100||0), expiringCount, "Expiring", "contracts", "#f59e0b")}
             </div>
-
-            <div class="sqrep-card">
-                <div class="sqrep-card-hd">
-                    Injury Overview
-                    ${injuries.filter(i=>!i.recovered).length ? `<span class="sqrep-inj-badge">${injuries.filter(i=>!i.recovered).length}</span>` : ""}
-                </div>
-                ${injuries.length ? injuries.slice(0,6).map(inj => `
-                <div class="sqrep-inj-row${inj.recovered ? " sqrep-inj-row--ok" : ""}">
-                    <div class="sqrep-inj-dot${inj.recovered ? " sqrep-inj-dot--ok" : ""}"></div>
-                    <span class="sqrep-inj-name">${inj.name.split(" ").slice(-1)[0]}</span>
-                    <span class="sqrep-inj-type">${inj.type}</span>
-                    <span class="sqrep-inj-days">${inj.recovered ? "✓ OK" : `Out ${inj.daysOut}d`}</span>
-                </div>`).join("") : `
-                <div class="sqrep-inj-clear">
-                    <div class="sqrep-inj-clear-icon">✓</div>
-                    <span>No injuries recorded</span>
-                </div>`}
-            </div>
-
         </div>
 
         </div><!-- /sqrep-overview -->
