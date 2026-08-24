@@ -2151,7 +2151,6 @@ td{
 /* Cards */
 .sqrep-card {
     background: rgba(18,24,38,.52);
-    border: 1px solid rgba(167,183,255,.09);
     border-radius: 16px; padding: 20px 22px;
 }
 .sqrep-card--flat { border-radius: 14px; padding: 18px 22px; }
@@ -2206,8 +2205,8 @@ td{
 .sqrep-perf-badge--goals { font-size: .82rem; font-weight: 800; color: #22c55e; }
 
 /* Age chart */
-.sqrep-age-chart { display: flex; align-items: flex-end; gap: 6px; height: 108px; margin-bottom: 16px; }
-.sqrep-age-col   { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+.sqrep-age-chart { display: flex; align-items: flex-end; gap: 6px; height: 120px; margin-bottom: 16px; overflow: hidden; }
+.sqrep-age-col   { display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 4px; flex: 1; height: 100%; }
 .sqrep-age-count { font-size: .72rem; font-weight: 800; color: rgba(255,255,255,.8); }
 .sqrep-age-bar   { width: 100%; border-radius: 4px 4px 0 0; min-height: 6px; }
 .sqrep-age-label { font-size: .52rem; color: rgba(167,183,255,.4); text-align: center; white-space: nowrap; }
