@@ -1339,6 +1339,7 @@ function wireInjuriesTab() {
                 }
             }
             await saveInjuries(injuries);
+            squadState.season.injuries = injuries;
             document.getElementById("sq-tab-body").innerHTML = renderInjuriesTab(squadState.players, squadState.season);
             wireInjuriesTab();
         }
@@ -1366,6 +1367,7 @@ function wireInjuriesTab() {
         const injuries = (squadState.season.injuries ?? []).slice();
         injuries.push({ playerId, type, date, expectedReturn: ret || null, status: "injured" });
         await saveInjuries(injuries);
+        squadState.season.injuries = injuries;
         document.getElementById("inj-modal").style.display = "none";
         document.getElementById("sq-tab-body").innerHTML = renderInjuriesTab(squadState.players, squadState.season);
         wireInjuriesTab();
