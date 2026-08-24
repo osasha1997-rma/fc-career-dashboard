@@ -291,13 +291,13 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
         const label = new Date(key + "-02").toLocaleDateString("en-GB", { month: "short" });
         return `
         <div class="sqrep-mb-col">
-            <div class="sqrep-mb-totals">
-                <span class="sqrep-mb-total sqrep-mb-total--for">${gf}</span>
-                <span class="sqrep-mb-total sqrep-mb-total--aga">${ga}</span>
+            <div class="sqrep-mb-num-row">
+                <span class="sqrep-mb-num sqrep-mb-num--for">${gf}</span>
+                <span class="sqrep-mb-num sqrep-mb-num--aga">${ga}</span>
             </div>
             <div class="sqrep-mb-bars">
-                <div class="sqrep-mb-bar sqrep-mb-bar--for" style="height:${hFor}px" title="${gf} scored"></div>
-                <div class="sqrep-mb-bar sqrep-mb-bar--aga" style="height:${hAga}px" title="${ga} conceded"></div>
+                <div class="sqrep-mb-bar sqrep-mb-bar--for" style="height:${hFor}px"></div>
+                <div class="sqrep-mb-bar sqrep-mb-bar--aga" style="height:${hAga}px"></div>
             </div>
             <span class="sqrep-mb-label">${label}</span>
         </div>`;
