@@ -1247,12 +1247,14 @@ function renderInjuriesTab(players, season) {
             <td>${inj.type}</td>
             <td>${fmtDate(inj.date)}</td>
             <td>${returnInfo}</td>
-            <td><span class="inj-status ${isActive ? "inj-status--active" : "inj-status--ok"}">${isActive ? "Injured" : "Recovered"}</span></td>
             <td>
-                ${isActive ? `<button class="inj-btn inj-btn--recover" data-inj-idx="${idx}" data-inj-key="${inj.key ?? ""}" data-inj-source="${inj.source ?? "manual"}">✓ Recovered</button>` : ""}
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                    <span class="inj-status ${isActive ? "inj-status--active" : "inj-status--ok"}">${isActive ? "Injured" : "Recovered"}</span>
+                    ${isActive ? `<button class="inj-btn inj-btn--recover" data-inj-idx="${idx}" data-inj-key="${inj.key ?? ""}" data-inj-source="${inj.source ?? "manual"}">✓ Recovered</button>` : ""}
+                </div>
             </td>
         </tr>`;
-    }).join("") : `<tr><td colspan="6" style="text-align:center;padding:32px;opacity:.5">No injuries recorded</td></tr>`;
+    }).join("") : `<tr><td colspan="5" style="text-align:center;padding:32px;opacity:.5">No injuries recorded</td></tr>`;
 
     return `
     <div class="inj-wrap">
@@ -1268,7 +1270,6 @@ function renderInjuriesTab(players, season) {
                 <th>Date</th>
                 <th>Expected Return</th>
                 <th>Status</th>
-                <th></th>
             </tr></thead>
             <tbody>${rows}</tbody>
         </table>
