@@ -925,11 +925,13 @@ function openAddMatchModal() {
         }).join("");
 
     // Wire fixture picker auto-fill
+    modal.dataset.fixtureId = "";
     sel.onchange = () => {
         const id = parseInt(sel.value);
-        if (!id) return;
+        if (!id) { modal.dataset.fixtureId = ""; return; }
         const fix = upcoming.find(m => m.id === id);
         if (!fix) return;
+        modal.dataset.fixtureId = fix.id;
         if (fix.date) document.getElementById("am-date").value = fix.date.slice(0,10);
         if (fix.opponent) document.getElementById("am-opponent").value = fix.opponent;
         if (fix.venue) document.getElementById("am-venue").value = fix.venue;
@@ -1027,8 +1029,12 @@ async function saveMatch() {
     const opponentStats = (oppPoss || oppShots || oppPasses || oppPassAcc || oppTackles)
         ? { possession: oppPoss, shots: oppShots, passes: oppPasses, passAccuracy: oppPassAcc, tackles: oppTackles } : {};
 
-    const newMatch = {
-        id:           Math.max(0, ...state.matches.map(m => m.id)) + 1,
+    const modal = document.getElementById("add-match-modal");
+    const fixtureId = modal.dataset.fixtureId ? parseInt(modal.dataset.fixtureId) : null;
+    const existingMatch = fixtureId ? state.matches.find(m => m.id === fixtureId) : null;
+
+    const matchData = {
+        id:           existingMatch ? existingMatch.id : Math.max(0, ...state.matches.map(m => m.id)) + 1,
         season:       state.season.season,
         competition:  document.getElementById("am-competition").value,
         stage:        document.getElementById("am-stage").value,
@@ -1048,12 +1054,14 @@ async function saveMatch() {
         performances,
         yellowCards,
         redCards,
-        injuries:     [],
+        injuries:     existingMatch?.injuries ?? [],
         teamStats,
         opponentStats,
     };
 
-    const updatedMatches = [...state.matches, newMatch];
+    const updatedMatches = existingMatch
+        ? state.matches.map(m => m.id === existingMatch.id ? matchData : m)
+        : [...state.matches, matchData];
 
     const btn = document.getElementById("am-save");
     btn.disabled = true;
@@ -1072,7 +1080,7 @@ async function saveMatch() {
         state.matches = updatedMatches;
         document.getElementById("add-match-modal").style.display = "none";
         hideLoader();
-        showToast("Match saved");
+        showToast(existingMatch ? "Match updated" : "Match saved");
         showScreen("matches");
     } catch (e) {
         hideLoader();
