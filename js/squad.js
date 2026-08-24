@@ -1200,31 +1200,56 @@ function renderRolesTab(players, season, matches) {
 
 // ── Injuries Tab ────────────────────────────────────────────────────────────
 function renderInjuriesTab(players, season) {
-    const injuries = (season.injuries ?? []).slice().sort((a, b) => {
-        // Active injuries first, then by date descending
+    const byId = id => players.find(p => p.id === id);
+    const fmtDate = d => d ? new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
+
+    // Derive injuries from match history
+    const matchInjuries = [];
+    const recoveredSet = new Set((season.injuries ?? []).filter(i => i.status === "recovered").map(i => `${i.playerId}_${i.date}`));
+    for (const m of (squadState.matches ?? []).filter(m => m.result)) {
+        for (const inj of (m.injuries ?? [])) {
+            const key = `${inj.player}_${m.date?.slice(0,10)}`;
+            matchInjuries.push({
+                playerId: inj.player,
+                type: inj.type ?? "Unknown",
+                date: m.date?.slice(0,10) ?? null,
+                daysOut: inj.daysOut ?? null,
+                expectedReturn: inj.expectedReturn ?? null,
+                opponent: m.opponent,
+                source: "match",
+                status: recoveredSet.has(key) ? "recovered" : "injured",
+                key,
+            });
+        }
+    }
+
+    // Manual injuries from season.injuries (exclude match-derived ones we already have)
+    const manualInjuries = (season.injuries ?? []).filter(i => i.source !== "match");
+
+    // Merge: manual entries + match-derived
+    const allInjuries = [...manualInjuries, ...matchInjuries].sort((a, b) => {
         if (a.status === b.status) return new Date(b.date) - new Date(a.date);
         return a.status === "injured" ? -1 : 1;
     });
 
-    const byId = id => players.find(p => p.id === id);
-    const fmtDate = d => d ? new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }) : "—";
-
-    const rows = injuries.length ? injuries.map((inj, idx) => {
+    const rows = allInjuries.length ? allInjuries.map((inj, idx) => {
         const p = byId(inj.playerId);
         if (!p) return "";
         const isActive = inj.status !== "recovered";
+        const returnInfo = inj.daysOut ? `~${inj.daysOut}d out` : fmtDate(inj.expectedReturn);
+        const fromMatch = inj.source === "match";
         return `
         <tr class="inj-row${isActive ? "" : " inj-row--recovered"}">
             <td class="sq-tbl-player" style="padding:10px 8px">
                 <div class="sq-tbl-name">${p.name}</div>
-                <div class="sq-tbl-nat" style="font-size:.7rem;opacity:.6">${p.position ?? ""}</div>
+                <div class="sq-tbl-nat" style="font-size:.7rem;opacity:.6">${p.position ?? ""}${fromMatch ? ` · vs ${inj.opponent}` : ""}</div>
             </td>
-            <td>${inj.type ?? "—"}</td>
+            <td>${inj.type}</td>
             <td>${fmtDate(inj.date)}</td>
-            <td>${fmtDate(inj.expectedReturn)}</td>
+            <td>${returnInfo}</td>
             <td><span class="inj-status ${isActive ? "inj-status--active" : "inj-status--ok"}">${isActive ? "Injured" : "Recovered"}</span></td>
             <td>
-                ${isActive ? `<button class="inj-btn inj-btn--recover" data-inj-idx="${idx}">✓ Recovered</button>` : ""}
+                ${isActive ? `<button class="inj-btn inj-btn--recover" data-inj-idx="${idx}" data-inj-key="${inj.key ?? ""}" data-inj-source="${inj.source ?? "manual"}">✓ Recovered</button>` : ""}
             </td>
         </tr>`;
     }).join("") : `<tr><td colspan="6" style="text-align:center;padding:32px;opacity:.5">No injuries recorded</td></tr>`;
@@ -1232,7 +1257,7 @@ function renderInjuriesTab(players, season) {
     return `
     <div class="inj-wrap">
         <div class="inj-toolbar">
-            <span class="inj-count">${injuries.filter(i => i.status !== "recovered").length} Active · ${injuries.length} Total</span>
+            <span class="inj-count">${allInjuries.filter(i => i.status !== "recovered").length} Active · ${allInjuries.length} Total</span>
             <button class="inj-btn inj-btn--add" id="inj-add-btn">+ Add Injury</button>
         </div>
         <div class="sq-tbl-scroll">
@@ -1292,9 +1317,26 @@ function wireInjuriesTab() {
     document.querySelector(".inj-wrap")?.addEventListener("click", async e => {
         const recoverBtn = e.target.closest(".inj-btn--recover");
         if (recoverBtn) {
-            const idx = parseInt(recoverBtn.dataset.injIdx);
+            const source = recoverBtn.dataset.injSource;
             const injuries = (squadState.season.injuries ?? []).slice();
-            injuries[idx] = { ...injuries[idx], status: "recovered", recoveredDate: new Date().toISOString().slice(0, 10) };
+            if (source === "match") {
+                // For match injuries, record recovery in season.injuries by key
+                const key = recoverBtn.dataset.injKey;
+                const existing = injuries.find(i => i.key === key);
+                if (existing) {
+                    existing.status = "recovered";
+                    existing.recoveredDate = new Date().toISOString().slice(0, 10);
+                } else {
+                    injuries.push({ key, source: "match", status: "recovered", recoveredDate: new Date().toISOString().slice(0, 10) });
+                }
+            } else {
+                const idx = parseInt(recoverBtn.dataset.injIdx);
+                const manualInjuries = injuries.filter(i => i.source !== "match");
+                if (manualInjuries[idx]) {
+                    manualInjuries[idx].status = "recovered";
+                    manualInjuries[idx].recoveredDate = new Date().toISOString().slice(0, 10);
+                }
+            }
             await saveInjuries(injuries);
             document.getElementById("sq-tab-body").innerHTML = renderInjuriesTab(squadState.players, squadState.season);
             wireInjuriesTab();
