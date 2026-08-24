@@ -2142,6 +2142,15 @@ td{
 .sqrep-mb-bar--for { background: #6366f1; }
 .sqrep-mb-bar--aga { background: #ef444466; }
 .sqrep-mb-label { font-size: .58rem; color: rgba(167,183,255,.4); white-space: nowrap; }
+.sqrep-mb-totals { display: flex; gap: 4px; font-size: .6rem; font-weight: 800; margin-bottom: 2px; }
+.sqrep-mb-total--for { color: #818cf8; }
+.sqrep-mb-total--aga { color: #f87171; }
+
+/* Key Statistics list */
+.sqrep-ks-list { display: flex; flex-direction: column; gap: 0; }
+.sqrep-ks-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid rgba(167,183,255,.06); font-size: .8rem; color: rgba(167,183,255,.6); }
+.sqrep-ks-row:last-child { border-bottom: none; }
+.sqrep-ks-val { font-weight: 700; color: rgba(255,255,255,.88); font-size: .85rem; }
 
 /* Stat banner */
 .sqrep-banner {

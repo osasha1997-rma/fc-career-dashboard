@@ -250,10 +250,29 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
     });
     const compRows = Object.entries(compMap).sort((a,b) => b[1].mp - a[1].mp);
 
+    // Apps per player (from startingXI)
+    const appsMap = {};
+    played.forEach(m => { (m.startingXI ?? []).forEach(id => { appsMap[id] = (appsMap[id] ?? 0) + 1; }); });
+
     const topScorers = Object.entries(goalMap).map(([id, g]) => {
         const p = byId(Number(id));
-        return p ? { name: p.name, position: p.position, goals: g, photo: p.photo, id: p.id } : null;
+        const apps = appsMap[Number(id)] ?? 0;
+        return p ? { name: p.name, position: p.position, goals: g, gpg: apps ? (g/apps).toFixed(2) : "—", photo: p.photo, id: p.id } : null;
     }).filter(Boolean).sort((a,b) => b.goals - a.goals).slice(0, 6);
+
+    // Key stats from teamStats
+    const tsMatches = played.filter(m => m.teamStats && typeof m.teamStats === "object");
+    const tsCount = tsMatches.length || 1;
+    const tsAvg = field => tsMatches.length ? (tsMatches.reduce((s,m) => s + (m.teamStats[field] ?? 0), 0) / tsCount).toFixed(1) : "—";
+    const avgPoss    = tsAvg("possession");
+    const avgShots   = tsAvg("shots");
+    const avgPasses  = tsAvg("passes");
+    const avgPassAcc = tsAvg("passAccuracy");
+    const avgTackles = tsAvg("tackles");
+    const totalYC = played.reduce((s,m) => s + (m.yellowCards?.length ?? 0), 0);
+    const totalRC = played.reduce((s,m) => s + (m.redCards?.length ?? 0), 0);
+    const gfpg = played.length ? (played.reduce((s,m) => s+(m.scoreFor??0),0)/played.length).toFixed(2) : "—";
+    const gapg = played.length ? (played.reduce((s,m) => s+(m.scoreAgainst??0),0)/played.length).toFixed(2) : "—";
 
     const monthBuckets = {};
     played.forEach(m => {
@@ -264,14 +283,18 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
         monthBuckets[key].ga += m.scoreAgainst ?? 0;
     });
     const monthKeys = Object.keys(monthBuckets).sort();
-    const maxMonthGoals = Math.max(...monthKeys.map(k => monthBuckets[k].gf), 1);
+    const maxMonthGoals = Math.max(...monthKeys.map(k => Math.max(monthBuckets[k].gf, monthBuckets[k].ga)), 1);
     const monthBar = (key) => {
         const { gf, ga } = monthBuckets[key];
-        const hFor  = Math.max(4, Math.round((gf / maxMonthGoals) * 80));
-        const hAga  = Math.max(4, Math.round((ga / maxMonthGoals) * 80));
-        const label = new Date(key + "-01").toLocaleDateString("en-GB", { month: "short" });
+        const hFor = Math.max(4, Math.round((gf / maxMonthGoals) * 80));
+        const hAga = Math.max(4, Math.round((ga / maxMonthGoals) * 80));
+        const label = new Date(key + "-02").toLocaleDateString("en-GB", { month: "short" });
         return `
         <div class="sqrep-mb-col">
+            <div class="sqrep-mb-totals">
+                <span class="sqrep-mb-total sqrep-mb-total--for">${gf}</span>
+                <span class="sqrep-mb-total sqrep-mb-total--aga">${ga}</span>
+            </div>
             <div class="sqrep-mb-bars">
                 <div class="sqrep-mb-bar sqrep-mb-bar--for" style="height:${hFor}px" title="${gf} scored"></div>
                 <div class="sqrep-mb-bar sqrep-mb-bar--aga" style="height:${hAga}px" title="${ga} conceded"></div>
@@ -483,28 +506,21 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
                 </div>` : `<div style="opacity:.4;font-size:.8rem;padding:16px 0">No match data yet</div>`}
             </div>
 
-            <!-- By competition + top scorers -->
+            <!-- Key stats + goals per game -->
             <div class="sqrep-row sqrep-row--pa">
 
                 <div class="sqrep-card">
-                    <div class="sqrep-card-hd">By Competition</div>
-                    <div class="sqrep-pos-table-wrap">
-                        <table class="sqrep-pos-table">
-                            <thead><tr><th>Competition</th><th>MP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>CS</th></tr></thead>
-                            <tbody>
-                            ${compRows.map(([key, s]) => `
-                            <tr class="sqrep-pos-tr">
-                                <td class="sqrep-pos-name">${compLabels[key] ?? key}</td>
-                                <td class="sqrep-pos-cnt">${s.mp}</td>
-                                <td style="color:#22c55e;font-weight:700">${s.w}</td>
-                                <td style="color:#f59e0b;font-weight:700">${s.d}</td>
-                                <td style="color:#ef4444;font-weight:700">${s.l}</td>
-                                <td>${s.gf}</td>
-                                <td>${s.ga}</td>
-                                <td style="color:#6366f1;font-weight:700">${s.cs}</td>
-                            </tr>`).join("")}
-                            </tbody>
-                        </table>
+                    <div class="sqrep-card-hd">Key Statistics <span style="font-size:.65rem;opacity:.4;font-weight:400;margin-left:4px">per game avg (${tsCount} matches)</span></div>
+                    <div class="sqrep-ks-list">
+                        <div class="sqrep-ks-row"><span>Goals Scored / Game</span><span class="sqrep-ks-val" style="color:#22c55e">${gfpg}</span></div>
+                        <div class="sqrep-ks-row"><span>Goals Conceded / Game</span><span class="sqrep-ks-val" style="color:#ef4444">${gapg}</span></div>
+                        <div class="sqrep-ks-row"><span>Avg Possession</span><span class="sqrep-ks-val">${avgPoss}%</span></div>
+                        <div class="sqrep-ks-row"><span>Shots per Game</span><span class="sqrep-ks-val">${avgShots}</span></div>
+                        <div class="sqrep-ks-row"><span>Passes per Game</span><span class="sqrep-ks-val">${avgPasses}</span></div>
+                        <div class="sqrep-ks-row"><span>Pass Accuracy</span><span class="sqrep-ks-val">${avgPassAcc}%</span></div>
+                        <div class="sqrep-ks-row"><span>Tackles per Game</span><span class="sqrep-ks-val">${avgTackles}</span></div>
+                        <div class="sqrep-ks-row"><span>Yellow Cards</span><span class="sqrep-ks-val" style="color:#f59e0b">${totalYC}</span></div>
+                        <div class="sqrep-ks-row"><span>Red Cards</span><span class="sqrep-ks-val" style="color:#ef4444">${totalRC}</span></div>
                     </div>
                 </div>
 
@@ -522,11 +538,36 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
                             </div>
                             <div class="sqrep-perf-badges">
                                 <div class="sqrep-perf-badge sqrep-perf-badge--goals">${p.goals}<span>G</span></div>
+                                <div class="sqrep-perf-badge" style="color:rgba(167,183,255,.6)">${p.gpg}<span>G/G</span></div>
                             </div>
                         </div>`;
                     }).join("") : `<div style="opacity:.4;font-size:.8rem;padding:8px 0">No goal data yet</div>`}
                 </div>
 
+            </div>
+
+            <!-- By competition -->
+            <div class="sqrep-card sqrep-card--flat">
+                <div class="sqrep-card-hd">By Competition</div>
+                <div class="sqrep-pos-table-wrap">
+                    <table class="sqrep-pos-table">
+                        <thead><tr><th>Competition</th><th>MP</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>CS</th><th>G/G</th></tr></thead>
+                        <tbody>
+                        ${compRows.map(([key, s]) => `
+                        <tr class="sqrep-pos-tr">
+                            <td class="sqrep-pos-name">${compLabels[key] ?? key}</td>
+                            <td class="sqrep-pos-cnt">${s.mp}</td>
+                            <td style="color:#22c55e;font-weight:700">${s.w}</td>
+                            <td style="color:#f59e0b;font-weight:700">${s.d}</td>
+                            <td style="color:#ef4444;font-weight:700">${s.l}</td>
+                            <td>${s.gf}</td>
+                            <td>${s.ga}</td>
+                            <td style="color:#6366f1;font-weight:700">${s.cs}</td>
+                            <td style="color:rgba(167,183,255,.6)">${(s.gf/s.mp).toFixed(1)}</td>
+                        </tr>`).join("")}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
         </div><!-- /sqrep-statistics -->
