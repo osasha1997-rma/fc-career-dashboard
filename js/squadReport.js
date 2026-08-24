@@ -147,6 +147,44 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
         return (e.getFullYear()-gameDate.getFullYear())*12+(e.getMonth()-gameDate.getMonth()) <= 6;
     }).length;
 
+    // ── Player Analysis tab data ───────────
+    const perfRatingSum = {}, perfRatingCnt = {};
+    played.forEach(m => {
+        (m.performances ?? []).forEach(perf => {
+            if (perf.rating) {
+                perfRatingSum[perf.player] = (perfRatingSum[perf.player] ?? 0) + perf.rating;
+                perfRatingCnt[perf.player] = (perfRatingCnt[perf.player] ?? 0) + 1;
+            }
+        });
+    });
+    const topByRating = [...active].map(p => ({
+        ...p,
+        goals:     goalMap[p.id]   ?? 0,
+        assists:   assistMap[p.id] ?? 0,
+        avgRating: perfRatingCnt[p.id] ? +(perfRatingSum[p.id] / perfRatingCnt[p.id]).toFixed(1) : null,
+        apps:      perfRatingCnt[p.id] ?? 0,
+    })).filter(p => p.avgRating).sort((a,b) => b.avgRating - a.avgRating).slice(0, 6);
+
+    const wins   = played.filter(m => m.result === "W").length;
+    const draws  = played.filter(m => m.result === "D").length;
+    const losses = played.filter(m => m.result === "L").length;
+    const goalsFor     = played.reduce((s,m) => s + (m.scoreFor ?? 0), 0);
+    const goalsAgainst = played.reduce((s,m) => s + (m.scoreAgainst ?? 0), 0);
+    const cleanSheets  = played.filter(m => (m.scoreAgainst ?? 0) === 0).length;
+    const last5 = [...played].sort((a,b) => new Date(b.date)-new Date(a.date)).slice(0,5).reverse();
+    const formBadge = r => {
+        const col = r==="W" ? "#22c55e" : r==="D" ? "#f59e0b" : "#ef4444";
+        return `<span class="sqrep-form-badge" style="background:${col}">${r}</span>`;
+    };
+
+    const xiPlayers = (season.startingXI ?? []).map(id => active.find(p => p.id === Number(id))).filter(Boolean);
+    const xiRow = p => `
+    <div class="sqrep-xi-row">
+        <span class="sqrep-xi-pos">${p.position}</span>
+        <span class="sqrep-xi-name">${p.name.split(" ").slice(-1)[0]}</span>
+        <span class="sqrep-xi-ovr">${p.overall}</span>
+    </div>`;
+
     // ── Depth pct ─────────────────────────
     const depthFor = (grp, ideal) => Math.min(100, Math.round(grp.length/ideal*100));
     const depthRow = (lbl, grp, ideal) => {
@@ -215,6 +253,15 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
 
     return `
     <div class="sqrep-wrap">
+
+        <!-- Tab bar -->
+        <div class="sqrep-tab-bar">
+            <button class="sqrep-tab sqrep-tab--active" data-sqrep-tab="overview">Overview</button>
+            <button class="sqrep-tab" data-sqrep-tab="player-analysis">Player Analysis</button>
+        </div>
+
+        <!-- ── OVERVIEW TAB ── -->
+        <div class="sqrep-tab-panel" id="sqrep-overview">
 
         <!-- Stat banner -->
         <div class="sqrep-banner">
@@ -319,5 +366,98 @@ export function renderSquadReport(players = [], matches = [], season = {}) {
 
         </div>
 
+        </div><!-- /sqrep-overview -->
+
+        <!-- ── PLAYER ANALYSIS TAB ── -->
+        <div class="sqrep-tab-panel sqrep-tab-panel--hidden" id="sqrep-player-analysis">
+
+            <!-- Row 1: top performers + season stats -->
+            <div class="sqrep-row sqrep-row--pa">
+
+                <div class="sqrep-card">
+                    <div class="sqrep-card-hd">Top Performers</div>
+                    ${topByRating.length ? topByRating.map((p, i) => {
+                        const ratingColor = p.avgRating >= 8 ? "#22c55e" : p.avgRating >= 7 ? "#f59e0b" : "rgba(167,183,255,.5)";
+                        const src = p.photo || `assets/renders/${p.id}.png`;
+                        return `
+                        <div class="sqrep-pa-perf-row">
+                            <span class="sqrep-perf-rank">${i+1}</span>
+                            <img src="${src}" class="sqrep-perf-img" onerror="this.style.display='none'" alt="">
+                            <div class="sqrep-perf-info">
+                                <span class="sqrep-perf-name">${p.name.split(" ").slice(-1)[0]}</span>
+                                <span class="sqrep-perf-meta">${p.position} · ${p.apps} apps</span>
+                            </div>
+                            <div class="sqrep-perf-badges">
+                                <div class="sqrep-perf-badge sqrep-perf-badge--ovr">${p.overall}<span>OVR</span></div>
+                                ${p.goals ? `<div class="sqrep-perf-badge sqrep-perf-badge--goals">${p.goals}<span>G</span></div>` : ""}
+                                ${p.assists ? `<div class="sqrep-perf-badge" style="color:#38bdf8">${p.assists}<span>A</span></div>` : ""}
+                                <div class="sqrep-perf-badge" style="color:${ratingColor}">${p.avgRating}<span>RTG</span></div>
+                            </div>
+                        </div>`;
+                    }).join("") : `<div style="opacity:.4;padding:12px 0;font-size:.8rem">No performance data yet</div>`}
+                </div>
+
+                <div class="sqrep-card">
+                    <div class="sqrep-card-hd">Season Statistics</div>
+                    <div class="sqrep-pa-stats-grid">
+                        <div class="sqrep-pa-stat"><div class="sqrep-pa-stat-val" style="color:#22c55e">${wins}</div><div class="sqrep-pa-stat-lbl">Wins</div></div>
+                        <div class="sqrep-pa-stat"><div class="sqrep-pa-stat-val" style="color:#f59e0b">${draws}</div><div class="sqrep-pa-stat-lbl">Draws</div></div>
+                        <div class="sqrep-pa-stat"><div class="sqrep-pa-stat-val" style="color:#ef4444">${losses}</div><div class="sqrep-pa-stat-lbl">Losses</div></div>
+                        <div class="sqrep-pa-stat"><div class="sqrep-pa-stat-val">${goalsFor}</div><div class="sqrep-pa-stat-lbl">Goals For</div></div>
+                        <div class="sqrep-pa-stat"><div class="sqrep-pa-stat-val">${goalsAgainst}</div><div class="sqrep-pa-stat-lbl">Conceded</div></div>
+                        <div class="sqrep-pa-stat"><div class="sqrep-pa-stat-val" style="color:#6366f1">${cleanSheets}</div><div class="sqrep-pa-stat-lbl">Clean Sheets</div></div>
+                    </div>
+                    ${last5.length ? `
+                    <div class="sqrep-pa-form-row">
+                        <span class="sqrep-pa-form-lbl">Last ${last5.length}</span>
+                        ${last5.map(m => formBadge(m.result)).join("")}
+                    </div>` : ""}
+                </div>
+
+            </div>
+
+            <!-- Row 2: injury report + best XI -->
+            <div class="sqrep-row sqrep-row--pa">
+
+                <div class="sqrep-card">
+                    <div class="sqrep-card-hd">
+                        Injury Report
+                        ${injuries.filter(i=>!i.recovered).length ? `<span class="sqrep-inj-badge">${injuries.filter(i=>!i.recovered).length}</span>` : ""}
+                    </div>
+                    ${injuries.length ? injuries.map(inj => `
+                    <div class="sqrep-inj-row${inj.recovered ? " sqrep-inj-row--ok" : ""}">
+                        <div class="sqrep-inj-dot${inj.recovered ? " sqrep-inj-dot--ok" : ""}"></div>
+                        <span class="sqrep-inj-name">${inj.name.split(" ").slice(-1)[0]}</span>
+                        <span class="sqrep-inj-type">${inj.type}</span>
+                        <span class="sqrep-inj-days">${inj.recovered ? "✓ OK" : `Out ${inj.daysOut}d`}</span>
+                    </div>`).join("") : `
+                    <div class="sqrep-inj-clear">
+                        <div class="sqrep-inj-clear-icon">✓</div>
+                        <span>No injuries recorded</span>
+                    </div>`}
+                </div>
+
+                <div class="sqrep-card">
+                    <div class="sqrep-card-hd">Starting XI <span style="font-size:.7rem;opacity:.5;font-weight:400;margin-left:4px">${season.formation ?? ""}</span></div>
+                    ${xiPlayers.length ? xiPlayers.map(xiRow).join("") : `<div style="opacity:.4;font-size:.8rem;padding:8px 0">No XI set — use Edit XI on the home screen</div>`}
+                </div>
+
+            </div>
+
+        </div><!-- /sqrep-player-analysis -->
+
     </div>`;
+}
+
+export function wireSquadReport() {
+    const tabs   = document.querySelectorAll(".sqrep-tab");
+    const panels = document.querySelectorAll(".sqrep-tab-panel");
+    tabs.forEach(btn => {
+        btn.addEventListener("click", () => {
+            tabs.forEach(t => t.classList.remove("sqrep-tab--active"));
+            panels.forEach(p => p.classList.add("sqrep-tab-panel--hidden"));
+            btn.classList.add("sqrep-tab--active");
+            document.getElementById(`sqrep-${btn.dataset.sqrepTab}`)?.classList.remove("sqrep-tab-panel--hidden");
+        });
+    });
 }

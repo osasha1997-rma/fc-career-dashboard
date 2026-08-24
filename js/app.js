@@ -30,7 +30,7 @@ import { createCompetitions, initializeCompetitions } from "./competitions.js";
 import { renderDevelopment } from "./development.js";
 import { createCalendar, initializeCalendar } from "./calendar.js";
 import { createPlayerProfile } from "./components/PlayerProfile.js";
-import { renderSquadReport } from "./squadReport.js";
+import { renderSquadReport, wireSquadReport } from "./squadReport.js";
 import { renderAIAssistant, initializeAIAssistant } from "./aiAssistant.js";
 import { createMatchCentre,
     initializeMatchCentre,
@@ -262,7 +262,7 @@ registerRoute("ai-assistant", () => {
 
 registerRoute("squad-report", () => {
     setHeader("Squad Report", state.season?.season ?? "");
-    return { html: renderSquadReport(state.players, state.matches, state.season ?? {}) };
+    return { html: renderSquadReport(state.players, state.matches, state.season ?? {}), init: wireSquadReport };
 });
 
 registerRoute("development", () => {
