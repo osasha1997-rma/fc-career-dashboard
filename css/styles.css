@@ -3047,6 +3047,7 @@ td{
 .sq-tbl-ovr { font-weight: 800 !important; color: #fff !important; font-size: .9rem !important; }
 .sq-tbl-pot { color: rgba(167,183,255,.7) !important; }
 .sq-tbl-pot-diff { font-size: .62rem; color: #22c55e; font-weight: 700; margin-left: 3px; }
+.sq-tbl-rating { font-weight: 600; color: #facc15; font-size: .85rem; }
 .sq-tbl-form { display: flex !important; align-items: center; gap: 3px; }
 .form-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
 .form-dot--w { background: #22c55e; }

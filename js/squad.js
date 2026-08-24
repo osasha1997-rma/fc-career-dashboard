@@ -365,6 +365,20 @@ function renderSquadTab() {
     const fmtVal  = v => v ? (v >= 1e9 ? `€${(v/1e9).toFixed(1)}B` : `€${(v/1e6).toFixed(0)}M`) : "—";
     const fmtWage = w => w ? `£${(w/1000).toFixed(0)}K` : "—";
 
+    // Build avg rating map from match performances
+    const ratingMap = {};
+    played.forEach(m => {
+        (m.performances ?? []).forEach(perf => {
+            if (!ratingMap[perf.player]) ratingMap[perf.player] = [];
+            ratingMap[perf.player].push(perf.rating);
+        });
+    });
+    const avgRating = id => {
+        const ratings = ratingMap[id];
+        if (!ratings?.length) return "—";
+        return (ratings.reduce((s, r) => s + r, 0) / ratings.length).toFixed(1);
+    };
+
     const formDots = id => {
         const results = formMap[id] ?? [];
         return results.slice(-5).map(r => {
@@ -391,6 +405,7 @@ function renderSquadTab() {
             <td class="sq-tbl-num">${p.age ?? "—"}</td>
             <td class="sq-tbl-ovr">${p.overall}</td>
             <td class="sq-tbl-pot">${p.potential ?? "—"}${potDiff}</td>
+            <td class="sq-tbl-rating">${avgRating(p.id)}</td>
             <td class="sq-tbl-form">${formDots(p.id)}</td>
             <td class="sq-tbl-val">${fmtVal(p.marketValue)}</td>
             <td class="sq-tbl-val">${fmtWage(p.wage)}/wk</td>
@@ -423,6 +438,7 @@ function renderSquadTab() {
                     <th>Age</th>
                     <th>OVR</th>
                     <th>POT</th>
+                    <th>Avg ★</th>
                     <th>Form</th>
                     <th>Value</th>
                     <th>Wage</th>
