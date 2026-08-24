@@ -282,10 +282,14 @@ function renderFormation(season, players) {
             ${p?.overall ? `<span class="gdb-f-ovr">${p.overall}</span>` : ""}
         </div>`;
 
-    const fRow = ps => `<div class="gdb-f-row">${ps.map(dot).join("")}</div>`;
+    const fRow = (ps, top) => `<div class="gdb-f-row" style="top:${top}%">${ps.map(dot).join("")}</div>`;
 
-    // Render lines from attack (last group) down to defence (first group), then GK
-    const lineRows = [...lineGroups].reverse().map(fRow).join("");
+    // Distribute outfield lines evenly between 12% (attack) and 75% (defence), then GK at 88%
+    const n = lineGroups.length;
+    const lineRows = [...lineGroups].reverse().map((ps, i) => {
+        const top = n === 1 ? 12 : 12 + (i / (n - 1)) * 63;
+        return fRow(ps, Math.round(top));
+    }).join("");
 
     return `
     <div class="gdb-card gdb-card--full">
@@ -302,7 +306,7 @@ function renderFormation(season, players) {
             </div>
             <div class="gdb-formation">
                 ${lineRows}
-                ${fRow(gk)}
+                ${fRow(gk, 88)}
             </div>
         </div>
         <div style="display:flex;gap:8px;padding:10px 14px 14px">
