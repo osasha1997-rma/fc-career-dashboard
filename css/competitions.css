@@ -354,3 +354,25 @@
     color: var(--primary);
     white-space: nowrap;
 }
+.cp-import-row {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    margin-bottom: .75rem;
+}
+.cp-import-btn {
+    background: rgba(167,183,255,.08);
+    border: 1px solid rgba(167,183,255,.15);
+    color: var(--text-muted);
+    border-radius: 6px;
+    padding: .35rem .85rem;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: background .15s;
+}
+.cp-import-btn:hover:not(:disabled) { background: rgba(167,183,255,.15); color: var(--text); }
+.cp-import-btn:disabled { opacity: .5; cursor: default; }
+.cp-import-status {
+    font-size: .78rem;
+    color: var(--text-muted);
+}

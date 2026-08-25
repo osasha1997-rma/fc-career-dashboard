@@ -356,7 +356,7 @@ function renderSquadTab() {
     const played = (squadState.matches ?? []).filter(m => m.result);
     const formMap = {};
     played.slice(-15).forEach(m => {
-        const involved = [...(m.startingXI ?? []), ...(m.substitutions ?? []).map(s => s.playerOn)];
+        const involved = [...new Set([...(m.startingXI ?? []), ...(m.substitutions ?? []).map(s => s.playerOn), ...(m.performances ?? []).map(p => p.player)].map(String))];
         involved.forEach(id => {
             if (!formMap[id]) formMap[id] = [];
             if (formMap[id].length < 5) formMap[id].unshift(m.result);
@@ -784,7 +784,7 @@ function wireSquadTab(onPlayerSelect) {
         const played = (squadState.matches ?? []).filter(m => m.result);
         const formMap = {};
         played.slice(-15).forEach(m => {
-            const involved = [...(m.startingXI ?? []), ...(m.substitutions ?? []).map(s => s.playerOn)];
+            const involved = [...new Set([...(m.startingXI ?? []), ...(m.substitutions ?? []).map(s => s.playerOn), ...(m.performances ?? []).map(p => p.player)].map(String))];
             involved.forEach(id => { if (!formMap[id]) formMap[id] = []; if (formMap[id].length < 5) formMap[id].unshift(m.result); });
         });
         const fmtVal  = v => v ? (v >= 1e9 ? `€${(v/1e9).toFixed(1)}B` : `€${(v/1e6).toFixed(0)}M`) : "—";

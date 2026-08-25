@@ -3,6 +3,7 @@ const LOGOS = {
     "Real Madrid":                  "assets/logos/real-madrid.png",
     "Alaves":                       "assets/logos/deportivo.png",
     "Deportivo Alavés":             "assets/logos/deportivo.png",
+    "D. Alavés":                    "assets/logos/deportivo.png",
     "Levante":                      "assets/logos/levante.png",
     "Levante UD":                   "assets/logos/levante-ud.png",
     "Real Sociedad":                "assets/logos/real-sociedad.png",

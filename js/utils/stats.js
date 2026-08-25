@@ -110,11 +110,12 @@ export function derivePlayerStats(player, matches) {
         const subOff = match.substitutions?.find(s => samePlayerId(s.playerOff, id));
         const perf   = match.performances?.find(p => samePlayerId(p.player, id));
 
-        const isStart = !!inXI;
-        const isSub   = !inXI && !!subOn;
-        if (!isStart && !isSub) continue;
+        const isStart = !!inXI || (!subOn && (!!subOff || !!perf));
+        const isSub   = !isStart && !!subOn;
+        const hasPerf = false;
+        if (!isStart && !isSub && !hasPerf) continue;
 
-        const minsOn  = isStart ? (subOff ? subOff.minute : 90) : (90 - subOn.minute);
+        const minsOn  = isStart ? (subOff ? subOff.minute : 90) : hasPerf ? 90 : (90 - subOn.minute);
         totalMinutes += minsOn;
 
         const goals   = (match.goals      ?? []).filter(g => samePlayerId(g.player, id)).length;

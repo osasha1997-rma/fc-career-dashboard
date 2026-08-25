@@ -7,6 +7,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import careersRouter from "./routes/careers.js";
 import uploadRouter from "./routes/upload.js";
+import aiRouter from "./routes/ai.js";
 
 const app  = express();
 const PORT = process.env.PORT || 4000;
@@ -16,6 +17,7 @@ app.use(express.json({ limit: "20mb" }));
 
 app.use("/api/careers", careersRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/ai", aiRouter);
 
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 

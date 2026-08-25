@@ -81,9 +81,15 @@ function renderTab(tab, comp, results, fixtures, table) {
 // ── Table ───────────────────────────────────────────────────────────────────
 
 function renderTable(table, comp) {
-    if (!table.length) return `<div class="cp-empty">No standings data yet</div>`;
+    const importBtn = `
+    <div class="cp-import-row">
+        <button class="cp-import-btn" id="cp-import-table-btn">📷 Import from image</button>
+        <input type="file" id="cp-import-file" accept="image/*" multiple style="display:none">
+        <span class="cp-import-status" id="cp-import-status"></span>
+    </div>`;
+    if (!table.length) return importBtn + `<div class="cp-empty">No standings data yet. Upload a screenshot to import.</div>`;
     const cc = getCompetitionColor(comp);
-    return `
+    return importBtn + `
     <div class="cp-table-wrap">
         <table class="cp-table">
             <thead>
@@ -187,6 +193,11 @@ function renderStats(comp, results) {
 
     return `
     <div class="cp-stats">
+        <div class="cp-import-row">
+            <button class="cp-import-btn" id="cp-import-stats-btn">📷 Import from image</button>
+            <input type="file" id="cp-import-stats-file" accept="image/*" multiple style="display:none">
+            <span class="cp-import-status" id="cp-import-stats-status"></span>
+        </div>
         ${isLeague ? `<div class="cp-stats-source">League-wide stats · ${results.length} matches played</div>` : ""}
         <div class="cp-stat-tabs" id="cp-stat-tabs">
             ${STAT_TABS.map(s => `<button class="cp-stat-tab${s.key === _activeStat ? " active" : ""}" data-stat="${s.key}">${s.label}</button>`).join("")}
@@ -354,9 +365,12 @@ export function initializeCompetitions() {
         document.querySelectorAll(".cp-comp-tab").forEach(b => b.classList.toggle("active", b === btn));
         document.getElementById("cp-content").innerHTML = renderCompContent(_activeComp);
         bindSubTabs();
+        bindImportTable();
     });
     bindSubTabs();
     bindStatTabs();
+    bindImportTable();
+    bindImportStats();
 }
 
 function bindSubTabs() {
@@ -372,7 +386,8 @@ function bindSubTabs() {
         const table    = _standings[_activeComp] ?? [];
         document.getElementById("cp-tab-body").innerHTML =
             renderTab(_activeTab, _activeComp, results, fixtures, table);
-        if (_activeTab === "stats") bindStatTabs();
+        if (_activeTab === "stats") { bindStatTabs(); bindImportStats(); }
+        if (_activeTab === "table") bindImportTable();
     });
 }
 
@@ -390,4 +405,204 @@ function bindStatTabs() {
         const assisters = ls?.assists?.length ? ls.assists  : buildFromMatches(results, "assists");
         document.getElementById("cp-stat-body").innerHTML = renderStatBody(_activeStat, scorers, assisters, ls ?? {});
     });
+}
+
+function bindImportTable() {
+    const btn    = document.getElementById("cp-import-table-btn");
+    const input  = document.getElementById("cp-import-file");
+    const status = document.getElementById("cp-import-status");
+    if (!btn || !input) return;
+
+    btn.addEventListener("click", () => input.click());
+
+    input.addEventListener("change", async () => {
+        const files = [...input.files];
+        if (!files.length) return;
+        input.value = "";
+
+        btn.disabled = true;
+
+        const apiBase = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+            ? "http://localhost:4000/api"
+            : "https://fc-career-dashboard.onrender.com/api";
+
+        try {
+            const allRows = [];
+            for (let i = 0; i < files.length; i++) {
+                status.textContent = `Extracting image ${i + 1}/${files.length}…`;
+                const imageBase64 = await fileToBase64(files[i]);
+                const res = await fetch(`${apiBase}/ai/extract-table`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ imageBase64, mimeType: files[i].type }),
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({ error: res.statusText }));
+                    throw new Error(err.error ?? res.statusText);
+                }
+                const { rows: parsed } = await res.json();
+                allRows.push(...parsed);
+            }
+
+            status.textContent = "Merging…";
+            // Deduplicate by pos — later images win
+            const rowMap = {};
+            for (const r of allRows) rowMap[r.pos] = r;
+            const rows = Object.values(rowMap).sort((a, b) => a.pos - b.pos);
+
+            if (!rows.length) throw new Error("No table rows found — try a cleaner screenshot");
+
+            status.textContent = `Found ${rows.length} rows. Saving…`;
+
+            const careerId = window._careerId;
+            if (!careerId) throw new Error("No active career");
+
+            const patch = {};
+            patch[`standings.${_activeComp}`] = rows;
+            const res = await fetch(`${apiBase}/careers/${careerId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(patch),
+            });
+            if (!res.ok) throw new Error(`Save failed: ${res.status}`);
+
+            _standings[_activeComp] = rows;
+
+            const all      = _matches.filter(m => m.competition === _activeComp);
+            const results  = all.filter(m => m.result).sort((a, b) => b.id - a.id);
+            const fixtures = all.filter(m => !m.result).sort((a, b) => a.id - b.id);
+            document.getElementById("cp-tab-body").innerHTML =
+                renderTab("table", _activeComp, results, fixtures, rows);
+            bindImportTable();
+            status.textContent = "";
+        } catch (err) {
+            status.textContent = `Error: ${err.message}`;
+            btn.disabled = false;
+        }
+    });
+}
+
+function bindImportStats() {
+    const btn    = document.getElementById("cp-import-stats-btn");
+    const input  = document.getElementById("cp-import-stats-file");
+    const status = document.getElementById("cp-import-stats-status");
+    if (!btn || !input) return;
+
+    btn.addEventListener("click", () => input.click());
+
+    input.addEventListener("change", async () => {
+        const files = [...input.files];
+        if (!files.length) return;
+        input.value = "";
+        btn.disabled = true;
+
+        const apiBase = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+            ? "http://localhost:4000/api"
+            : "https://fc-career-dashboard.onrender.com/api";
+
+        try {
+            const allRows = [];
+            for (let i = 0; i < files.length; i++) {
+                status.textContent = `Extracting image ${i + 1}/${files.length}…`;
+                const imageBase64 = await fileToBase64(files[i]);
+                const res = await fetch(`${apiBase}/ai/extract-stats`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ imageBase64, mimeType: files[i].type, statType: _activeStat }),
+                });
+                if (!res.ok) {
+                    const err = await res.json().catch(() => ({ error: res.statusText }));
+                    throw new Error(err.error ?? res.statusText);
+                }
+                const { rows } = await res.json();
+                allRows.push(...rows);
+            }
+
+            // Deduplicate by name — later wins
+            const seen = {};
+            const rows = allRows.filter(r => { const k = r.name?.toLowerCase(); return k && !seen[k] && (seen[k] = true); });
+            if (!rows.length) throw new Error("No stats found in image");
+
+            status.textContent = "Saving…";
+            const careerId = window._careerId;
+            if (!careerId) throw new Error("No active career");
+
+            // Merge into existing leagueStats
+            const existing = _leagueStats[_activeComp] ?? {};
+            existing[_activeStat] = rows;
+            _leagueStats[_activeComp] = existing;
+
+            const patch = {};
+            patch[`leagueStats.${_activeComp}`] = existing;
+            const saveRes = await fetch(`${apiBase}/careers/${careerId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(patch),
+            });
+            if (!saveRes.ok) throw new Error(`Save failed: ${saveRes.status}`);
+
+            // Re-render stats tab
+            const all      = _matches.filter(m => m.competition === _activeComp);
+            const results  = all.filter(m => m.result).sort((a, b) => b.id - a.id);
+            document.getElementById("cp-tab-body").innerHTML = renderTab("stats", _activeComp, results, [], []);
+            bindStatTabs();
+            bindImportStats();
+            status.textContent = "";
+        } catch (err) {
+            status.textContent = `Error: ${err.message}`;
+            btn.disabled = false;
+        }
+    });
+}
+
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(",")[1]);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+function parseTableText(raw) {
+    const rows = [];
+    for (const line of raw.split("\n")) {
+        // Strip leading noise (arrows, pipes, bullets, etc.)
+        const t = line.replace(/^[\s▶►▸▷❯>|•\-]+/, "").trim();
+        // Match: pos  team-name  P W D L GF GA [GD] Pts
+        // GD can be negative; team name can contain letters, spaces, accents, colons
+        const m = t.match(/^(\d{1,3})\s+(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(-?\d+)\s+(\d+)\s*$/);
+        if (m) {
+            // 10 groups: pos team P W D L GF GA GD Pts
+            rows.push({
+                pos:  parseInt(m[1]),
+                team: m[2].trim().replace(/:$/, ""),
+                p:    parseInt(m[3]),
+                w:    parseInt(m[4]),
+                d:    parseInt(m[5]),
+                l:    parseInt(m[6]),
+                gf:   parseInt(m[7]),
+                ga:   parseInt(m[8]),
+                // m[9] = GD (skip — we calculate it)
+                pts:  parseInt(m[10]),
+            });
+            continue;
+        }
+        // Fallback: 7 numbers (no GD column)
+        const m2 = t.match(/^(\d{1,3})\s+(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s*$/);
+        if (m2) {
+            rows.push({
+                pos:  parseInt(m2[1]),
+                team: m2[2].trim().replace(/:$/, ""),
+                p:    parseInt(m2[3]),
+                w:    parseInt(m2[4]),
+                d:    parseInt(m2[5]),
+                l:    parseInt(m2[6]),
+                gf:   parseInt(m2[7]),
+                ga:   parseInt(m2[8]),
+                pts:  parseInt(m2[9]),
+            });
+        }
+    }
+    return rows.sort((a, b) => a.pos - b.pos);
 }
